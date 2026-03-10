@@ -104,7 +104,7 @@ See `AGENTS.md` in this repository for instructions on:
 
 ```bash
 # Planning repository
-git clone https://github.com/IMCG-SRO/cz.imcg.fast.allocations.git
+git clone https://github.com/smolikzd/cz.imcg.fast.allocations.git
 
 # Framework repository
 git clone https://github.com/smolikzd/cz.imcg.fast.planner.git

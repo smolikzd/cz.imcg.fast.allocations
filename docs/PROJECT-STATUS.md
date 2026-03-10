@@ -266,7 +266,7 @@ All steps implement: ZIF_FI_PROCESS_STEP
 **Development Methodology**: BMAD (Business Methodology for Agile Development)
 
 **Repository Ownership**:
-- Planning: IMCG-SRO/cz.imcg.fast.allocations (pending remote setup)
+- Planning: smolikzd/cz.imcg.fast.allocations
 - Framework: smolikzd/cz.imcg.fast.planner
 - Implementation: IMCG-SRO/cz.imcg.fast.ovysledovka
 

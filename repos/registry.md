@@ -4,6 +4,13 @@ This file tracks the code repositories that belong to this planning project.
 
 ## Repositories
 
+### Planning Repository: cz.imcg.fast.allocations
+- **Remote**: https://github.com/smolikzd/cz.imcg.fast.allocations.git
+- **Local Path**: /Users/smolik/DEV/cz.imcg.fast.allocations
+- **Purpose**: Planning and coordination hub (BMAD artifacts, constitution, sprint tracking)
+- **Owner**: Zdenek Smolik
+- **Constitution**: Source of truth at `_bmad/_memory/constitution.md`
+
 ### Framework Repository: cz.imcg.fast.planner
 - **Remote**: https://github.com/smolikzd/cz.imcg.fast.planner.git
 - **Local Path**: /Users/smolik/DEV/cz.imcg.fast.planner
