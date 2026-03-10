@@ -1,0 +1,92 @@
+# generated: 2026-03-09
+# project: cz.imcg.fast.planner
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Mark epic as 'in-progress' when starting work on its first story
+# - SM typically creates next story ONLY after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
+#
+# SPRINT ASSIGNMENT (from epics-alloc-remediation.md):
+# =====================================================
+# Sprint 1 — Unblock the pipeline (all Critical):
+#   1-1, 1-2, 2-2, 4-2, 4-3, 5-3
+# Sprint 2 — Structural correctness (High / Moderate):
+#   2-1, 3-1, 3-2, 3-3, 4-1, 5-1, 5-2, 5-4
+# Sprint 3 — Wire Phase 3 + housekeeping:
+#   6-1, 7-1, 7-2, 7-3, 7-4
+
+generated: 2026-03-09
+project: cz.imcg.fast.planner
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # ── Epic 1: Unblock Pipeline Activation ──────────────────────────────────
+  epic-1: done
+  1-1-add-serial-mode-interface-stubs-to-init-phase1-corr-bche-phase3: done
+  1-2-remove-write-statement-from-corr-bche: done
+  epic-1-retrospective: optional
+
+  # ── Epic 2: Fix LUW and Rollback Contract ────────────────────────────────
+  epic-2: done
+  2-1-implement-rollback-methods-in-phase1-phase2-corr-bche-phase3: done
+  2-2-fix-framework-bug-call-init-before-execute-substep-in-bgrfc-fm: done
+  epic-2-retrospective: optional
+
+  # ── Epic 3: Functional Correctness — PHASE2 Substep Path ─────────────────
+  epic-3: done
+  3-1-move-mo-log-initialisation-from-execute-to-init-in-phase2: done
+  3-2-move-final-state-write-and-summary-logging-to-on-success-on-error-in-phase2: done
+  3-3-fix-phase2-catch-block-fall-through: done
+  epic-3-retrospective: optional
+
+  # ── Epic 4: Functional Correctness — Data Integrity ──────────────────────
+  epic-4: done
+  4-1-restore-brand-hier1-filter-parameters-in-phase1-and-phase3: done
+  4-2-fix-init-execute-to-always-insert-allocation-state-row: done
+  4-3-fix-lt-items-memory-accumulation-in-corr-bche: done
+  epic-4-retrospective: optional
+
+  # ── Epic 5: Error Handling and Observability ──────────────────────────────
+  epic-5: done
+  5-1-replace-message-type-e-with-raise-exception-in-phase1-phase2-phase3: done
+  5-2-implement-real-validate-guards-in-phase1-phase2-phase3-corr-bche: done
+  5-3-fix-lv-dummy-type-c-to-type-string-in-phase1-phase2-phase3: done
+  5-4-add-bal-log-initialisation-and-logging-to-corr-bche: done
+  epic-5-retrospective: optional
+
+  # ── Epic 6: Wire Phase 3 into Pipeline ───────────────────────────────────
+  epic-6: done
+  6-1-wire-phase-3-step-into-process-definition: done
+  epic-6-retrospective: optional
+
+  # ── Epic 7: Code Quality and Housekeeping ────────────────────────────────
+  epic-7: done
+  7-1-remove-ms-context-dead-field-from-all-step-classes: done
+  7-2-update-class-header-comments-in-all-step-classes: done
+  7-3-delete-orig-dead-classes-from-system-and-repository: done
+  7-4-document-cleanup-old-instances-commit-intent: done
+  epic-7-retrospective: optional
