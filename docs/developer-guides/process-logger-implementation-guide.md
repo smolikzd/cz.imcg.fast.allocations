@@ -745,7 +745,7 @@ ENDCLASS.
 **Solution:**
 1. Verify external number = instance UUID (check BALHDR table)
 2. Ensure `mo_log->save()` called (framework does this automatically)
-3. Check BAL object/subobject match: Object = 'ZFI_PROCESS', Subobject = process type
+3. Check BAL object/subobject match: Object = 'ZFI_ALLOC', Subobject = process type
 4. Use SLG1 with wildcards: External number = `*{uuid_suffix}*`
 
 ---
