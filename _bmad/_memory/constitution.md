@@ -60,14 +60,25 @@ All code MUST follow SAP naming conventions, ABAP development standards, and pro
 
 Before making ANY changes to ABAP code, data dictionary objects, or framework structure, the developer MUST consult the mcp-sap-docs resource. This applies to new features, bug fixes, optimizations, and refactoring.
 
-**Rationale**: SAP systems have complex dependencies, version-specific behaviors, and best practices that are not intuitive. Consulting official documentation prevents introducing subtle bugs, performance issues, or incompatibilities.
+**Rationale**: SAP systems have complex dependencies, version-specific behaviors, and best practices that are not intuitive. Consulting official documentation prevents introducing subtle bugs, performance issues, or incompatibilities. Trial-and-error with SAP APIs (e.g., BALI, RAP, CDS) wastes time and introduces bugs.
 
 **Non-Negotiable Rules**:
-- MUST search mcp-sap-docs before implementing any DDIC change
-- MUST verify ABAP syntax compatibility for target SAP version
+- MUST search mcp-sap-docs BEFORE implementing any SAP standard API (BALI, RAP, CDS, etc.)
+- MUST search mcp-sap-docs BEFORE implementing any DDIC change
+- MUST verify ABAP syntax compatibility for target SAP version (7.58 for this project)
 - MUST check SAP Help Portal for recommended patterns when implementing standard SAP patterns
 - MUST validate against SAP Community solutions when troubleshooting errors
+- MUST verify correct method names, parameters, and return types from official API documentation
 - As specified in AGENTS.md: "all change consult with mcp-sap-docs"
+
+**Example Workflow (BALI Application Log API)**:
+1. Before implementing logging: Query mcp-sap-docs for "BALI application log IF_BALI_MESSAGE_GETTER"
+2. Read official documentation for class/interface structure
+3. Use documented methods (e.g., `GET_ALL_VALUES`, not guessed `get_message_detail()`)
+4. Review existing framework code for consistent API usage patterns
+5. Only after consulting docs: Implement and test
+
+**Lesson Learned**: Story 4.4 health check implementation required multiple iterations due to guessing BALI API methods instead of consulting documentation first. Official SAP Help Portal documentation (https://help.sap.com/docs/SAP_S4HANA_CLOUD/...) is the single source of truth.
 
 ### IV. Factory Pattern & Encapsulation
 
