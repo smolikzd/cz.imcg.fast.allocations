@@ -90,3 +90,18 @@ development_status:
   7-3-delete-orig-dead-classes-from-system-and-repository: done
   7-4-document-cleanup-old-instances-commit-intent: done
   epic-7-retrospective: done  # Comprehensive retro covering all 7 epics (2026-03-10)
+
+  # ── Sprint 4: Process Logger Architecture ────────────────────────────────
+  # Epic: Exception Handling and Message Persistence
+  # Goal: Implement multi-language logging with BAL + T100 messages
+  # Related: ADR-008, Implementation Guide, Migration Guide
+  
+  sprint-4: in-progress
+  4-1-create-logger-infrastructure: done  # Interface + Implementation + Unit Tests (2026-03-11)
+  4-2-expand-message-classes: ready-for-dev
+  4-3-integrate-logger-with-process-instance: ready-for-dev
+  4-4-integrate-logger-with-bgrfc-substeps: ready-for-dev
+  4-5-migrate-step-code: ready-for-dev
+  4-6-translation-to-english: ready-for-dev
+  4-7-integration-testing-and-regression: ready-for-dev
+  4-8-documentation-and-training: ready-for-dev
