@@ -1,9 +1,10 @@
 # Process Logger Implementation Guide
 
-**Version:** 1.0  
-**Date:** 2026-03-11  
+**Version:** 1.1  
+**Date:** 2026-03-12 (Updated after Story 4-5 implementation)  
 **Audience:** Step developers, framework maintainers  
-**Related Documents:** ADR-008 (Architecture Decision Record)
+**Related Documents:** ADR-008 (Architecture Decision Record)  
+**Implementation Status:** ✅ Completed (97 messages, 5 step classes migrated)
 
 ---
 
@@ -790,6 +791,250 @@ ENDCLASS.
 
 ---
 
+## Real Implementation Examples (Story 4-5)
+
+### Example 1: Simple Success Message (INIT Step)
+
+**From:** `zcl_fi_alloc_step_init.clas.abap:91`
+
+```abap
+METHOD execute.
+  " ... initialization logic ...
+  
+  " Log success message
+  MESSAGE s016(zfi_alloc) INTO rs_result-message.
+  IF mo_log IS BOUND.
+    TRY.
+        mo_log->message(
+          iv_message_class  = 'ZFI_ALLOC'
+          iv_message_number = '016'
+          iv_severity       = 'S'
+        ).
+      CATCH zcx_fi_process_error.
+        " Logger failed - continue with result message
+    ENDTRY.
+  ENDIF.
+  
+  rs_result-success = abap_true.
+ENDMETHOD.
+```
+
+**T100 Message:**
+```
+016 (EN): Process initialized
+016 (CS): Proces inicializován
+```
+
+---
+
+### Example 2: Error Message with Multiple Variables (PHASE1)
+
+**From:** `zcl_fi_alloc_step_phase1.clas.abap:100`
+
+```abap
+METHOD validate.
+  " Check if allocation state exists
+  SELECT SINGLE * FROM zfi_alloc_state
+    INTO @DATA(ls_state)
+    WHERE allocation_id = @mv_allocation_id
+      AND company_code  = @mv_company_code
+      AND fiscal_year   = @mv_fiscal_year
+      AND fiscal_period = @mv_fiscal_period.
+  
+  IF sy-subrc <> 0.
+    " Raise exception with 4 variables
+    RAISE EXCEPTION TYPE zcx_fi_process_error
+      EXPORTING
+        textid = zcx_fi_process_error=>validation_failed
+        value  = |ID alokace { mv_allocation_id } pro účetní období { mv_company_code }/{ mv_fiscal_year }/{ mv_fiscal_period } neexistuje|.
+  ENDIF.
+ENDMETHOD.
+```
+
+**T100 Message:**
+```
+100 (EN): Allocation ID &1 for period &2/&3/&4 does not exist
+100 (CS): ID alokace &1 pro účetní období &2/&3/&4 neexistuje
+```
+
+**Note:** Exception text uses old pattern (string template). Logger architecture logs exceptions automatically via framework, so step code just raises exceptions.
+
+---
+
+### Example 3: Progress Logging with Counter (PHASE2)
+
+**From:** `zcl_fi_alloc_step_phase2.clas.abap:145`
+
+```abap
+METHOD execute.
+  " ... load unique keys from cache ...
+  DATA(lv_base_header_lines) = lines( lt_base_header ).
+  
+  " Log count of unique keys
+  MESSAGE i212(zfi_alloc) WITH lv_base_header_lines INTO DATA(lv_dummy).
+  IF mo_log IS BOUND.
+    TRY.
+        mo_log->message(
+          iv_message_class  = 'ZFI_ALLOC'
+          iv_message_number = '212'
+          iv_message_v1     = lv_base_header_lines
+          iv_severity       = 'I'
+        ).
+      CATCH zcx_fi_process_error.
+        " Logger failed - continue
+    ENDTRY.
+  ENDIF.
+  
+  " Continue processing...
+ENDMETHOD.
+```
+
+**T100 Message:**
+```
+212 (EN): Number of unique keys: &1
+212 (CS): Počet unikátních klíčů: &1
+```
+
+---
+
+### Example 4: Validation Error with Result Structure (PHASE3)
+
+**From:** `zcl_fi_alloc_step_phase3.clas.abap:215`
+
+```abap
+METHOD validate.
+  " Check allocation ID provided
+  IF mv_allocation_id IS INITIAL.
+    MESSAGE e315(zfi_alloc) INTO rs_result-message.
+    IF mo_log IS BOUND.
+      TRY.
+          mo_log->message(
+            iv_message_class  = 'ZFI_ALLOC'
+            iv_message_number = '315'
+            iv_severity       = 'E'
+          ).
+        CATCH zcx_fi_process_error.
+          " Logger failed - continue with result message
+      ENDTRY.
+    ENDIF.
+    rs_result-success = abap_false.
+    RETURN.
+  ENDIF.
+  
+  " ... more validation checks ...
+  
+  rs_result-success = abap_true.
+ENDMETHOD.
+```
+
+**T100 Message:**
+```
+315 (EN): PHASE3: ALLOCATION_ID is missing
+315 (CS): PHASE3: ALLOCATION_ID chybí
+```
+
+**Pattern:** Always populate `rs_result-message` first (for framework result structure), then optionally log via `mo_log` if bound.
+
+---
+
+### Example 5: Informational Messages with Multiple Variables (PHASE1)
+
+**From:** `zcl_fi_alloc_step_phase1.clas.abap:104-107`
+
+```abap
+METHOD execute.
+  " Log allocation parameters
+  MESSAGE i104(zfi_alloc) WITH mv_company_code INTO DATA(lv_dummy).
+  IF mo_log IS BOUND.
+    TRY.
+        mo_log->message(
+          iv_message_class  = 'ZFI_ALLOC'
+          iv_message_number = '104'
+          iv_message_v1     = mv_company_code
+          iv_severity       = 'I'
+        ).
+      CATCH zcx_fi_process_error.
+    ENDTRY.
+  ENDIF.
+  
+  MESSAGE i105(zfi_alloc) WITH mv_fiscal_year INTO lv_dummy.
+  IF mo_log IS BOUND.
+    TRY.
+        mo_log->message(
+          iv_message_class  = 'ZFI_ALLOC'
+          iv_message_number = '105'
+          iv_message_v1     = mv_fiscal_year
+          iv_severity       = 'I'
+        ).
+      CATCH zcx_fi_process_error.
+    ENDTRY.
+  ENDIF.
+  
+  " ... continue logging other parameters ...
+ENDMETHOD.
+```
+
+**T100 Messages:**
+```
+104 (EN): Company code: &1
+104 (CS): Účetní okruh: &1
+
+105 (EN): Fiscal year: &1
+105 (CS): Fiskální rok: &1
+```
+
+---
+
+### Example 6: Defensive Logging Pattern (All Steps)
+
+**Common Pattern Across All 5 Migrated Steps:**
+
+```abap
+" Standard pattern used 97 times:
+MESSAGE <type><number>(<class>) [WITH <vars>] INTO <variable>.
+IF mo_log IS BOUND.
+  TRY.
+      mo_log->message(
+        iv_message_class  = '<class>'
+        iv_message_number = '<number>'
+        [iv_message_v1     = <var1>]
+        [iv_message_v2     = <var2>]
+        [iv_message_v3     = <var3>]
+        [iv_message_v4     = <var4>]
+        iv_severity       = '<type>'
+      ).
+    CATCH zcx_fi_process_error.
+      " Logger failed - continue (business logic unaffected)
+  ENDTRY.
+ENDIF.
+```
+
+**Rationale:**
+1. `MESSAGE...INTO` populates `sy-msg*` system fields (for result structures, legacy compatibility)
+2. `IF mo_log IS BOUND` ensures logger initialized (defensive check)
+3. `TRY-CATCH` protects against logger failures (logging must not break business logic)
+4. Empty CATCH block acceptable (logger failure already logged internally via ZFI_PROCESS/998)
+
+---
+
+### Implementation Statistics
+
+**Total Migration (Story 4-5):**
+- **97 messages created** in ZFI_ALLOC (013-020, 100-124, 200-226, 300-324, 400-411)
+- **97 logging blocks added** (1 per message)
+- **1,027 lines added** (~10-15 lines per message due to defensive TRY-CATCH pattern)
+- **5 step classes migrated** (INIT, PHASE1, PHASE2, PHASE3, CORR_BCHE)
+- **Code expansion: +58% average** (acceptable for observability-critical system)
+
+**Message Distribution:**
+- INIT: 8 messages (013-020)
+- PHASE1: 25 messages (100-124)
+- PHASE2: 27 messages (200-226) ← Most verbose step
+- PHASE3: 25 messages (300-324)
+- CORR_BCHE: 12 messages (400-411)
+
+---
+
 ## Best Practices
 
 ### ✅ DO
@@ -836,6 +1081,7 @@ ENDCLASS.
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-03-11 | Zdenek Smolik | Initial version |
+| 1.1 | 2026-03-12 | Zdenek Smolik | Added real implementation examples from Story 4-5 migration |
 
 ---
 
