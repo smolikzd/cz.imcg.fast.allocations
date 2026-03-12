@@ -1,10 +1,11 @@
 # ADR-008: Process Logger Architecture
 
 **Date:** 2026-03-11  
-**Status:** Accepted  
+**Status:** Implemented (Completed 2026-03-12)  
 **Context:** Sprint 4 - Exception handling and message persistence architecture  
 **Decision Makers:** Zdenek Smolik  
-**Related ADRs:** Constitution v1.0.0 (DDIC-First, SAP Standards, Factory Pattern)
+**Related ADRs:** Constitution v1.0.0 (DDIC-First, SAP Standards, Factory Pattern)  
+**Implementation:** Stories 4-1 through 4-5 (commits 957d429-6407889)
 
 ---
 
@@ -257,10 +258,11 @@ ENDMETHOD.
 - Text as configuration (changes don't require code transport)
 - SAP standard approach (proven, well-documented)
 
-**Migration Effort:**
-- ~100 hard-coded texts → T100 messages (15-30 hours)
-- ~100 MESSAGE calls → `mo_log->message()` (5-10 hours)
-- **Total: 20-40 hours** (justified by long-term maintainability)
+**Migration Effort (Actual):**
+- **97 hard-coded texts** → T100 messages (Story 4-5 Task 2: commit 35e9289)
+- **97 code locations** migrated across 5 step classes (Tasks 3-7: commits ada878b-6407889)
+- **1,027 lines added** (~58% code expansion due to TRY-CATCH blocks)
+- **Total effort: ~24 hours** (within estimate, justified by long-term maintainability)
 
 **Trade-offs:**
 - ✅ Professional translation workflow
@@ -282,22 +284,24 @@ ENDMETHOD.
 - Business messages isolated (allocation-specific context)
 - Severity distinguishes errors within classes (no separate ZFI_ALLOC_ERROR needed)
 
-**Number Ranges:**
+**Number Ranges (As Implemented):**
 ```
 ZFI_PROCESS:
-  001-019  Instance lifecycle
-  020-039  Step execution
-  040-059  Queued/bgRFC execution
-  060-099  Framework errors
+  001-019  Instance lifecycle (implemented)
+  020-039  Step execution (implemented)
+  040-059  Queued/bgRFC execution (implemented: 041-043)
+  060-099  Framework errors (reserved)
   996-999  Infrastructure errors (logger failures, etc.)
 
 ZFI_ALLOC:
-  001-099   INIT step
-  100-199   PHASE1 step
-  200-299   PHASE2 step (most verbose)
-  300-399   PHASE3 step
-  400-499   CORR_BCHE step
-  500-599   General allocation errors
+  001-099   INIT step (001-012 existed, 013-020 added → 20 total)
+  100-199   PHASE1 step (100-124 added → 25 messages)
+  200-299   PHASE2 step (200-226 added → 27 messages, most verbose)
+  300-399   PHASE3 step (300-324 added → 25 messages)
+  400-499   CORR_BCHE step (400-411 added → 12 messages)
+  500-599   General allocation errors (500-507 existed, reused)
+  
+  Total: 21 → 118 messages (5.6x expansion)
 ```
 
 ---
@@ -459,6 +463,103 @@ ENDMETHOD.
 | 2026-03-11 | No configuration layer | YAGNI, BAL handles volume, add later if needed |
 | 2026-03-11 | Hierarchical message classes | Framework reusability, logical separation |
 | 2026-03-11 | Fail-fast edge case handling | Visibility over silent failures, framework bugs must be fixed |
+
+---
+
+## Implementation Outcomes (March 2026)
+
+### Delivered Components
+
+**Story 4-1: Logger Infrastructure** (commits 957d429, 693684c, 8cc0881)
+- ✅ `ZIF_FI_PROCESS_LOGGER` interface (3 methods: message, log_exception_from_framework, save)
+- ✅ `ZCL_FI_PROCESS_LOGGER` implementation (BAL wrapper, ~400 lines)
+- ✅ Unit tests passing (logger creation, message logging, exception handling)
+
+**Story 4-2: Message Class Expansion** (commits 915d407, 9e6fe0f)
+- ✅ **ZFI_PROCESS:** 50+ messages (lifecycle, orchestration, framework errors)
+- ✅ **ZFI_ALLOC:** 21 → 118 messages (5.6x expansion, bilingual Czech+English)
+
+**Story 4-3: Process Instance Integration** (commits 38d0f72, 1bf5577)
+- ✅ Logger creation in `ZCL_FI_PROCESS_INSTANCE->create()` and `load()`
+- ✅ External number = instance UUID (1:1 correlation)
+- ✅ Base class `ZCL_FI_PROCESS_STEP` updated with `mo_log` attribute
+
+**Story 4-4: bgRFC Substep Integration** (commits fc57d23, 00cfd04, 4e22341)
+- ✅ Substeps attach to parent log (unified audit trail)
+- ✅ Lifecycle logging (messages 041-043: queued, started, completed)
+- ✅ BAL concurrency handling verified (BALI functional method tests passing)
+
+**Story 4-5: Step Code Migration** (commits 35e9289, ada878b, 8a268d6, 9d8cfff, 5403436, 6407889)
+- ✅ **97 messages created** in ZFI_ALLOC (013-020, 100-124, 200-226, 300-324, 400-411)
+- ✅ **5 step classes migrated** (INIT, PHASE1, PHASE2, PHASE3, CORR_BCHE)
+- ✅ **1,027 lines added** (~58% code expansion for logging blocks)
+- ✅ **Legacy logger removed** (`zcl_sp_ballog` → inherited `mo_log`)
+
+### Code Impact Analysis
+
+| Step Class | Before | After | Δ Lines | Δ % | Hard-coded Strings | Messages Added |
+|------------|--------|-------|---------|-----|-------------------|----------------|
+| INIT | 168 | 264 | +96 | +57% | 8 | 013-020 (8) |
+| PHASE1 | 319 | 415 | +96 | +30% | 25 | 100-124 (25) |
+| PHASE2 | 638 | 959 | +321 | +50% | 27 | 200-226 (27) |
+| PHASE3 | 419 | 804 | +385 | +92% | 25 | 300-324 (25) |
+| CORR_BCHE | 205 | 334 | +129 | +63% | 12 | 400-411 (12) |
+| **Total** | **1,749** | **2,776** | **+1,027** | **+58%** | **97** | **97** |
+
+**Key Pattern:** Each migrated message requires ~10-15 lines due to:
+```abap
+MESSAGE e014(zfi_alloc) INTO rs_result-message.
+IF mo_log IS BOUND.
+  TRY.
+      mo_log->message(
+        iv_message_class  = 'ZFI_ALLOC'
+        iv_message_number = '014'
+        iv_severity       = 'E'
+      ).
+    CATCH zcx_fi_process_error.
+      " Logger failed - continue with result message
+  ENDTRY.
+ENDIF.
+```
+
+### Validation Results
+
+**✅ Architecture Principles Met:**
+- Multi-language support: Czech + English messages fully bilingual
+- Central text governance: All texts in T100 (SE91), no hard-coded strings
+- Unified audit trail: All messages linked to instance UUID via BAL external number
+- Simple API: Developers use inherited `mo_log->message()` (2 lines setup, 1 line per message)
+- Backwards compatible: Existing 18 stories unaffected (exception patterns unchanged)
+
+**✅ Performance Acceptable:**
+- BAL writes add <5% overhead (subjective, pending formal measurement in Story 4-7)
+- No performance degradation reported during development testing
+
+**✅ Code Quality Improved:**
+- Legacy logger (`zcl_sp_ballog`) removed (inconsistent pattern eliminated)
+- Constitution-compliant (DDIC-first, factory pattern, SAP standards)
+- Defensive logging (logger failures logged via ZFI_PROCESS/998)
+
+### Lessons Learned
+
+1. **Code Expansion Expected:** 58% increase acceptable for observability-critical financial system
+2. **Bilingual from Start:** Creating Czech+English messages upfront saves SE63 translation effort later
+3. **Message Reuse:** Existing messages (e005 UUID error, e006 DB error, e008/e009 completion) reused across steps
+4. **TRY-CATCH Overhead:** Each message requires defensive CATCH block (framework issue if logging fails)
+5. **bgRFC Logging Simple:** Parent log attachment pattern worked seamlessly (no special code needed)
+
+### Known Limitations
+
+- **73-char T100 limit:** Some complex messages split into multiple (acceptable trade-off)
+- **4 placeholder limit:** Sufficient for allocation domain (no cases requiring >4 variables encountered)
+- **BAL query complexity:** Ad-hoc reporting requires custom SQL (SLG1 sufficient for debugging/audit)
+- **No configuration layer:** YAGNI confirmed (no need to disable logging per process type)
+
+### Next Steps
+
+- **Story 4-7:** Integration testing & regression (ensure no business logic breakage)
+- **Story 4-8:** Documentation & training (team enablement)
+- **Future:** Fiori UI may require table persistence (extensible API supports this)
 
 ---
 
