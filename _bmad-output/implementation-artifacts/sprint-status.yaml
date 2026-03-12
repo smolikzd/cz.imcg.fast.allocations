@@ -104,7 +104,7 @@ development_status:
   4-5-migrate-step-code: done  # All 5 step classes migrated (89 messages), commits ada878b, 8a268d6, 9d8cfff, 5403436, 6407889 (2026-03-12). Next: Integration testing code
   4-6-translation-to-english: ready-for-dev
   4-7-integration-testing-and-regression: in-progress  # Testing checklist created (docs/testing/story-4-7-integration-testing-checklist.md), awaiting SAP developer execution (2026-03-12)
-  4-8-documentation-and-training: ready-for-dev
+  4-8-documentation-and-training: done  # ADR-008 updated, Implementation Guide v1.1, Migration Guide v1.1, training presentation + cheat sheet (commits 0770d2e, a4d0870, 0284c5b, 4eb33ba, 2026-03-12)
   
   # ── Parallel Track: Testing & Quality Assurance ──────────────────────────
   # Epic: Unit Test Depth and Reliability
