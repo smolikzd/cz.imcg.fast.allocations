@@ -103,7 +103,7 @@ development_status:
   4-4-integrate-logger-with-bgrfc-substeps: done  # bgRFC substeps create separate logs, lifecycle logging (041/042/043), BALI test passing (commits fc57d23, 00cfd04, 4e22341, 2026-03-11)
   4-5-migrate-step-code: done  # All 5 step classes migrated (89 messages), commits ada878b, 8a268d6, 9d8cfff, 5403436, 6407889 (2026-03-12). Next: Integration testing code
   4-6-translation-to-english: ready-for-dev
-  4-7-integration-testing-and-regression: ready-for-dev
+  4-7-integration-testing-and-regression: in-progress  # Testing checklist created (docs/testing/story-4-7-integration-testing-checklist.md), awaiting SAP developer execution (2026-03-12)
   4-8-documentation-and-training: ready-for-dev
   
   # ── Parallel Track: Testing & Quality Assurance ──────────────────────────
