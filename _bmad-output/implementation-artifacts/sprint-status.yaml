@@ -105,3 +105,10 @@ development_status:
   4-6-translation-to-english: ready-for-dev
   4-7-integration-testing-and-regression: ready-for-dev
   4-8-documentation-and-training: ready-for-dev
+  
+  # ── Parallel Track: Testing & Quality Assurance ──────────────────────────
+  # Epic: Unit Test Depth and Reliability
+  # Goal: Comprehensive test coverage for critical bgRFC transaction fixes
+  # Related: Linear EST-99, Issue #1 (atomic COMMIT WORK), Issue #3 (logger save timing)
+  
+  est-99-bgrfc-error-propagation-test: ready-for-dev  # Tech spec complete (Task 0 done: bgRFC/BALI API research, 2026-03-12)
