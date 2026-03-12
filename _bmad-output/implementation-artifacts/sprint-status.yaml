@@ -101,7 +101,7 @@ development_status:
   4-2-expand-message-classes: done  # ZFI_PROCESS: 50+ messages, ZFI_ALLOC: 21 messages (commits 915d407, 9e6fe0f, 2026-03-11)
   4-3-integrate-logger-with-process-instance: done  # Logger lifecycle + ZFI_PROCESS/CORE architecture + test passing (commits 38d0f72, 1bf5577, 2026-03-11)
   4-4-integrate-logger-with-bgrfc-substeps: done  # bgRFC substeps create separate logs, lifecycle logging (041/042/043), BALI test passing (commits fc57d23, 00cfd04, 4e22341, 2026-03-11)
-  4-5-migrate-step-code: in-progress  # Task 6/8 done: PHASE3 migrated (25 messages 300-324), commit 5403436 (2026-03-12). Next: Migrate CORR_BCHE step class code
+  4-5-migrate-step-code: done  # All 5 step classes migrated (89 messages), commits ada878b, 8a268d6, 9d8cfff, 5403436, 6407889 (2026-03-12). Next: Integration testing code
   4-6-translation-to-english: ready-for-dev
   4-7-integration-testing-and-regression: ready-for-dev
   4-8-documentation-and-training: ready-for-dev
