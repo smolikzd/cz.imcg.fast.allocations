@@ -2,8 +2,8 @@
 title: 'Comprehensive bgRFC Error Propagation and Transaction Verification Test'
 slug: 'bgrfc-error-propagation-test'
 created: '2026-03-12'
-status: 'ready-for-dev'
-stepsCompleted: [1, 2, 3, 4]
+status: 'in-progress'
+stepsCompleted: [0, 1, 2, 3, 4, 5]
 related_issues: ['est-99']
 target_repository: 'planner'
 sprint_id: 'sprint-4'
@@ -303,14 +303,14 @@ Before starting Task 0 (research), verify the following fixes are complete:
   - **Notes**: This task demonstrates WHY Principle III exists. Issue #1 and #3 were caused by not doing this research first. We won't repeat the mistake.
 
 
-- [ ] **Task 1: Review and enhance TEST_QUEUED_FAIL step class**
+- [x] **Task 1: Review and enhance TEST_QUEUED_FAIL step class**
   - File: `src/zcl_fi_step_fail_queued.clas.abap`
   - Action: Review existing implementation to ensure it adequately supports comprehensive verification
   - Verify: 5 substeps planned, substep #3 fails deterministically via `[FAIL]` token
   - Enhance if needed: Ensure exception messages are meaningful for BALI log verification
-  - Notes: Current implementation appears adequate per investigation; only enhance if gaps found during test implementation
+  - Notes: COMPLETED 2026-03-13 (commit 0eeaff5) - Enhanced to raise ZCX_FI_PROCESS_ERROR instead of returning success=false. Exception message includes substep number for debugging.
 
-- [ ] **Task 2: Create check_bgrfc_error_propagation() method in health check query class**
+- [x] **Task 2: Create check_bgrfc_error_propagation() method in health check query class**
   - File: `src/zcl_fiproc_health_chk_query.clas.abap`
   - Action: Add new public method following existing pattern (similar to `check_queued_fail()` at lines 143-181)
   - Location: Add after existing queued test methods (around line 180)
@@ -331,9 +331,9 @@ Before starting Task 0 (research), verify the following fixes are complete:
     2. After `check_capability()` returns, add additional verifications:
        - **bgRFC unit verification**: Query bgRFC system to verify units were registered
        - **BALI log verification**: Query application log to verify exception message persisted
-  - Notes: Follow dual-visibility pattern; method callable from both ABAP Unit and Fiori UI
+  - Notes: COMPLETED 2026-03-13 (commit 0eeaff5) - Method created with comprehensive verification logic (261 lines). Follows dual-visibility pattern. Method declaration added to class definition, method call added to build_rows().
 
-- [ ] **Task 3: Implement bgRFC unit verification logic (INDIRECT APPROACH)**
+- [x] **Task 3: Implement bgRFC unit verification logic (INDIRECT APPROACH)**
   - File: `src/zcl_fiproc_health_chk_query.clas.abap` (within `check_bgrfc_error_propagation()` method)
   - Action: Verify bgRFC unit processing completed successfully using indirect verification
   - **Task 0 Finding**: No programmatic query APIs exist for bgRFC units (SBGRFCMON is UI-only)
@@ -498,7 +498,7 @@ Before starting Task 0 (research), verify the following fixes are complete:
     - Code compiles (types verified: if_bali_log_filter, if_bali_log, ty_item_table, if_bali_constants)
     - May need minor adjustments for actual external_id format used by framework
 
-- [ ] **Task 5: Add ABAP Unit wrapper test method**
+- [x] **Task 5: Add ABAP Unit wrapper test method**
   - File: `src/zcl_fiproc_health_chk_query.clas.testclasses.abap`
   - Action: Add new test method following existing pattern (similar to `test_queued_fail()` at lines 50-60)
   - Location: Add after existing test methods (around line 162)
@@ -511,9 +511,9 @@ Before starting Task 0 (research), verify the following fixes are complete:
       ).
     ENDMETHOD.
     ```
-  - Notes: Enables F5/F6 ABAP Unit execution in ADT
+  - Notes: COMPLETED 2026-03-13 (commit 0eeaff5) - ABAP Unit wrapper added. Enables F5/F6 ABAP Unit execution in ADT
 
-- [ ] **Task 6: Add test documentation and metadata**
+- [x] **Task 6: Add test documentation and metadata**
   - File: `src/zcl_fiproc_health_chk_query.clas.abap` (method comments)
   - Action: Add comprehensive method documentation explaining test purpose
   - Content:
@@ -542,7 +542,7 @@ Before starting Task 0 (research), verify the following fixes are complete:
     "! @raising cx_abap_unit_assert | Assertion failure
     "! @raising zcx_fi_process_error | Process execution error
     ```
-  - Notes: Documentation visible in ADT hover-help and potentially extractable for Fiori UI
+  - Notes: COMPLETED 2026-03-13 (commit 0eeaff5) - Comprehensive ABAP-Doc documentation added inline with method implementation. Documentation includes purpose, test scenario (5 steps), and visibility notes. Documentation visible in ADT hover-help.
 
 - [ ] **Task 7: Test execution and validation**
   - File: N/A (testing activity)

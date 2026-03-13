@@ -111,4 +111,4 @@ development_status:
   # Goal: Comprehensive test coverage for critical bgRFC transaction fixes
   # Related: Linear EST-99, Issue #1 (atomic COMMIT WORK), Issue #3 (logger save timing)
   
-  est-99-bgrfc-error-propagation-test: ready-for-dev  # Tech spec complete (Task 0 done: bgRFC/BALI API research, 2026-03-12)
+  est-99-bgrfc-error-propagation-test: in-progress  # Task 1 DONE (2026-03-13, commit 0eeaff5): Enhanced step class + implemented test method + ABAP Unit wrapper. Tasks 2-7 pending: Execute test, verify results, deploy to SAP
