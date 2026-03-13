@@ -112,3 +112,10 @@ development_status:
   # Related: Linear EST-99, Issue #1 (atomic COMMIT WORK), Issue #3 (logger save timing)
   
   est-99-bgrfc-error-propagation-test: done  # COMPLETED 2026-03-13: Test passing GREEN, validates Issue #1 (atomic COMMIT) and Issue #3 (logger save timing). Commits: 0eeaff5 (initial), 2caa2e3 (type fix), 178e74d (BALI API), e6f00c4 (substep count), eef17ac (validate), 0c49cf9 (plan 6 substeps). All assertions passed: AC3 (FAILED status), AC4 (6 substeps), AC5 (queue_id), AC6 (BALI logs), AC7 (terminal state)
+
+  # ── EST-101: Configurable BAL Object/Subobject per Process Type ──────────
+  # Goal: Make SLG1 object+subobject configurable per process type in ZFI_PROC_TYPE
+  # Related: tech-spec-est-101-configurable-bal-object-subobject.md
+  # Target repo: planner (cz.imcg.fast.planner)
+
+  est-101-configurable-bal-object-subobject: done  # COMPLETED 2026-03-13: All code changes pushed to planner repo. Commits: 6073cbb (feat), 1438618 (syntax fixes), 219e5fa (debug MESSAGE removal). DDIC: 2 new data elements (ZFI_PROCESS_BAL_OBJECT, ZFI_PROCESS_BAL_SUBOBJ), ZFI_PROC_TYPE extended with BAL_OBJECT+BAL_SUBOBJECT fields. Framework: ZCL_FI_PROCESS_INSTANCE getters + load_bal_config, ZCL_FI_PROCESS_MANAGER BAL validation (balobjt), ZFI_BGRFC_EXEC_SUBSTEP uses getters, ZCL_FIPROC_HEALTH_CHK_QUERY test types + BALI filter fixes. Pending: SAP system deployment + manual SE16 data migration for existing ZFI_PROC_TYPE rows (see est-101-data-migration-note.md)
