@@ -268,7 +268,7 @@ The method signature is unchanged (still takes `iv_step_number`, still returns `
 " Validate bgRFC inbound destination exists (fail before persisting instance)
 TRY.
     cl_bgrfc_destination_inbound=>create( mv_bgrfc_dest_name ).
-  CATCH cx_bgrfc_destination_not_found cx_bgrfc_destination_invalid.  "verify class names in SE24
+  CATCH cx_bgrfc_invalid_destination.
     RAISE EXCEPTION TYPE zcx_fi_process_error
       EXPORTING
         textid = zcx_fi_process_error=>bgrfc_destination_not_found
@@ -282,7 +282,7 @@ ENDTRY.
 - `save_instance()` (line ~491) persists the instance — placing the check between these two calls guarantees no orphaned instances on invalid destination
 - The check runs unconditionally — a blank destination raises `bgrfc_destination_not_found` immediately (no `IS NOT INITIAL` bypass)
 
-> **Verify in SE24**: Confirm the exact `cx_bgrfc_*` exception class(es) raised by `cl_bgrfc_destination_inbound=>create()` when the destination does not exist. Likely `cx_bgrfc_destination_not_found` or `cx_bgrfc_*`. Catch the correct class(es).
+> **Confirmed (SE24):** `cl_bgrfc_destination_inbound=>create()` raises `CX_BGRFC_INVALID_DESTINATION` when the destination does not exist.
 
 ---
 
@@ -431,14 +431,14 @@ Then PHASE2 substeps are dispatched to the `ZFI_PROCESS` bgRFC inbound destinati
 
 ### Notes
 
-- **`cl_bgrfc_destination_inbound=>create()` exception class**: Verify exact `cx_bgrfc_*` exception class name in SE24 before coding Task 5. Expected: `cx_bgrfc_destination_not_found` — but confirm. Catch the most specific class available.
+- **`cl_bgrfc_destination_inbound=>create()` exception class**: Confirmed via SE24 — raises `CX_BGRFC_INVALID_DESTINATION` when the destination does not exist.
 - **`load_bal_config()` method name**: Intentionally not renamed to `load_process_type_config()`. Two callers exist (`initialize_instance` ~line 465, `load_instance` ~line 541). Renaming provides no functional benefit. Logged as technical debt.
 - **`ZFI_PROC_TYPE` BUFALLOW = N**: No table buffering. Every `initialize_instance()` call hits the database for `load_bal_config()`. This is the existing behavior (same as EST-101) and is acceptable given process creation frequency.
 - **DDIC field LENG/OUTPUTLEN**: Inherited from the `BGRFC_DEST_NAME_INBOUND` data element domain. No override needed — intentional.
 - **Constitution compliance**:
   - Principle I (DDIC-First): Field uses standard SAP data element directly ✅
   - Principle II (SAP Standards): Field name matches data element name, line lengths ≤120 chars ✅
-  - Principle III (Consult SAP Docs): Verify `cx_bgrfc_*` exception class in SE24 before coding ⚠️
+  - Principle III (Consult SAP Docs): `CX_BGRFC_INVALID_DESTINATION` confirmed in SE24 ✅
   - Principle IV (Factory Pattern): No new instantiation patterns ✅
   - Principle V (Error Handling): `ZCX_FI_PROCESS_ERROR=>bgrfc_destination_not_found` with msg 084, `BEGIN OF/END OF` pattern ✅
 - **Target repository**: `cz.imcg.fast.planner` (all changes are in ZFI_PROCESS package)
