@@ -2,8 +2,8 @@
 title: 'Configurable bgRFC Inbound Destination per Process Type (EST-100)'
 slug: 'est-100-configurable-bgrfc-inbound-destination'
 created: '2026-03-13'
-status: 'ready-for-dev'
-stepsCompleted: [1, 2, 3, 4]
+status: 'done'
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7a, 7b, 9]
 tech_stack: ['ABAP 7.58', 'SAP DDIC', 'ZFI_PROCESS framework', 'bgRFC', 'cl_bgrfc_destination_inbound']
 files_to_modify:
   - 'src/zfi_proc_type.tabl.xml'
