@@ -267,7 +267,7 @@ cz.imcg.fast.allocations/              # THIS REPOSITORY
 | Repository | Remote | Purpose | Constitution |
 |------------|--------|---------|--------------|
 | `cz.imcg.fast.planner` | https://github.com/smolikzd/cz.imcg.fast.planner.git | Framework (ZFI_PROCESS) | Synced to `src/.constitution.md` |
-| `cz.imcg.fast.ovysledovka` | https://github.com/IMCG-SRO/cz.imcg.fast.ovysledovka.git | Implementation (allocation steps) | Synced to `src/.constitution.md` |
+| `cz.imcg.fast.ovysledovka` | https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git | Implementation (allocation steps) | Synced to `src/.constitution.md` |
 
 **Local Paths** (expected):
 - Planning: `/Users/smolik/DEV/cz.imcg.fast.allocations`

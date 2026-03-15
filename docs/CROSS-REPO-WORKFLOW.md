@@ -400,7 +400,7 @@ ls ~/DEV/ | grep "cz.imcg.fast"
 # If missing, clone them:
 cd ~/DEV/
 git clone https://github.com/smolikzd/cz.imcg.fast.planner.git
-git clone https://github.com/IMCG-SRO/cz.imcg.fast.ovysledovka.git
+git clone https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git
 ```
 
 ### Sprint Status Out of Sync

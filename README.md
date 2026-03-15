@@ -40,7 +40,7 @@ cz.imcg.fast.ovysledovka/     ← Implementation Code Repository
   - Framework constitution and standards
 
 ### Implementation Repository: `cz.imcg.fast.ovysledovka`
-- **Remote**: https://github.com/IMCG-SRO/cz.imcg.fast.ovysledovka.git
+- **Remote**: https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git
 - **Purpose**: Contains business-specific allocation process implementations
 - **Contents**:
   - 5 allocation step classes (INIT, PHASE1, PHASE2, PHASE3, CORR_BCHE)
@@ -110,7 +110,7 @@ git clone https://github.com/smolikzd/cz.imcg.fast.allocations.git
 git clone https://github.com/smolikzd/cz.imcg.fast.planner.git
 
 # Implementation repository  
-git clone https://github.com/IMCG-SRO/cz.imcg.fast.ovysledovka.git
+git clone https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git
 ```
 
 ### Directory Layout:
