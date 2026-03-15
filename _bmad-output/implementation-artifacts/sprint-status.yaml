@@ -96,13 +96,14 @@ development_status:
   # Goal: Implement multi-language logging with BAL + T100 messages
   # Related: ADR-008, Implementation Guide, Migration Guide
   
+  epic-sprint-4: done  # Sprint 4 pseudo-epic grouping
   sprint-4: done  # COMPLETED 2026-03-13: Logger architecture migration complete, deployed to SAP, runtime issue discovered (CDS view - not Sprint 4 related)
   4-1-create-logger-infrastructure: done  # Interface + Implementation + Unit Tests (commits 957d429, 693684c, 8cc0881, 2026-03-11)
   4-2-expand-message-classes: done  # ZFI_PROCESS: 50+ messages, ZFI_ALLOC: 21 messages (commits 915d407, 9e6fe0f, 2026-03-11)
   4-3-integrate-logger-with-process-instance: done  # Logger lifecycle + ZFI_PROCESS/CORE architecture + test passing (commits 38d0f72, 1bf5577, 2026-03-11)
   4-4-integrate-logger-with-bgrfc-substeps: done  # bgRFC substeps create separate logs, lifecycle logging (041/042/043), BALI test passing (commits fc57d23, 00cfd04, 4e22341, 2026-03-11)
   4-5-migrate-step-code: done  # All 5 step classes migrated (97 messages), commits ada878b→6407889 (2026-03-12). Deployment fixes: 98cee55, 6b60259, 0addac0, 350f646, 2d87681, c818f92 (2026-03-13)
-  4-6-translation-to-english: ready-for-dev  # Deferred - not critical for Sprint 4 completion
+  4-6-translation-to-english: done  # COMPLETED 2026-03-13: English translations added for ZFI_PROCESS (~30 msgs) and ZFI_ALLOC (~97 msgs) via SE63
   4-7-integration-testing-and-regression: done  # Deployed to SAP, fixed 73 syntax errors + bgRFC deadlock + error message bug. Discovered CDS view issue (separate from Sprint 4) (2026-03-13)
   4-8-documentation-and-training: done  # ADR-008 updated, Implementation Guide v1.1, Migration Guide v1.1, training presentation + cheat sheet (commits 0770d2e, a4d0870, 0284c5b, 4eb33ba, 2026-03-12)
   
@@ -111,11 +112,30 @@ development_status:
   # Goal: Comprehensive test coverage for critical bgRFC transaction fixes
   # Related: Linear EST-99, Issue #1 (atomic COMMIT WORK), Issue #3 (logger save timing)
   
-  est-99-bgrfc-error-propagation-test: done  # COMPLETED 2026-03-13: Test passing GREEN, validates Issue #1 (atomic COMMIT) and Issue #3 (logger save timing). Commits: 0eeaff5 (initial), 2caa2e3 (type fix), 178e74d (BALI API), e6f00c4 (substep count), eef17ac (validate), 0c49cf9 (plan 6 substeps). All assertions passed: AC3 (FAILED status), AC4 (6 substeps), AC5 (queue_id), AC6 (BALI logs), AC7 (terminal state)
+  epic-est-99: done  # EST-99 pseudo-epic grouping
+  est-99-bgrfc-error-propagation-test: done
 
   # ── EST-101: Configurable BAL Object/Subobject per Process Type ──────────
   # Goal: Make SLG1 object+subobject configurable per process type in ZFI_PROC_TYPE
   # Related: tech-spec-est-101-configurable-bal-object-subobject.md
   # Target repo: planner (cz.imcg.fast.planner)
 
-  est-101-configurable-bal-object-subobject: done  # COMPLETED 2026-03-13: All code changes pushed to planner repo. Commits: 6073cbb (feat), 1438618 (syntax fixes), 219e5fa (debug MESSAGE removal). DDIC: 2 new data elements (ZFI_PROCESS_BAL_OBJECT, ZFI_PROCESS_BAL_SUBOBJ), ZFI_PROC_TYPE extended with BAL_OBJECT+BAL_SUBOBJECT fields. Framework: ZCL_FI_PROCESS_INSTANCE getters + load_bal_config, ZCL_FI_PROCESS_MANAGER BAL validation (balobjt), ZFI_BGRFC_EXEC_SUBSTEP uses getters, ZCL_FIPROC_HEALTH_CHK_QUERY test types + BALI filter fixes. Pending: SAP system deployment + manual SE16 data migration for existing ZFI_PROC_TYPE rows (see est-101-data-migration-note.md)
+  epic-est-101: done  # EST-101 pseudo-epic grouping
+  est-101-configurable-bal-object-subobject: done
+
+  # ── EST-100: Configurable bgRFC Inbound Destination per Process Type ────
+  # Goal: Add BGRFC_DEST_NAME_INBOUND field to ZFI_PROC_TYPE; replace 3-tier heuristic
+  # Related: tech-spec-est-100-configurable-bgrfc-inbound-destination.md
+  # Target repo: planner (cz.imcg.fast.planner)
+
+  epic-est-100: done  # EST-100 pseudo-epic grouping
+  est-100-configurable-bgrfc-inbound-destination: done  # commit b85c1ca (planner), 2026-03-14
+
+  # ── Ad-hoc Bug Fix: AMDP cx_amdp_execution_failed escaping bgRFC substeps ──
+  # Root cause: cx_amdp_execution_failed is cx_static_check — not caught by cx_root; requires RAISING clause in method declaration
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+
+  fix-amdp-raising-clauses-all-methods: done  # commit 0ebb267 (ovysledovka), 2026-03-15: Added RAISING cx_amdp_execution_failed to get_base_by_key, get_base_with_items_by_key, get_base_keys, get_unassigned declarations; wrapped get_base_keys (PHASE1) and get_unassigned (PHASE3) calls in TRY/CATCH; get_base_by_key_new was already done (a0be59b), PHASE2 TRY/CATCH was done (4da84ab)
+  fix-amdp-phase2-catch-block: done  # commits 4da84ab+a0be59b (ovysledovka), 2026-03-14: PHASE2 cx_amdp_execution_failed handling + CONV symsgv() safe truncation
+  fix-planner-line-exists-method-return: done  # commit 0aeb4ea (planner), 2026-03-14: LOOP WHERE pattern instead of line_exists() on method return value
+  fix-proc-test-cleanup: done  # commit 341184d (ovysledovka), 2026-03-14: DELETE zfi_proc_inst + COMMIT WORK AND WAIT in test cleanup
