@@ -176,3 +176,12 @@ development_status:
   # Target repos: planner (new class) + ovysledovka (program fix)
 
   fix-phase2-legacy-logger-type-mismatch: done  # commit 871472c (planner): zcl_fi_process_null_logger added; commit 6b18c7e (ovysledovka): zfi_alloc_phase_2 fixed. 2026-03-16
+
+  # ── EST-106: Configurable Max Parallel Instances per Process Type ────────────
+  # Goal: Prevent over-parallelisation by adding MAX_PARALLEL_INSTS field to ZFI_PROC_TYPE;
+  #       check fires at execute_process(); 0 = unlimited (backward-compatible default)
+  # Target repo: planner (cz.imcg.fast.planner)
+  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-106-max-parallel-instances.md
+
+  epic-est-106: done  # EST-106 pseudo-epic grouping
+  est-106-configurable-max-parallel-instances: done  # commits e55eaaa, e762ff2 (planner), 2026-03-16: ZFI_PROC_MAX_PARALLEL_INSTS domain+dtel, MAX_PARALLEL_INSTS field on ZFI_PROC_TYPE, msg 017, parallel_limit_exceeded exception constant, check_parallel_limit() in manager execute_process(), PARALLEL_LIMIT health check test. Fix: dtel label lengths corrected (SCRLEN limits).
