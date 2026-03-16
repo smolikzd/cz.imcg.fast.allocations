@@ -137,7 +137,6 @@ development_status:
 
   fix-amdp-raising-clauses-all-methods: done  # commit 0ebb267 (ovysledovka), 2026-03-15: Added RAISING cx_amdp_execution_failed to get_base_by_key, get_base_with_items_by_key, get_base_keys, get_unassigned declarations; wrapped get_base_keys (PHASE1) and get_unassigned (PHASE3) calls in TRY/CATCH; get_base_by_key_new was already done (a0be59b), PHASE2 TRY/CATCH was done (4da84ab)
   fix-amdp-phase2-catch-block: done  # commits 4da84ab+a0be59b (ovysledovka), 2026-03-14: PHASE2 cx_amdp_execution_failed handling + CONV symsgv() safe truncation
-  fix-planner-line-exists-method-return: done  # commit 0aeb4ea (planner), 2026-03-14: LOOP WHERE pattern instead of line_exists() on method return value
   fix-proc-test-cleanup: done  # commit 341184d (ovysledovka), 2026-03-14: DELETE zfi_proc_inst + COMMIT WORK AND WAIT in test cleanup
 
   # ── Story: Remove dead CONTEXT_DATA column from ZFI_PROC_INST ──────────────
@@ -145,6 +144,25 @@ development_status:
   # Story file: _bmad-output/planning-artifacts/story-remove-context-data.md
 
   story-remove-context-data: done  # commit 95e5b0f (planner), 2026-03-16: CONTEXT_DATA DD03P removed from zfi_proc_inst.tabl.xml; zfi_setup_demo_data removed at 3087aad
+
+  # ── EST-102: Parameter Hash Duplicity Check per Process Type ────────────────
+  # Goal: Prevent duplicate process instances with identical parameters per process type
+  # Target repo: planner (cz.imcg.fast.planner)
+
+  epic-est-102: done  # EST-102 pseudo-epic grouping
+  est-102-parameter-hash-duplicity-check: done  # commits 91615fe, da56c89, 6cd73b1, c1088fb (planner), 2026-03-14/15: ZFI_PROC_DUPLIC_CHECK domain+field on ZFI_PROC_TYPE, parameter hash calc on create, get_instances_by_hash(), health check self-contained refactor. SAP activation: 31f5fcc
+
+  # ── Fix: Invalid table row selection (line_exists on method return) ──────────
+  # Root cause: line_exists() called directly on method return value — invalid ABAP
+  # Target repo: planner (cz.imcg.fast.planner)
+
+  fix-row-selection-line-exists: done  # commits 1ff4dd3, e541938, 0aeb4ea (planner), 2026-03-16: replaced line_exists()/READ TABLE directly on method return with local var + LOOP WHERE pattern across 3 locations in zcl_fi_process_instance
+
+  # ── ovysledovka: ZZ prefix SAP synchronization ───────────────────────────────
+  # SAP activation commit syncing ZZ prefix changes in CDS views and step classes
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+
+  fix-ovysledovka-zz-prefix-sync: done  # commit 600195f (ovysledovka), 2026-03-16: ZZ prefix sync in PHASE2, PHASE3 step classes and CDS views (zfi_i_alloc_base_keys, zfi_i_alloc_unassigned)
 
   # ── Story: Process Instance Insight — Parameter Projection & Business Status
   # Target repo: planner (cz.imcg.fast.planner)
