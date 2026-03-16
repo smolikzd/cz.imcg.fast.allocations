@@ -184,4 +184,4 @@ development_status:
   # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-106-max-parallel-instances.md
 
   epic-est-106: done  # EST-106 pseudo-epic grouping
-  est-106-configurable-max-parallel-instances: done  # commits e55eaaa, e762ff2 (planner), 2026-03-16: ZFI_PROC_MAX_PARALLEL_INSTS domain+dtel, MAX_PARALLEL_INSTS field on ZFI_PROC_TYPE, msg 017, parallel_limit_exceeded exception constant, check_parallel_limit() in manager execute_process(), PARALLEL_LIMIT health check test. Fix: dtel label lengths corrected (SCRLEN limits).
+  est-106-configurable-max-parallel-instances: done  # commits e55eaaa, e762ff2, a137f1b (planner), 2026-03-16: ZFI_PROC_MAX_PARALLEL_INSTS domain+dtel, MAX_PARALLEL_INSTS field on ZFI_PROC_TYPE, msg 017, parallel_limit_exceeded exception constant, check_parallel_limit() in manager execute_process(), PARALLEL_LIMIT health check test. Fixes: dtel label lengths (SCRLEN limits), CONV string() type-compat on raise. Tests passed.
