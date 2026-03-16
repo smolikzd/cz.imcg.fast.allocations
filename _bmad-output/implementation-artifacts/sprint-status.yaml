@@ -169,3 +169,10 @@ development_status:
   # Story file: _bmad-output/planning-artifacts/story-process-insight-params-bs.md
 
   story-process-insight-params-bs: done  # commit e27519e (planner), 2026-03-16: 3 domains+dtels, ZFI_PROCESS_S_FIN_PARAMS, ZFI_PROC_INST +12 cols, ZFI_PROC_DEF +6 BS cols, zcl_fi_process_instance BS lifecycle + param projection, CDS/BDEF. Fixes: 3085f66, deb2337, 0970717, 70cea8c
+
+  # ── Fix: Legacy zfi_alloc_phase_2 syntax error (logger type mismatch) ────────
+  # Root cause: lo_log typed as zcl_sp_ballog; zcl_fi_allocations_rules constructor expects zif_fi_process_logger
+  # Resolution: Added zcl_fi_process_null_logger (no-op stub) to planner; legacy program now instantiates it; removed invalid log_sy_msg/log_save calls
+  # Target repos: planner (new class) + ovysledovka (program fix)
+
+  fix-phase2-legacy-logger-type-mismatch: done  # commit 871472c (planner): zcl_fi_process_null_logger added; commit 6b18c7e (ovysledovka): zfi_alloc_phase_2 fixed. 2026-03-16
