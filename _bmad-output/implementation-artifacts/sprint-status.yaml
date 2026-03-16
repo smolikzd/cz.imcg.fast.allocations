@@ -139,3 +139,15 @@ development_status:
   fix-amdp-phase2-catch-block: done  # commits 4da84ab+a0be59b (ovysledovka), 2026-03-14: PHASE2 cx_amdp_execution_failed handling + CONV symsgv() safe truncation
   fix-planner-line-exists-method-return: done  # commit 0aeb4ea (planner), 2026-03-14: LOOP WHERE pattern instead of line_exists() on method return value
   fix-proc-test-cleanup: done  # commit 341184d (ovysledovka), 2026-03-14: DELETE zfi_proc_inst + COMMIT WORK AND WAIT in test cleanup
+
+  # ── Story: Remove dead CONTEXT_DATA column from ZFI_PROC_INST ──────────────
+  # Target repo: planner (cz.imcg.fast.planner)
+  # Story file: _bmad-output/planning-artifacts/story-remove-context-data.md
+
+  story-remove-context-data: done  # commit 95e5b0f (planner), 2026-03-16: CONTEXT_DATA DD03P removed from zfi_proc_inst.tabl.xml; zfi_setup_demo_data removed at 3087aad
+
+  # ── Story: Process Instance Insight — Parameter Projection & Business Status
+  # Target repo: planner (cz.imcg.fast.planner)
+  # Story file: _bmad-output/planning-artifacts/story-process-insight-params-bs.md
+
+  story-process-insight-params-bs: done  # commit e27519e (planner), 2026-03-16: 3 domains+dtels, ZFI_PROCESS_S_FIN_PARAMS, ZFI_PROC_INST +12 cols, ZFI_PROC_DEF +6 BS cols, zcl_fi_process_instance BS lifecycle + param projection, CDS/BDEF. Fixes: 3085f66, deb2337, 0970717, 70cea8c

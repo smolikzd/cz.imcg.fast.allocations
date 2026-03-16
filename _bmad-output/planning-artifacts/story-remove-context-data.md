@@ -1,6 +1,6 @@
 # Story: Remove Dead CONTEXT_DATA Column from ZFI_PROC_INST
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -20,12 +20,12 @@ so that the schema accurately reflects only the data that is actually written an
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Remove DD03P block from DDIC table XML (AC: #1)
-  - [ ] Delete lines 91–95 of `src/zfi_proc_inst.tabl.xml` (the CONTEXT_DATA DD03P block)
-- [ ] Task 2: Remove matching field from demo data program (AC: #2)
-  - [ ] Delete line 37 of `src/zfi_setup_demo_data.prog.abap` (`context_data TYPE zfi_process_context`)
-- [ ] Task 3: Verify no other references to CONTEXT_DATA on ZFI_PROC_INST (AC: #3)
-  - [ ] Grep codebase for `context_data` and confirm no reads/writes target ZFI_PROC_INST
+- [x] Task 1: Remove DD03P block from DDIC table XML (AC: #1)
+  - [x] Delete lines 91–95 of `src/zfi_proc_inst.tabl.xml` (the CONTEXT_DATA DD03P block)
+- [x] Task 2: Remove matching field from demo data program (AC: #2)
+  - [x] `zfi_setup_demo_data.prog.abap` was removed entirely (commit `3087aad`) — superseded by `ZFI_SETUP_TEST_DATA`. AC #2 is moot.
+- [x] Task 3: Verify no other references to CONTEXT_DATA on ZFI_PROC_INST (AC: #3)
+  - [x] Grep confirms: only `ZFI_PROC_STEP` and `ZFI_PROC_DEF` reference `CONTEXT_DATA`/`CONTEXT_DATA_STRUCTURE` — neither is `ZFI_PROC_INST`
 
 ## Dev Notes
 
@@ -53,6 +53,11 @@ so that the schema accurately reflects only the data that is actually written an
 github-copilot/claude-sonnet-4.6
 
 ### Completion Notes List
+
+Implemented in planner repo prior to current session. Committed at:
+- `95e5b0f` — removed CONTEXT_DATA DD03P block from `zfi_proc_inst.tabl.xml`
+- `3087aad` — `zfi_setup_demo_data.prog.abap` removed entirely (AC#2 moot)
+- Verified by grep: `CONTEXT_DATA` appears only in `ZFI_PROC_STEP` and `ZFI_PROC_DEF` — not `ZFI_PROC_INST`
 
 ### File List
 
