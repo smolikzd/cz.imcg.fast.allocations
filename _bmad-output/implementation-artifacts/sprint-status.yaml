@@ -185,3 +185,13 @@ development_status:
 
   epic-est-106: done  # EST-106 pseudo-epic grouping
   est-106-configurable-max-parallel-instances: done  # commits e55eaaa, e762ff2, a137f1b (planner), 2026-03-16: ZFI_PROC_MAX_PARALLEL_INSTS domain+dtel, MAX_PARALLEL_INSTS field on ZFI_PROC_TYPE, msg 017, parallel_limit_exceeded exception constant, check_parallel_limit() in manager execute_process(), PARALLEL_LIMIT health check test. Fixes: dtel label lengths (SCRLEN limits), CONV string() type-compat on raise. Tests passed.
+
+  # ── EST-110: SUPERSEDED status and COMPLETED duplicate block ─────────────
+  # Goal: Introduce SUPERSEDED terminal status; extend duplicate check to also
+  #       block COMPLETED; cancel() guard narrowed to positive allowlist;
+  #       cleanup_old_instances() retargeted to CANCELLED+SUPERSEDED; unit tests.
+  # Target repo: planner (cz.imcg.fast.planner)
+  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-110-superseded-status-completed-duplicate-block.md
+
+  epic-est-110: done  # EST-110 pseudo-epic grouping
+  est-110-superseded-status-completed-duplicate-block: done  # commit 0a55cb8 (planner), 2026-03-17: SUPERSEDED domain value, instance_superseded exception+msg 018, supersede() method, cancel() positive allowlist, execute() SUPERSEDED block, supersede_process() on manager, duplicate check extended to COMPLETED, cleanup_old_instances() RANGE table for CANCELLED+SUPERSEDED, test_blocks_when_completed+test_allows_when_superseded+test_double_supersede, 4-sub-scenario health check. Post-review fixes applied. Unit tests passed.
