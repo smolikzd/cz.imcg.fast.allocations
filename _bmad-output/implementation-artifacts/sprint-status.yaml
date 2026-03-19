@@ -199,9 +199,23 @@ development_status:
   # ── EST-121: APJ Background Execution & Lifecycle Enhancement ─────────────
   # Epic: APJ Background Execution & Lifecycle Enhancement
   # Goal: Enable background execution and restart of process instances via SAP Application Jobs (APJ)
-  # Related: tech-spec-apj-background-execution-lifecycle.md, brainstorming-session-2026-03-17-000000.md
   # Target repo: planner (cz.imcg.fast.planner)
   # Linear: EST-121
+  # Planning commit: a855318 (cz.imcg.fast.allocations), 2026-03-19
+  #
+  # Source artifacts (GitHub):
+  #   Tech spec: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/tech-spec-apj-background-execution-lifecycle.md
+  #   Brainstorming: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/brainstorming/brainstorming-session-2026-03-17-000000.md
+  #
+  # Story artifacts (GitHub):
+  #   EST-121.1: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-1-ddic-foundation.md
+  #   EST-121.2: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-2-job-class-and-catalog.md
+  #   EST-121.3: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-3-status-constants-and-request-methods.md
+  #   EST-121.4: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-4-lifecycle-extensions.md
+  #   EST-121.5: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-5-manager-delegation-and-job-status.md
+  #   EST-121.6: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-6-guard-extensions-and-unit-tests.md
+  #
+  # Dependency chain: EST-121.1 → .2 → .3 → .4 → .5 → .6
 
   epic-est-121: in-progress  # EST-121: APJ Background Execution & Lifecycle Enhancement
   est-121-1-ddic-foundation: ready-for-dev  # Tasks 1-4: Domain values, data elements, table fields, exception text IDs
