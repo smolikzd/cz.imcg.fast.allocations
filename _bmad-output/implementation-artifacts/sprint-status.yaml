@@ -195,3 +195,18 @@ development_status:
 
   epic-est-110: done  # EST-110 pseudo-epic grouping
   est-110-superseded-status-completed-duplicate-block: done  # commit 0a55cb8 (planner), 2026-03-17: SUPERSEDED domain value, instance_superseded exception+msg 018, supersede() method, cancel() positive allowlist, execute() SUPERSEDED block, supersede_process() on manager, duplicate check extended to COMPLETED, cleanup_old_instances() RANGE table for CANCELLED+SUPERSEDED, test_blocks_when_completed+test_allows_when_superseded+test_double_supersede, 4-sub-scenario health check. Post-review fixes applied. Unit tests passed.
+
+  # ── EST-121: APJ Background Execution & Lifecycle Enhancement ─────────────
+  # Epic: APJ Background Execution & Lifecycle Enhancement
+  # Goal: Enable background execution and restart of process instances via SAP Application Jobs (APJ)
+  # Related: tech-spec-apj-background-execution-lifecycle.md, brainstorming-session-2026-03-17-000000.md
+  # Target repo: planner (cz.imcg.fast.planner)
+  # Linear: EST-121
+
+  epic-est-121: in-progress  # EST-121: APJ Background Execution & Lifecycle Enhancement
+  est-121-1-ddic-foundation: ready-for-dev  # Tasks 1-4: Domain values, data elements, table fields, exception text IDs
+  est-121-2-job-class-and-catalog: ready-for-dev  # Tasks 5-6: ZCL_FI_PROCESS_JOB class + APJ catalog entry & template
+  est-121-3-status-constants-and-request-methods: ready-for-dev  # Tasks 7-9: gc_status constants + request_execute() + request_restart()
+  est-121-4-lifecycle-extensions: ready-for-dev  # Tasks 10-12: Extend restart/cancel/execute for new statuses
+  est-121-5-manager-delegation-and-job-status: ready-for-dev  # Tasks 13-14: check_job_status() + manager delegation methods
+  est-121-6-guard-extensions-and-unit-tests: ready-for-dev  # Tasks 15-17: EST-102/EST-106 guard extensions + unit tests
