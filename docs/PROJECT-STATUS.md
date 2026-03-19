@@ -65,7 +65,7 @@ fed4a46 Update sprint-status.yaml: Mark Sprint 1 & 2 as complete
 - **Status**: ✅ Clean, all commits pushed
 - **Latest Commit**: `d5c9e32` - Story 6.1: Wire PHASE3 step into allocation process pipeline
 - **Branch**: main
-- **Remote**: https://github.com/IMCG-SRO/cz.imcg.fast.ovysledovka.git
+- **Remote**: https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git
 
 **Recent Changes** (last 5 commits):
 ```
@@ -268,7 +268,7 @@ All steps implement: ZIF_FI_PROCESS_STEP
 **Repository Ownership**:
 - Planning: smolikzd/cz.imcg.fast.allocations
 - Framework: smolikzd/cz.imcg.fast.planner
-- Implementation: IMCG-SRO/cz.imcg.fast.ovysledovka
+- Implementation: smolikzd/cz.imcg.fast.ovysledovka
 
 ---
 

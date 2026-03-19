@@ -34,7 +34,7 @@ This file tracks the code repositories that belong to this planning project.
 - `ZCL_FI_BGRFC_*` - bgRFC handlers
 
 ### Implementation Repository: cz.imcg.fast.ovysledovka
-- **Remote**: https://github.com/IMCG-SRO/cz.imcg.fast.ovysledovka.git
+- **Remote**: https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git
 - **Local Path**: /Users/smolik/DEV/cz.imcg.fast.ovysledovka
 - **Purpose**: Business-specific allocation process implementations
 - **Owner**: IMCG s.r.o.
