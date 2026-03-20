@@ -1,6 +1,6 @@
 # Story EST-121.1: DDIC Foundation for APJ Background Execution
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -19,31 +19,31 @@ so that all subsequent EST-121 stories can compile and activate against properly
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add EXEC_REQUESTED and RESTART_REQUESTED domain values (AC: #1)
-  - [ ] Open `src/zfi_process_status.doma.xml`
-  - [ ] Verify highest VALPOS is 0008 (SUPERSEDED from EST-110)
-  - [ ] Append two `<DD07V>` entries: VALPOS 0009 EXEC_REQUESTED, VALPOS 0010 RESTART_REQUESTED
-  - [ ] Verify both values fit within CHAR(20) domain length (14 and 17 chars respectively)
+- [x] Task 1: Add EXEC_REQUESTED and RESTART_REQUESTED domain values (AC: #1)
+  - [x] Open `src/zfi_process_status.doma.xml`
+  - [x] Verify highest VALPOS is 0008 (SUPERSEDED from EST-110)
+  - [x] Append two `<DD07V>` entries: VALPOS 0009 EXEC_REQUESTED, VALPOS 0010 RESTART_REQUESTED
+  - [x] Verify both values fit within CHAR(20) domain length (14 and 17 chars respectively)
 
-- [ ] Task 2: Create DDIC data elements for JOB_NAME and JOB_COUNT (AC: #2)
-  - [ ] Create `src/zfi_process_jobname.dtel.xml` — ZFI_PROCESS_JOBNAME, CHAR(32), labels "APJ Job Name"
-  - [ ] Create `src/zfi_process_jobcount.dtel.xml` — ZFI_PROCESS_JOBCOUNT
-  - [ ] **IMPORTANT pre-check:** Verify actual type of `CL_APJ_RT_API=>TY_JOBCOUNT` in target system. If NUMC(8), use DATATYPE=NUMC. If CHAR(8), use DATATYPE=CHAR. Default assumption: CHAR(8).
-  - [ ] Constitution Principle I: Both fields use dedicated DDIC data elements, not raw built-in types
+- [x] Task 2: Create DDIC data elements for JOB_NAME and JOB_COUNT (AC: #2)
+  - [x] Create `src/zfi_process_jobname.dtel.xml` — ZFI_PROCESS_JOBNAME, CHAR(32), labels "APJ Job Name"
+  - [x] Create `src/zfi_process_jobcount.dtel.xml` — ZFI_PROCESS_JOBCOUNT
+  - [x] **IMPORTANT pre-check:** Verify actual type of `CL_APJ_RT_API=>TY_JOBCOUNT` in target system. If NUMC(8), use DATATYPE=NUMC. If CHAR(8), use DATATYPE=CHAR. Default assumption: CHAR(8).
+  - [x] Constitution Principle I: Both fields use dedicated DDIC data elements, not raw built-in types
 
-- [ ] Task 3: Add JOB_NAME and JOB_COUNT fields to ZFI_PROC_INST (AC: #3)
-  - [ ] Open `src/zfi_proc_inst.tabl.xml`
-  - [ ] Verify the existing field order ends with BUSINESS_STATUS_2 (if additional fields added, insert after actual last field)
-  - [ ] Append `<DD03P>` entries for JOB_NAME (ROLLNAME=ZFI_PROCESS_JOBNAME) and JOB_COUNT (ROLLNAME=ZFI_PROCESS_JOBCOUNT)
-  - [ ] Fields are NOT key fields, NOT required (initial value = blank)
-  - [ ] Existing records get blank values — no data migration needed
+- [x] Task 3: Add JOB_NAME and JOB_COUNT fields to ZFI_PROC_INST (AC: #3)
+  - [x] Open `src/zfi_proc_inst.tabl.xml`
+  - [x] Verify the existing field order ends with BUSINESS_STATUS_2 (if additional fields added, insert after actual last field)
+  - [x] Append `<DD03P>` entries for JOB_NAME (ROLLNAME=ZFI_PROCESS_JOBNAME) and JOB_COUNT (ROLLNAME=ZFI_PROCESS_JOBCOUNT)
+  - [x] Fields are NOT key fields, NOT required (initial value = blank)
+  - [x] Existing records get blank values — no data migration needed
 
-- [ ] Task 4: Add exception text ID and T100 message for scheduling errors (AC: #4, #5)
-  - [ ] Open `src/zcx_fi_process_error.clas.abap`
-  - [ ] Insert `scheduling_failed` constant block after `instance_superseded` (msgno 019)
-  - [ ] Open `src/zfi_process.msag.xml`
-  - [ ] Verify message 019 is free, then insert `<T100>` entry: "Background job scheduling failed: &1"
-  - [ ] Reserve message 020 for future APJ-related messages
+- [x] Task 4: Add exception text ID and T100 message for scheduling errors (AC: #4, #5)
+  - [x] Open `src/zcx_fi_process_error.clas.abap`
+  - [x] Insert `scheduling_failed` constant block after `instance_superseded` (msgno 019)
+  - [x] Open `src/zfi_process.msag.xml`
+  - [x] Verify message 019 is free, then insert `<T100>` entry: "Background job scheduling failed: &1"
+  - [x] Reserve message 020 for future APJ-related messages
 
 ## Dev Notes
 
@@ -89,6 +89,27 @@ so that all subsequent EST-121 stories can compile and activate against properly
 ## Dev Agent Record
 
 ### Agent Model Used
+claude-opus-4.6
+
 ### Debug Log References
+- User clarified `CL_APJ_RT_API=>TY_JOBCOUNT` maps to SAP domain `BTCJOBCNT` (base type TEXT8 = CHAR 8)
+- JOB_COUNT data element references SAP standard domain `BTCJOBCNT` directly (same pattern as `ZFI_PROCESS_BAL_OBJECT` → `BALOBJ_D`)
+- JOB_NAME uses custom domain `ZFI_PROCESS_JOBNAME` CHAR(32) since no SAP standard domain fits
+- Message 019 was confirmed free; message 020 is already used (Step started) so reservation is moot
+
 ### Completion Notes List
+- Task 1: Added EXEC_REQUESTED (VALPOS 0009) and RESTART_REQUESTED (VALPOS 0010) to ZFI_PROCESS_STATUS domain. Both fit within CHAR(20) limit.
+- Task 2: Created ZFI_PROCESS_JOBNAME domain (CHAR 32) + data element. Created ZFI_PROCESS_JOBCOUNT data element referencing SAP standard domain BTCJOBCNT (CHAR 8).
+- Task 3: Appended JOB_NAME and JOB_COUNT fields to ZFI_PROC_INST after BUSINESS_STATUS_2. Not key fields, not required.
+- Task 4: Added `scheduling_failed` exception constant (msgno 019) to ZCX_FI_PROCESS_ERROR. Added T100 message 019 "Background job scheduling failed: &1" to ZFI_PROCESS message class.
+
 ### File List
+| File | Repo | Action |
+|------|------|--------|
+| `src/zfi_process_status.doma.xml` | planner | Modified — added EXEC_REQUESTED (0009), RESTART_REQUESTED (0010) |
+| `src/zfi_process_jobname.doma.xml` | planner | Created — CHAR(32) domain for APJ job name |
+| `src/zfi_process_jobname.dtel.xml` | planner | Created — data element referencing ZFI_PROCESS_JOBNAME domain |
+| `src/zfi_process_jobcount.dtel.xml` | planner | Created — data element referencing SAP BTCJOBCNT domain |
+| `src/zfi_proc_inst.tabl.xml` | planner | Modified — added JOB_NAME, JOB_COUNT fields |
+| `src/zcx_fi_process_error.clas.abap` | planner | Modified — added scheduling_failed constant (msgno 019) |
+| `src/zfi_process.msag.xml` | planner | Modified — added message 019 |

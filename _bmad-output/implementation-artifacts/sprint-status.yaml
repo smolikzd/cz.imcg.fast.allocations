@@ -218,7 +218,7 @@ development_status:
   # Dependency chain: EST-121.1 → .2 → .3 → .4 → .5 → .6
 
   epic-est-121: in-progress  # EST-121: APJ Background Execution & Lifecycle Enhancement
-  est-121-1-ddic-foundation: ready-for-dev  # Tasks 1-4: Domain values, data elements, table fields, exception text IDs
+  est-121-1-ddic-foundation: review  # Tasks 1-4: Domain values, data elements, table fields, exception text IDs — all complete
   est-121-2-job-class-and-catalog: ready-for-dev  # Tasks 5-6: ZCL_FI_PROCESS_JOB class + APJ catalog entry & template
   est-121-3-status-constants-and-request-methods: ready-for-dev  # Tasks 7-9: gc_status constants + request_execute() + request_restart()
   est-121-4-lifecycle-extensions: ready-for-dev  # Tasks 10-12: Extend restart/cancel/execute for new statuses
