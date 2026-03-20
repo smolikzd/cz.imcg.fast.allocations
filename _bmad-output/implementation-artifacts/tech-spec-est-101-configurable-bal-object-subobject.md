@@ -2,7 +2,7 @@
 title: 'Configurable SLG1 Object and Subobject per Process Type (EST-101)'
 slug: 'est-101-configurable-bal-object-subobject'
 created: '2026-03-13'
-status: 'ready-for-dev'
+status: 'archived'
 stepsCompleted: [1, 2, 3, 4]
 tech_stack:
   - 'ABAP 7.58 (SAP S/4HANA on-premise)'
