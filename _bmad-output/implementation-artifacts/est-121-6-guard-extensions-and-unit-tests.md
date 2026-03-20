@@ -104,9 +104,9 @@ so that background-scheduled instances are properly protected against over-sched
 3. **No regression:** Run ALL existing tests after changes — especially EST-102, EST-106, and EST-110 tests.
 
 ### References
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Tasks 15-17]
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Technical Decision 9]
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Testing Strategy]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Tasks 15-17]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Technical Decision 9]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Testing Strategy]
 
 ## Dev Agent Record
 

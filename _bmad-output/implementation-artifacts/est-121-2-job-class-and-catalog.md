@@ -83,8 +83,8 @@ so that any process instance can be executed or restarted as a background SAP Ap
 3. **Catalog/template are ADT-only:** Cannot be hand-crafted in XML — must be created in ADT, then pulled via abapGit.
 
 ### References
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Task 5, Task 6]
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Technical Decisions 1-3, 12]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Task 5, Task 6]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Technical Decisions 1-3, 12]
 - [Source: constitution.md#Principle III, IV]
 
 ## Dev Agent Record

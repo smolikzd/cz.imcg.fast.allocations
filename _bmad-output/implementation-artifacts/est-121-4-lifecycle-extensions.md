@@ -80,9 +80,9 @@ so that the APJ job class can properly delegate to existing methods and users ca
 4. **execute() outer IF logic:** The condition is a REJECTION guard (returns early if true). Adding `AND status <> exec_requested` means exec_requested will NOT be rejected, allowing it to pass through to the execution logic.
 
 ### References
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Tasks 10-12]
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Technical Decisions 7, cancel fire-and-forget]
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Revised State Machine]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Tasks 10-12]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Technical Decisions 7, cancel fire-and-forget]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Revised State Machine]
 
 ## Dev Agent Record
 

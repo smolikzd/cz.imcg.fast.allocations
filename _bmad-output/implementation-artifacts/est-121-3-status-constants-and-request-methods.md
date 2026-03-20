@@ -92,8 +92,8 @@ so that callers can schedule background execution and restart via SAP Applicatio
 3. **cl_abap_tstmp=>add() availability:** Verify this method exists on ABAP 7.58. If not, use manual timestamp arithmetic.
 
 ### References
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Tasks 7-9]
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Technical Decisions 4, 5, 6, 11, 12]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Tasks 7-9]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Technical Decisions 4, 5, 6, 11, 12]
 - [Source: constitution.md#Principle I, II, III, V]
 
 ## Dev Agent Record

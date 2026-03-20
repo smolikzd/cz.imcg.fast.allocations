@@ -84,8 +84,8 @@ so that callers can schedule and monitor background jobs through the standard ma
 2. **CL_APJ_RT_API=>TY_JOB_STATUS_TEXT type:** Verify this type exists and its length. If not available, use `string` for the local variable.
 
 ### References
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Tasks 13-14]
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Technical Decision 8]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Tasks 13-14]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Technical Decision 8]
 
 ## Dev Agent Record
 

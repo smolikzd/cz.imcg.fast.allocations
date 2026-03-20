@@ -82,7 +82,7 @@ so that all subsequent EST-121 stories can compile and activate against properly
 2. **Pre-condition checks:** Verify VALPOS 0008 is the highest in the domain XML. Verify BUSINESS_STATUS_2 is the last field in the table XML. If other changes were made since the spec was written, adjust insertion points.
 
 ### References
-- [Source: tech-spec-apj-background-execution-lifecycle.md#Tasks 1-4]
+- [Source: tech-spec-est-121-apj-background-execution-lifecycle.md#Tasks 1-4]
 - [Source: constitution.md#Principle I - DDIC-First Architecture]
 - [Source: constitution.md#Principle V - Error Handling]
 
