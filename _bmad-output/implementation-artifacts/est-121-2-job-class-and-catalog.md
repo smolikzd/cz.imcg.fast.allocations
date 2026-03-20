@@ -1,6 +1,6 @@
 # Story EST-121.2: APJ Job Class and Catalog
 
-Status: ready-for-dev
+Status: in-progress
 
 ## Story
 
@@ -19,12 +19,12 @@ so that any process instance can be executed or restarted as a background SAP Ap
 
 ## Tasks / Subtasks
 
-- [ ] Task 5: Create `ZCL_FI_PROCESS_JOB` class (AC: #1, #2, #3, #4, #5)
-  - [ ] Create `src/zcl_fi_process_job.clas.abap` — PUBLIC FINAL CREATE PUBLIC
-  - [ ] Implement `IF_APJ_DT_EXEC_OBJECT` and `IF_APJ_RT_EXEC_OBJECT` interfaces
-  - [ ] Define constants: `gc_action_execute TYPE c LENGTH 1 VALUE 'E'`, `gc_action_restart TYPE c LENGTH 1 VALUE 'R'`
-  - [ ] Implement `GET_PARAMETERS`: return INSTGUID (parameter, CHAR 32, mandatory) and ACTION (parameter, CHAR 1, mandatory)
-  - [ ] Implement `EXECUTE`:
+- [x] Task 5: Create `ZCL_FI_PROCESS_JOB` class (AC: #1, #2, #3, #4, #5)
+  - [x] Create `src/zcl_fi_process_job.clas.abap` — PUBLIC FINAL CREATE PUBLIC
+  - [x] Implement `IF_APJ_DT_EXEC_OBJECT` and `IF_APJ_RT_EXEC_OBJECT` interfaces
+  - [x] Define constants: `gc_action_execute TYPE c LENGTH 1 VALUE 'E'`, `gc_action_restart TYPE c LENGTH 1 VALUE 'R'`
+  - [x] Implement `GET_PARAMETERS`: return INSTGUID (parameter, CHAR 32, mandatory) and ACTION (parameter, CHAR 1, mandatory)
+  - [x] Implement `EXECUTE`:
     - Extract INSTGUID and ACTION from `it_parameters` (flat structure: `selname`, `low`)
     - If INSTGUID is initial → RETURN silently
     - Load instance via `zcl_fi_process_manager=>get_instance( )` then `load_process()`
@@ -32,8 +32,8 @@ so that any process instance can be executed or restarted as a background SAP Ap
     - If status mismatch → RETURN silently (do NOT raise exception)
     - Delegate to `lo_instance->execute()` or `lo_instance->restart()`
     - CATCH `zcx_fi_process_error` → RETURN (instance already set to FAILED internally)
-  - [ ] Create `src/zcl_fi_process_job.clas.xml` metadata file
-  - [ ] Add ABAP-Doc on class header and all public members
+  - [x] Create `src/zcl_fi_process_job.clas.xml` metadata file
+  - [x] Add ABAP-Doc on class header and all public members
 
 - [ ] Task 6: Create APJ job catalog entry and template (AC: #6)
   - [ ] Create catalog entry `ZFI_PROCESS_JOB_CAT` in ADT: description "ZFI Process Instance Background Execution", class `ZCL_FI_PROCESS_JOB`
@@ -90,6 +90,22 @@ so that any process instance can be executed or restarted as a background SAP Ap
 ## Dev Agent Record
 
 ### Agent Model Used
+claude-opus-4.6
+
 ### Debug Log References
+- Critical Warning #1 (compile order): gc_status-exec_requested/restart_requested not yet defined (EST-121.3 Task 7). Used string literals 'EXEC_REQUESTED' / 'RESTART_REQUESTED' — will be updated to constants in EST-121.3.
+- CREATE PUBLIC required by APJ framework — documented exception to Constitution Principle IV (Factory Pattern). Same pattern as step implementation classes.
+- Added gc_param_instguid and gc_param_action constants for parameter names — ensures SELNAME in GET_PARAMETERS matches the CASE branches in EXECUTE.
+- GET_PARAMETERS returns default ACTION='E' in et_parameter_val — APJ template will pre-fill execute action.
+
 ### Completion Notes List
+- Task 5: Created ZCL_FI_PROCESS_JOB class implementing IF_APJ_DT_EXEC_OBJECT + IF_APJ_RT_EXEC_OBJECT. GET_PARAMETERS returns INSTGUID (CHAR 32, mandatory) + ACTION (CHAR 1, mandatory). EXECUTE extracts params via flat selname/low, loads instance via manager singleton, validates status guard, delegates to execute()/restart(). All exceptions caught internally — silent return on all failures. ABAP-Doc on class header and all public constants. Line length verified ≤120 chars.
+- Task 6: **BLOCKED — requires ADT.** APJ catalog/template objects (SAJC/SAJT) must be created in Eclipse ADT, then pulled via abapGit. Cannot be hand-crafted as XML. Instructions documented for manual creation in SAP.
+
 ### File List
+| File | Repo | Action |
+|------|------|--------|
+| `src/zcl_fi_process_job.clas.abap` | planner | Created — APJ job class with IF_APJ_DT_EXEC_OBJECT + IF_APJ_RT_EXEC_OBJECT |
+| `src/zcl_fi_process_job.clas.xml` | planner | Created — class metadata |
+| `src/zfi_process_job_cat.sajc.xml` | planner | **Pending** — must be created in ADT then abapGit-pulled |
+| `src/zfi_process_job_tmpl.sajt.xml` | planner | **Pending** — must be created in ADT then abapGit-pulled |
