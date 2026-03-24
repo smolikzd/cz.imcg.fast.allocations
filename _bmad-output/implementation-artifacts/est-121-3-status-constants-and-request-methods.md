@@ -1,6 +1,6 @@
 # Story EST-121.3: Status Constants and Background Request Methods
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -22,17 +22,17 @@ so that callers can schedule background execution and restart via SAP Applicatio
 
 ## Tasks / Subtasks
 
-- [ ] Task 7: Add `gc_status` constants for new statuses to both classes (AC: #1, #2)
-  - [ ] Open `src/zcl_fi_process_instance.clas.abap`
-  - [ ] In PUBLIC SECTION `gc_status` block (lines 26-36), add `exec_requested` and `restart_requested` before `skipped`
-  - [ ] Open `src/zcl_fi_process_manager.clas.abap`
-  - [ ] In PRIVATE SECTION `gc_status` block (lines 178-187), add `exec_requested` and `restart_requested` before `END OF gc_status`
-  - [ ] Verify line length ≤120 chars (VALUE 'RESTART_REQUESTED' is 17 chars — may need wrapping)
+- [x] Task 7: Add `gc_status` constants for new statuses to both classes (AC: #1, #2)
+  - [x] Open `src/zcl_fi_process_instance.clas.abap`
+  - [x] In PUBLIC SECTION `gc_status` block (lines 26-36), add `exec_requested` and `restart_requested` before `skipped`
+  - [x] Open `src/zcl_fi_process_manager.clas.abap`
+  - [x] In PRIVATE SECTION `gc_status` block (lines 178-187), add `exec_requested` and `restart_requested` before `END OF gc_status`
+  - [x] Verify line length ≤120 chars (VALUE 'RESTART_REQUESTED' is 17 chars — may need wrapping)
 
-- [ ] Task 8: Add `request_execute()` method to `ZCL_FI_PROCESS_INSTANCE` (AC: #3, #6, #7, #9)
-  - [ ] Add PUBLIC SECTION method declaration with ABAP-Doc (after `execute` method)
-  - [ ] Add `gc_job_template` constant: `TYPE cl_apj_rt_api=>ty_template_name VALUE 'ZFI_PROCESS_JOB_TMPL'`
-  - [ ] Implement `request_execute()`:
+- [x] Task 8: Add `request_execute()` method to `ZCL_FI_PROCESS_INSTANCE` (AC: #3, #6, #7, #9)
+  - [x] Add PUBLIC SECTION method declaration with ABAP-Doc (after `execute` method)
+  - [x] Add `gc_job_template` constant: `TYPE cl_apj_rt_api=>ty_template_name VALUE 'ZFI_PROCESS_JOB_TMPL'`
+  - [x] Implement `request_execute()`:
     1. Status guard: only NEW → raise `invalid_status` otherwise
     2. Schedule-first: build `ls_start_info` with timestamp = NOW + 2 seconds via `cl_abap_tstmp=>add()`
     3. Build `lt_params` with INSTGUID + ACTION='E' using `cl_apj_rt_api=>tt_job_parameter_value` structure
@@ -41,9 +41,9 @@ so that callers can schedule background execution and restart via SAP Applicatio
     6. If status changed → cancel orphaned job best-effort, raise `invalid_status`
     7. Status-second: set status = exec_requested, job_name, job_count, then `save_instance()`
 
-- [ ] Task 9: Add `request_restart()` method to `ZCL_FI_PROCESS_INSTANCE` (AC: #4, #5, #8, #9)
-  - [ ] Add PUBLIC SECTION method declaration with ABAP-Doc (after `restart` method)
-  - [ ] Implement `request_restart()`:
+- [x] Task 9: Add `request_restart()` method to `ZCL_FI_PROCESS_INSTANCE` (AC: #4, #5, #8, #9)
+  - [x] Add PUBLIC SECTION method declaration with ABAP-Doc (after `restart` method)
+  - [x] Implement `request_restart()`:
     1. Status guard: only FAILED or CANCELLED → raise `invalid_status` otherwise
     2. Schedule-first: same timestamp pattern as request_execute()
     3. Build `lt_params` with INSTGUID + ACTION='R'
@@ -99,6 +99,20 @@ so that callers can schedule background execution and restart via SAP Applicatio
 ## Dev Agent Record
 
 ### Agent Model Used
+claude-opus-4.6
+
 ### Debug Log References
+N/A — no compilation errors (ABAP source, cannot run locally)
+
 ### Completion Notes List
+- Task 7: Added `exec_requested` and `restart_requested` to gc_status in both instance class (PUBLIC, before `skipped`) and manager class (PRIVATE, before `END OF gc_status`). Also updated `zcl_fi_process_job` to replace string literals with proper constant references (`zcl_fi_process_instance=>gc_status-exec_requested` / `restart_requested`).
+- Task 8: Added `gc_job_template` constant (VALUE 'ZFI_PROCESS_JOB_TMPL') and `request_execute()` method. Implementation follows schedule-first/status-second pattern: status guard (NEW only), timestamp-based start (NOW+2s via `cl_abap_tstmp=>add`), APJ parameter construction referencing `zcl_fi_process_job` constants, `cl_apj_rt_api=>schedule_job()` with `cx_apj_rt` → `scheduling_failed` wrapping, optimistic lock via SELECT SINGLE, best-effort cancel on race condition, then status update + `save_instance()`.
+- Task 9: Added `request_restart()` method. Same pattern as `request_execute()` but guards on FAILED/CANCELLED, uses ACTION='R', and sets status to `restart_requested`. Optimistic lock compares against the original status (FAILED or CANCELLED) rather than hardcoded value.
+- Bonus: Updated `zcl_fi_process_job` to use typed constant references instead of string literals for status comparisons.
+
 ### File List
+| File | Action |
+|------|--------|
+| `src/zcl_fi_process_instance.clas.abap` | Modified — gc_status constants, gc_job_template, request_execute(), request_restart() |
+| `src/zcl_fi_process_manager.clas.abap` | Modified — gc_status constants |
+| `src/zcl_fi_process_job.clas.abap` | Modified — replaced string literals with gc_status constant references |

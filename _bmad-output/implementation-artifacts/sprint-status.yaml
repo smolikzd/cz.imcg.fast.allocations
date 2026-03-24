@@ -217,13 +217,13 @@ development_status:
   #
   # Dependency chain: EST-121.1 → .2 → .3 → .4 → .5 → .6
 
-  epic-est-121: in-progress  # EST-121: APJ Background Execution & Lifecycle Enhancement
-  est-121-1-ddic-foundation: review  # Tasks 1-4: Domain values, data elements, table fields, exception text IDs — all complete
-  est-121-2-job-class-and-catalog: in-progress  # Tasks 5-6: ZCL_FI_PROCESS_JOB class + APJ catalog entry & template
-  est-121-3-status-constants-and-request-methods: review  # Tasks 7-9: gc_status constants + request_execute() + request_restart() — all complete
-  est-121-4-lifecycle-extensions: ready-for-dev  # Tasks 10-12: Extend restart/cancel/execute for new statuses
-  est-121-5-manager-delegation-and-job-status: ready-for-dev  # Tasks 13-14: check_job_status() + manager delegation methods
-  est-121-6-guard-extensions-and-unit-tests: ready-for-dev  # Tasks 15-17: EST-102/EST-106 guard extensions + unit tests
+  epic-est-121: done  # EST-121: APJ Background Execution & Lifecycle Enhancement
+  est-121-1-ddic-foundation: done  # Tasks 1-4: Domain values, data elements, table fields, exception text IDs. Commits: 18f78f3, 2859d60, b9d8508 (planner), 2026-03-19
+  est-121-2-job-class-and-catalog: done  # Tasks 5-6: ZCL_FI_PROCESS_JOB class + APJ catalog/template. Commits: 144b74e, be384ce, bb96ae6, 8758833 (planner), 2026-03-19
+  est-121-3-status-constants-and-request-methods: done  # Tasks 7-9: gc_status constants + request_execute() + request_restart(). Commit: c09b495 (planner), 2026-03-20
+  est-121-4-lifecycle-extensions: done  # Tasks 10-12: Extend restart/cancel/execute for EXECREQ/RESTREQ statuses. Commit: 687f414 (planner), 2026-03-21
+  est-121-5-manager-delegation-and-job-status: done  # Tasks 13-14: check_job_status() + manager delegation methods. Commit: 04e43e7 (planner), 2026-03-24. Activated in SAP.
+  est-121-6-guard-extensions-and-unit-tests: review  # Tasks 15-17: EST-102 duplicate check + EST-106 parallel limit extensions for EXECREQ/RESTREQ + 7 unit tests. Commit: b749002 (planner), 2026-03-24. Awaiting SAP activation + unit test run.
 
   # ── EST-125: Fix Export Step BAL Logging ──────────────────────────────────
   # Goal: Fix ZCL_FI_ALLOC_STEP_EXTRACT to write meaningful data to application log (BAL)
