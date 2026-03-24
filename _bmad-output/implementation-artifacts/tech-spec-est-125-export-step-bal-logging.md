@@ -1,240 +1,482 @@
 ---
-title: 'EST-125: Fix Export Step BAL Logging'
+title: 'EST-125: Export Step BAL Logging — Phase 2: Logger Injection'
 slug: 'tech-spec-est-125-export-step-bal-logging'
 created: '2026-03-24'
+updated: '2026-03-24'
 status: 'ready-for-dev'
 stepsCompleted: ['understand', 'investigate', 'generate', 'review']
 tech_stack: ['ABAP 7.58', 'ZFI_PROCESS framework', 'SAP BALI API']
 files_to_modify:
+  - 'src/zfi_ea_ov_ext/zcl_fi_ov_keboola_extractor.clas.abap'
   - 'src/zfi_alloc_process/zcl_fi_alloc_step_extract.clas.abap'
+  - 'src/zfi_ea_ov_ext/zfi_ov_keboola_extract.prog.abap'
 code_patterns:
-  - 'log_message() with iv_message_v1..v4 for context'
-  - 'log_and_set_result() for combined result+log'
-  - 'mo_log->log_exception_from_framework() in CATCH blocks'
+  - 'zif_fi_process_logger->message() for all BAL logging'
+  - 'IF mo_log IS BOUND guard before every logger call'
+  - 'zcl_fi_process_null_logger for standalone callers'
 test_patterns:
   - 'Manual: run allocation process with EXPORT step, check SLG1 log'
+  - 'Manual: run standalone program zfi_ov_keboola_extract, verify no dumps'
 linear_issue: 'EST-125'
 target_repository: 'ovysledovka'
 constitution_principles:
-  - 'Principle II - SAP Standards (ABAP-Doc, naming)'
+  - 'Principle II - SAP Standards (ABAP-Doc, naming, line length ≤120)'
   - 'Principle III - Consult SAP Docs (BALI API patterns)'
   - 'Principle V - Error Handling & Observability (exception logging, context in messages)'
 ---
 
-# Tech-Spec: EST-125 -- Fix Export Step BAL Logging
+# Tech-Spec: EST-125 -- Export Step BAL Logging (Phase 2)
 
 **Created:** 2026-03-24
 **Linear Issue:** [EST-125](https://linear.app/smolikzd/issue/EST-125/)
 **Target Repository:** `cz.imcg.fast.ovysledovka`
 
+## Phase History
+
+**Phase 1 (completed, commit `d522096`):** Fixed 5 logging issues in the step class only:
+class header, execution context, CATCH block, orphan MESSAGE, extraction summary row count.
+Messages 600/601 updated with `&1`/`&2` placeholders.
+
+**Phase 2 (this spec):** Inject the framework logger into the extractor class, replace
+the legacy `ZCL_SP_BALLOG` logging, and add per-file logging for every stored file.
+
 ## Overview
 
 ### Problem Statement
 
-The export step (`ZCL_FI_ALLOC_STEP_EXTRACT`) does not write meaningful data to the SAP Application Log (BAL). When operators investigate failed or successful export runs in SLG1, they see only two generic messages (600=error, 601=success) with zero context -- no fiscal year/period, no exception details, no extraction summary. This is inconsistent with all other steps in the pipeline (INIT, PHASE1, PHASE2, CORR_BCHE, PHASE3) which provide rich, actionable log entries.
+The Keboola extractor (`ZCL_FI_OV_KEBOOLA_EXTRACTOR`) creates its own BAL log
+(`ZCL_SP_BALLOG`, object `ZFI`/subobject `ZFI_KBC`) that is completely separate from
+the process framework log. This means:
 
-Six specific issues were identified:
-
-| # | Severity | Issue |
-|---|----------|-------|
-| 1 | HIGH | Missing exception detail logging -- `lo_ex` captured but never passed to `mo_log->log_exception_from_framework()` |
-| 2 | HIGH | No execution context in log -- messages 600/601 have zero placeholder values (no year/period) |
-| 3 | ~~MEDIUM~~ | ~~Empty `validate()` method~~ -- **Skipped per project lead decision** |
-| 4 | MEDIUM | Orphan MESSAGE statement -- `MESSAGE s117(zfi_alloc) INTO rs_result-message` fills `sy-msg*` but `log_sy_msg()` is never called |
-| 5 | LOW | No extraction summary -- no log of record count or files written after `mo_kbc->execute()` |
-| 6 | LOW | Stale class header comment -- says "Phase 1" instead of "Export/Extract" |
+1. **Per-file storage events are invisible** in the process BAL log (SLG1) -- operators
+   cannot see which files were written or how many.
+2. **Two BAL logs** are created for a single export step execution -- confusing for support.
+3. The extractor's internal messages (package counts, iteration progress, file names)
+   go to a separate log that nobody looks at.
+4. The existing `MESSAGE s001(00) WITH ...` progress lines in `execute()` are status-bar
+   only messages -- they never reach any BAL log at all.
 
 ### Solution
 
-Align `ZCL_FI_ALLOC_STEP_EXTRACT` with the logging patterns established by INIT and PHASE1 steps:
-
-1. Add `mo_log->log_exception_from_framework()` in the CATCH block
-2. Add fiscal year/period context to all log messages via `iv_message_v1`/`iv_message_v2`
-3. Replace orphan MESSAGE with `log_and_set_result()` pattern
-4. Add post-execution summary logging (record count if available from extractor)
-5. Fix class header comment
+1. **Replace `mo_log` (ZCL_SP_BALLOG)** in the extractor with `mo_log` typed as
+   `zif_fi_process_logger` (the framework logger interface).
+2. **Add optional constructor parameter** `io_log TYPE REF TO zif_fi_process_logger`.
+3. **Convert all logging** from `MESSAGE...INTO lv_dummy` + `mo_log->log_sy_msg()` to
+   `mo_log->message()` with explicit T100 parameters. Keep message class `ZFI_OV_KBC`.
+4. **Add per-file logging**: after each FTP upload or app server write, log the filename
+   via `mo_log->message()`.
+5. **Convert status-bar MESSAGE s001(00)** progress lines to `mo_log->message()` calls
+   using `ZFI_OV_KBC` message 000 (generic `&1 &2 &3 &4`).
+6. **Remove** the `ZCL_SP_BALLOG` instantiation from the constructor (no more separate log).
+7. **Step class** passes its `mo_log` to the extractor constructor.
+8. **Standalone program** passes `zcl_fi_process_null_logger` (no-op, silent).
 
 ### Scope
 
 **In Scope:**
-- Fix 5 logging issues in `zcl_fi_alloc_step_extract.clas.abap` (validate guards intentionally skipped)
-- May need new T100 messages in message class `ZFI_ALLOC` for context-rich logging (or reuse existing 600/601 with placeholders if message definition allows)
+- Replace `ZCL_SP_BALLOG` with `zif_fi_process_logger` in extractor
+- Convert all ~12 active `mo_log->log_sy_msg()` calls to `mo_log->message()`
+- Convert ~13 `MESSAGE s001(00)` progress lines to `mo_log->message()`
+- Add per-file filename logging after `send_to_ftp()` and `send_to_appl_server()`
+- Step class: pass `mo_log` to extractor constructor
+- Standalone program: instantiate and pass `zcl_fi_process_null_logger`
 
 **Out of Scope:**
-- Changes to `zcl_fi_ov_keboola_extractor` (the extractor class itself)
-- Changes to the ZFI_PROCESS framework base class or logger
-- Adding unit tests (no test infrastructure exists for step classes yet)
-- Changing the extractor's business logic or file output format
+- Changes to the ZFI_PROCESS framework (planner repo)
+- New messages in `ZFI_OV_KBC` (existing messages 000-008 are sufficient)
+- File size logging (filename only per decision)
+- Changing the extractor's business logic, file format, or storage methods
+- Fixing duplicate `mt_semtag_filter` entries (separate tech debt)
+- Adding unit tests
 
 ## Context for Development
 
-### Codebase Patterns
+### Current Logging Inventory in Extractor
 
-**Pattern 1: Exception logging in CATCH blocks** (from PHASE1, lines 66-68):
-```abap
-CATCH cx_amdp_execution_failed INTO DATA(lx_amdp_p1).
-  IF mo_log IS BOUND.
-    mo_log->log_exception_from_framework( lx_amdp_p1 ).
-  ENDIF.
-  log_message( iv_message_class = 'ZFI_ALLOC' iv_message_number = '011'
-               iv_message_v1 = CONV symsgv( mv_company_code )
-               iv_message_v2 = CONV symsgv( mv_fiscal_year )
-               iv_severity = 'E' ).
-```
+#### `mo_log->log_sy_msg()` calls (routed to ZCL_SP_BALLOG today):
 
-**Pattern 2: Context logging with placeholders** (from INIT, line 39):
-```abap
-log_message(
-  iv_message_class  = 'ZFI_ALLOC'
-  iv_message_number = '000'
-  iv_message_v1     = |{ mv_company_code }/{ mv_fiscal_year }/{ mv_fiscal_period }/{ mv_allocation_id }|
-).
-```
+| Location | Message | Purpose |
+|----------|---------|---------|
+| `execute()` L160-161 | `s001(zfi_ov_kbc)` | "Get packages relevant for extraction" |
+| `execute()` L167-168 | `s002(zfi_ov_kbc) WITH sy-dbcnt` | "Number of selected packages: &1" |
+| `execute()` L171-172 | `s003(zfi_ov_kbc)` | "Start extraction process" |
+| `execute()` L179-180 | `e008(zfi_ov_kbc) WITH recordcount` | "Largest package exceeds max rows: &1" |
+| `get_data()` L314-315 | `s004(zfi_ov_kbc) WITH mv_part iv_count` | "Iteration: &1, reading: &2" |
+| `get_data()` L338-339 | `s005(zfi_ov_kbc) WITH mv_part sy-dbcnt` | "Iteration: &1, extracted: &2" |
+| `get_data()` L395-396 | `s007(zfi_ov_kbc) WITH lv_file` | "Saving data into file &1" |
+| `trailing_file()` L551-552 | `s007(zfi_ov_kbc) WITH lv_file` | "Saving data into file &1" (trailing) |
+| `send_to_appl_server()` L581-582 | `e006(zfi_ov_kbc) WITH filename` | "File &1 could not be opened" |
+| `send_finished_to_appl_server()` L609-610 | `e006(zfi_ov_kbc) WITH filename` | "File &1 could not be opened" |
 
-**Pattern 3: log_and_set_result() for combined result+log** (from INIT, lines 56-60):
-```abap
-rs_result-message = log_and_set_result(
-  iv_message_class  = 'ZFI_ALLOC'
-  iv_message_number = '016'
-  iv_severity       = 'S'
-).
-```
+#### `MESSAGE s001(00)` calls (status bar only, no BAL):
 
-### Files to Reference
+| Location | Content |
+|----------|---------|
+| `execute()` L197 | `processing semantic tag: {lv_staggroup}` |
+| `execute()` L200 | `group packet no: {lv_packet_no}` |
+| `execute()` L209 | `group packet {n} rows: {count}` |
+| `execute()` L229 | `group packet no: {lv_packet_no}` |
+| `execute()` L238 | `group packet {n} rows: {count}` |
+| `execute()` L247-252 | stats: groups total/left, group rows, total rows, percent, separator |
 
-| File | Purpose |
-| ---- | ------- |
-| `ovysledovka: src/zfi_alloc_process/zcl_fi_alloc_step_extract.clas.abap` | **Target file** -- the export step to fix |
-| `ovysledovka: src/zfi_alloc_process/zcl_fi_alloc_step_init.clas.abap` | Reference: validate pattern, log_and_set_result pattern |
-| `ovysledovka: src/zfi_alloc_process/zcl_fi_alloc_step_phase1.clas.abap` | Reference: exception logging pattern, context logging |
-| `planner: src/zcl_fi_process_step.clas.abap` | Base class: `log_message()`, `log_sy_msg()`, `log_and_set_result()` |
-| `planner: src/zif_fi_process_logger.intf.abap` | Logger interface: `log_exception_from_framework()` |
+### Message Class ZFI_OV_KBC (8 messages)
 
-### Technical Decisions
+| # | Text | Placeholders |
+|---|------|-------------|
+| 000 | `&1 &2 &3 &4` | Generic 4-slot |
+| 001 | `Get packages relevant for extraction` | None |
+| 002 | `Number of selected packages: &1` | &1=count |
+| 003 | `Start extraction process` | None |
+| 004 | `Iteration: &1, reading packes with record count &2.` | &1=part, &2=count |
+| 005 | `Iteration: &1, extracted records: &2.` | &1=part, &2=count |
+| 006 | `File &1 could not be opened.` | &1=filename |
+| 007 | `Saving data into file &1.` | &1=filename |
+| 008 | `Largest packages is bigger than max number of rows. Records &1.` | &1=count |
 
-1. **Reuse existing message numbers where possible.** Messages 600 (error) and 601 (success) already exist. If they accept placeholder variables (`&1`, `&2`), add fiscal year/period as `iv_message_v1`/`iv_message_v2`. If they are defined without placeholders, new message numbers will be needed.
+### Files to Modify
 
-2. **validate() is intentionally left as-is.** The EXPORT step parameters (fiscal year/period) are already validated by the INIT step earlier in the pipeline. Adding redundant guards here is unnecessary.
+| File | Changes |
+|------|---------|
+| `src/zfi_ea_ov_ext/zcl_fi_ov_keboola_extractor.clas.abap` | Replace logger type, convert all logging, add per-file log |
+| `src/zfi_alloc_process/zcl_fi_alloc_step_extract.clas.abap` | Pass `mo_log` to extractor constructor |
+| `src/zfi_ea_ov_ext/zfi_ov_keboola_extract.prog.abap` | Pass `zcl_fi_process_null_logger` to constructor |
 
-3. **Extraction summary depends on extractor API.** If `zcl_fi_ov_keboola_extractor` exposes a method to get record count after `execute()` (e.g., `get_record_count()` or a public attribute), log it. If not, log a simple "extraction completed successfully" with context. Do NOT modify the extractor class.
+### Files to Reference (read-only)
 
-4. **Keep the local TYPE definitions.** Issues #3 (local `ty_sel`, `ty_r_fins_sem_tag`) are pre-existing and out of scope for this logging fix. A separate story should address DDIC-first compliance.
+| File | Repo | Purpose |
+|------|------|---------|
+| `src/zcl_fi_process_step.clas.abap` | planner | Base class with `mo_log` typed `zif_fi_process_logger` |
+| `src/zif_fi_process_logger.intf.abap` | planner | Logger interface: `message()`, `log_exception_from_framework()` |
+| `src/zcl_fi_process_null_logger.clas.abap` | planner | No-op logger for standalone callers |
 
 ## Implementation Plan
 
-### Tasks
+### Task 1: Replace logger type in extractor class definition
 
-**Task 1: Fix class header comment** (Issue #6)
-- File: `zcl_fi_alloc_step_extract.clas.abap`, lines 1-2
-- Change:
-  ```abap
-  " BEFORE:
-  *& Class ZCL_FI_ALLOC_STEP_PHASE1
-  *& Phase 1: Fetch source documents and prepare allocation base
+**File:** `zcl_fi_ov_keboola_extractor.clas.abap`, definition section
 
-  " AFTER:
-  *& Class ZCL_FI_ALLOC_STEP_EXTRACT
-  *& Export: Extract period data to Keboola via FTP
-  ```
+Change `mo_log` type from `ZCL_SP_BALLOG` to `zif_fi_process_logger`:
 
-**Task 2: Add execution context logging at start of execute()** (Issue #2)
-- File: `zcl_fi_alloc_step_extract.clas.abap`, method `execute`, insert before TRY
-- Log fiscal year/period context using an appropriate message number:
-  ```abap
-  log_message(
-    iv_message_class  = 'ZFI_ALLOC'
-    iv_message_number = '000'
-    iv_message_v1     = |{ mv_fiscal_year }/{ mv_fiscal_period }|
+```abap
+" BEFORE:
+data MO_LOG type ref to ZCL_SP_BALLOG read-only .
+
+" AFTER:
+data mo_log type ref to zif_fi_process_logger read-only .
+```
+
+Add optional `io_log` parameter to the constructor:
+
+```abap
+" BEFORE:
+methods CONSTRUCTOR
+  importing
+    !IV_GJAHR type GJAHR
+    ...
+    !IT_SEMTAG_FILTER type TY_R_FINS_SEM_TAG optional
+  raising
+    ZCX_FI_OV_KEBOOLA_EXTRACTOR .
+
+" AFTER (add io_log as first IMPORTING):
+methods CONSTRUCTOR
+  importing
+    !io_log type ref to zif_fi_process_logger optional
+    !IV_GJAHR type GJAHR
+    ...
+    !IT_SEMTAG_FILTER type TY_R_FINS_SEM_TAG optional
+  raising
+    ZCX_FI_OV_KEBOOLA_EXTRACTOR .
+```
+
+### Task 2: Rewrite constructor -- remove ZCL_SP_BALLOG creation
+
+**File:** `zcl_fi_ov_keboola_extractor.clas.abap`, method `constructor`
+
+```abap
+" BEFORE (lines 113-131):
+DATA ls_log TYPE bal_s_log.
+...
+"Log initialization
+CREATE OBJECT mo_log.
+ls_log-object    = 'ZFI'.
+ls_log-subobject = 'ZFI_KBC'.
+mo_log->log_create( is_log = ls_log ).
+
+" AFTER:
+mo_log = io_log.
+```
+
+Remove `DATA ls_log TYPE bal_s_log.` and the entire BAL log creation block.
+Keep all other constructor logic (parameter assignments, FTP config, etc.) unchanged.
+
+### Task 3: Convert `mo_log->log_sy_msg()` calls to `mo_log->message()`
+
+Every occurrence of the pattern:
+```abap
+MESSAGE sNNN(zfi_ov_kbc) WITH <args> INTO lv_dummy.
+mo_log->log_sy_msg( ).
+```
+
+Must be replaced with:
+```abap
+IF mo_log IS BOUND.
+  mo_log->message(
+    iv_message_class  = 'ZFI_OV_KBC'
+    iv_message_number = 'NNN'
+    iv_message_v1     = CONV symsgv( <arg1> )
+    ...
+    iv_severity       = 'S'  " or 'E' for error messages
   ).
-  ```
-  Note: Message 000 is used by INIT for context. If it accepts `&1`, reuse it. Otherwise define a new message like "Export started for period &1/&2".
+ENDIF.
+```
 
-**Task 3: Fix CATCH block -- add exception detail logging** (Issue #1)
-- File: `zcl_fi_alloc_step_extract.clas.abap`, lines 80-84
-- Add `mo_log->log_exception_from_framework()` before `log_message()`:
-  ```abap
-  CATCH zcx_fi_ov_keboola_extractor INTO DATA(lo_ex).
-    IF mo_log IS BOUND.
-      mo_log->log_exception_from_framework( lo_ex ).
-    ENDIF.
-    log_message(
-      iv_message_class  = 'ZFI_ALLOC'
-      iv_message_number = '600'
-      iv_message_v1     = CONV symsgv( mv_fiscal_year )
-      iv_message_v2     = CONV symsgv( mv_fiscal_period )
-      iv_severity       = 'E'
-    ).
-    rs_result-success      = abap_false.
-    rs_result-can_continue = abap_false.
-    RETURN.
-  ```
+**Conversion table (10 active call sites):**
 
-**Task 4: Fix success path -- replace orphan MESSAGE with log_and_set_result()** (Issues #4 + #2)
-- File: `zcl_fi_alloc_step_extract.clas.abap`, lines 87-91
-- Replace the current pattern:
-  ```abap
-  " BEFORE:
-  log_message( iv_message_class = 'ZFI_ALLOC'
-               iv_message_number = '601' iv_severity = 'S' ).
-  MESSAGE s117(zfi_alloc) INTO rs_result-message.
+| Line | Old message | Severity | v1 | v2 | Notes |
+|------|-------------|----------|----|----|-------|
+| 160-161 | `s001` | S | -- | -- | No placeholders |
+| 167-168 | `s002 WITH sy-dbcnt` | S | `sy-dbcnt` | -- | Log after SELECT |
+| 171-172 | `s003` | S | -- | -- | No placeholders |
+| 179-180 | `e008 WITH recordcount` | E | `recordcount` | -- | Error: max rows exceeded |
+| 314-315 | `s004 WITH mv_part iv_count` | S | `mv_part` | `iv_count` | |
+| 338-339 | `s005 WITH mv_part sy-dbcnt` | S | `mv_part` | `sy-dbcnt` | Log after SELECT |
+| 395-396 | `s007 WITH lv_file` | S | `lv_file` | -- | File name |
+| 551-552 | `s007 WITH lv_file` | S | `lv_file` | -- | Trailing file name |
+| 581-582 | `e006 WITH filename` | E | `filename` | -- | App server open error |
+| 609-610 | `e006 WITH filename` | E | `filename` | -- | Trailing file open error |
 
-  " AFTER:
-  rs_result-message = log_and_set_result(
-    iv_message_class  = 'ZFI_ALLOC'
-    iv_message_number = '601'
-    iv_message_v1     = CONV symsgv( mv_fiscal_year )
-    iv_message_v2     = CONV symsgv( mv_fiscal_period )
+**Important:** Remove all `lv_dummy` variables that were used only for `MESSAGE...INTO`.
+If `lv_dummy` is declared with `DATA(lv_dummy)` inline, remove that too.
+
+### Task 4: Convert `MESSAGE s001(00)` progress lines
+
+The ~13 `MESSAGE s001(00) WITH |...|` lines in `execute()` are status-bar-only messages.
+Convert them to BAL logging using the generic message `ZFI_OV_KBC/000` (`&1 &2 &3 &4`):
+
+```abap
+" BEFORE:
+MESSAGE s001(00) WITH |processing semantic tag: { lv_staggroup }|.
+
+" AFTER:
+IF mo_log IS BOUND.
+  mo_log->message(
+    iv_message_class  = 'ZFI_OV_KBC'
+    iv_message_number = '000'
+    iv_message_v1     = CONV symsgv( |tag: { lv_staggroup }| )
+  ).
+ENDIF.
+```
+
+Apply this pattern to all MESSAGE s001(00) lines. Consolidate where possible --
+e.g., the stats block (lines 247-252) can be merged into fewer log entries:
+
+```abap
+" BEFORE (6 separate MESSAGE calls):
+MESSAGE s001(00) WITH |groups total: { lv_total_groups }|.
+MESSAGE s001(00) WITH |groups left: { groups_left }|.
+MESSAGE s001(00) WITH |group rows: { lv_group_row_count }|.
+MESSAGE s001(00) WITH |total rows: { mv_total_rows }|.
+MESSAGE s001(00) WITH |completed: { percent_done }%|.
+MESSAGE s001(00) WITH |---|.
+
+" AFTER (2 log entries):
+IF mo_log IS BOUND.
+  mo_log->message(
+    iv_message_class  = 'ZFI_OV_KBC'
+    iv_message_number = '000'
+    iv_message_v1     = CONV symsgv( |{ lv_processed_groups }/{ lv_total_groups } groups| )
+    iv_message_v2     = CONV symsgv( |{ lv_group_row_count } rows| )
+    iv_message_v3     = CONV symsgv( |total: { mv_total_rows }| )
+    iv_message_v4     = CONV symsgv( |{ percent_done }%| )
+  ).
+ENDIF.
+```
+
+### Task 5: Add per-file logging after storage
+
+After each file is stored (FTP or app server), log the filename. Add logging
+at the end of each storage method:
+
+**`send_to_ftp()` -- after `lo_ftp->disconnect()` (line 491):**
+```abap
+IF mo_log IS BOUND.
+  mo_log->message(
+    iv_message_class  = 'ZFI_OV_KBC'
+    iv_message_number = '007'
+    iv_message_v1     = CONV symsgv( |{ mv_csv_filename }.gz| )
     iv_severity       = 'S'
   ).
-  ```
-  This eliminates the orphan MESSAGE and logs the success with context in a single call.
+ENDIF.
+```
 
-**Task 5 (Optional): Add extraction summary** (Issue #5)
-- After `mo_kbc->execute()`, check if the extractor object exposes record count
-- If available: `log_message( ... iv_message_v1 = CONV #( lv_record_count ) ... )`
-- If not available: Skip this task (do not modify the extractor class)
-- Candidate approach: check for public attributes or methods on `zcl_fi_ov_keboola_extractor` that return stats
+**`send_to_appl_server()` -- after `CLOSE DATASET` (both compressed and uncompressed paths):**
+```abap
+" Uncompressed path (after line 588):
+IF mo_log IS BOUND.
+  mo_log->message(
+    iv_message_class  = 'ZFI_OV_KBC'
+    iv_message_number = '007'
+    iv_message_v1     = CONV symsgv( mv_csv_filename_fp )
+    iv_severity       = 'S'
+  ).
+ENDIF.
 
-### Acceptance Criteria
+" Compressed path (after line 596):
+IF mo_log IS BOUND.
+  mo_log->message(
+    iv_message_class  = 'ZFI_OV_KBC'
+    iv_message_number = '007'
+    iv_message_v1     = CONV symsgv( lv_filename )
+    iv_severity       = 'S'
+  ).
+ENDIF.
+```
 
-**AC1: Exception details appear in SLG1**
-- Given: The Keboola extractor raises `zcx_fi_ov_keboola_extractor` during export
-- When: The step fails and the operator opens SLG1
-- Then: The log contains the full exception text from `log_exception_from_framework()` AND the error message 600 with fiscal year/period in the placeholders
+**`send_finished_to_ftp()` -- after `lo_ftp->disconnect()` (line 643):**
+```abap
+IF mo_log IS BOUND.
+  mo_log->message(
+    iv_message_class  = 'ZFI_OV_KBC'
+    iv_message_number = '007'
+    iv_message_v1     = CONV symsgv( mv_csv_finished_filename )
+    iv_severity       = 'S'
+  ).
+ENDIF.
+```
 
-**AC2: Success log contains execution context**
-- Given: The export step completes successfully
-- When: The operator opens SLG1
-- Then: The log contains at minimum: (a) context entry with fiscal year/period, (b) success message 601 with fiscal year/period
+**`send_finished_to_appl_server()` -- after `CLOSE DATASET` (line 614):**
+```abap
+IF mo_log IS BOUND.
+  mo_log->message(
+    iv_message_class  = 'ZFI_OV_KBC'
+    iv_message_number = '007'
+    iv_message_v1     = CONV symsgv( mv_csv_finished_filename_fp )
+    iv_severity       = 'S'
+  ).
+ENDIF.
+```
 
-**AC3: No orphan MESSAGE statements**
-- Given: Any execution path through the export step
-- When: A `MESSAGE ... INTO` statement is executed
-- Then: Either `log_sy_msg()` or `log_and_set_result()` is called to persist it to BAL
+### Task 6: Step class -- pass logger to extractor
 
-**AC4: Class header is accurate**
-- Given: The class file header comment
-- Then: It references "ZCL_FI_ALLOC_STEP_EXTRACT" and "Export" (not "PHASE1")
+**File:** `zcl_fi_alloc_step_extract.clas.abap`, method `execute`
 
-**AC5: Line length compliance**
+Add `io_log = mo_log` to the extractor constructor call:
+
+```abap
+" BEFORE:
+mo_kbc = NEW zcl_fi_ov_keboola_extractor(
+  iv_gjahr         = mv_fiscal_year
+  iv_poper         = mv_fiscal_period
+  ...
+).
+
+" AFTER:
+mo_kbc = NEW zcl_fi_ov_keboola_extractor(
+  io_log           = mo_log
+  iv_gjahr         = mv_fiscal_year
+  iv_poper         = mv_fiscal_period
+  ...
+).
+```
+
+### Task 7: Standalone program -- pass null logger
+
+**File:** `zfi_ov_keboola_extract.prog.abap`
+
+Add `zcl_fi_process_null_logger` instantiation before the extractor constructor:
+
+```abap
+" BEFORE:
+try.
+    lo_kbc = new zcl_fi_ov_keboola_extractor(
+      iv_gjahr         = p_gjahr
+      ...
+    ).
+
+" AFTER:
+try.
+    lo_kbc = new zcl_fi_ov_keboola_extractor(
+      io_log           = new zcl_fi_process_null_logger( )
+      iv_gjahr         = p_gjahr
+      ...
+    ).
+```
+
+## Acceptance Criteria
+
+**AC1: All extractor logging goes through framework logger**
+- Given: The export step executes via the process framework
+- When: The extractor logs messages during execution
+- Then: All messages appear in the process BAL log (single SLG1 entry), NOT in a
+  separate ZFI/ZFI_KBC log
+
+**AC2: Per-file storage is logged**
+- Given: The extractor creates N data part files + 1 trailing file
+- When: Each file is stored (FTP or app server)
+- Then: The BAL log contains message 007 ("Saving data into file &1") with the
+  actual filename for each stored file
+
+**AC3: Progress messages reach BAL**
+- Given: The extractor iterates over semantic tag groups
+- When: Each group is processed
+- Then: The BAL log contains progress entries (package counts, row counts, group
+  progress) that were previously status-bar-only
+
+**AC4: Standalone program works with null logger**
+- Given: `zfi_ov_keboola_extract` is executed directly (SE38/SA38)
+- When: It passes `zcl_fi_process_null_logger` to the extractor
+- Then: No runtime errors occur. No BAL log is created. Extraction runs normally.
+
+**AC5: No ZCL_SP_BALLOG references remain**
+- Given: All modified files
+- Then: No references to `ZCL_SP_BALLOG`, `bal_s_log`, `log_create`, or `log_sy_msg`
+  exist in the extractor class
+
+**AC6: Line length compliance**
 - Given: All modified/added lines
 - Then: No line exceeds 120 characters (per constitution)
 
-## Additional Context
+## Technical Decisions
 
-### Dependencies
+1. **`io_log` is optional** in the constructor signature to preserve compilation
+   without a caller change. However, both known callers (step class, standalone program)
+   will always pass a value. When `io_log` is not supplied, `mo_log` stays unbound
+   and all `IF mo_log IS BOUND` guards skip logging silently.
 
-- No blocking dependencies. This is a self-contained fix within a single class file.
-- The export step's existing behavior (calling `zcl_fi_ov_keboola_extractor`) is unchanged.
-- Message numbers 600, 601 must already exist in message class `ZFI_ALLOC`. Verify before implementation; create new messages only if existing ones don't accept placeholders.
+2. **Keep message class ZFI_OV_KBC.** The extractor is a standalone business class
+   in package `ZFI_EA_OV_EXT`, not part of the allocation step package. Its messages
+   belong to its own domain. The framework logger accepts any T100 message class.
 
-### Testing Strategy
+3. **Consolidate verbose stats.** The 6-line stats block per group iteration
+   (lines 247-252) should be merged into 1-2 log entries using message 000's four
+   placeholder slots.
 
-1. **Manual test -- happy path**: Run full allocation process through EXPORT step for a valid fiscal year/period. Check SLG1 -- verify context message and success message with year/period visible.
-2. **Manual test -- extractor failure**: Simulate extractor error (e.g., invalid FTP path). Verify SLG1 shows full exception text AND error message 600 with year/period.
+4. **Reuse message 007** ("Saving data into file &1") for per-file logging. This
+   message already exists and has the right semantics. It is called in `get_data()`
+   before storage and should also be called after storage in each `send_*` method
+   to confirm the file was actually written.
 
-### Notes
+## Dependencies
 
-- The `mt_semtag_filter` in `init()` contains duplicate entries (e.g., NTINC_ALAC, PL_RESULT, Z3_EBITDA appear twice). This is a separate issue and out of scope for this spec.
-- The local TYPE definitions (`ty_sel`, `ty_r_fins_sem_tag`) violate Constitution Principle I (DDIC-First). This is pre-existing technical debt and out of scope.
-- This spec does NOT require changes to the `cz.imcg.fast.planner` framework repository.
+- `zcl_fi_process_null_logger` must exist in the planner repo (already present,
+  commit `871472c`).
+- `zif_fi_process_logger` interface must be available (already present in planner repo).
+- No new DDIC objects or message definitions are required.
+
+## Testing Strategy
+
+1. **Manual test -- happy path via framework**: Run full allocation process through
+   EXPORT step. Check SLG1 -- verify all extractor messages appear in the same BAL
+   log as other step messages. Verify per-file entries with filenames.
+2. **Manual test -- standalone program**: Run `zfi_ov_keboola_extract` via SE38.
+   Verify no runtime errors and no BAL log created.
+3. **Negative test -- extractor failure**: Simulate FTP connection error. Verify
+   exception details appear in the process BAL log.
+
+## Notes
+
+- The `mt_semtag_filter` in step `init()` contains duplicate entries. Separate issue.
+- Local TYPE definitions in both files violate Constitution Principle I (DDIC-First).
+  Pre-existing tech debt, out of scope.
+- The `1 = 1` guard in `zip_data()` (line 511) is pre-existing dead code. Out of scope.
+- Commented-out code blocks throughout the extractor are pre-existing. Out of scope.
