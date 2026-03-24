@@ -223,7 +223,7 @@ development_status:
   est-121-3-status-constants-and-request-methods: done  # Tasks 7-9: gc_status constants + request_execute() + request_restart(). Commit: c09b495 (planner), 2026-03-20
   est-121-4-lifecycle-extensions: done  # Tasks 10-12: Extend restart/cancel/execute for EXECREQ/RESTREQ statuses. Commit: 687f414 (planner), 2026-03-21
   est-121-5-manager-delegation-and-job-status: done  # Tasks 13-14: check_job_status() + manager delegation methods. Commit: 04e43e7 (planner), 2026-03-24. Activated in SAP.
-  est-121-6-guard-extensions-and-unit-tests: review  # Tasks 15-17: EST-102 duplicate check + EST-106 parallel limit extensions for EXECREQ/RESTREQ + 7 unit tests. Commit: b749002 (planner), 2026-03-24. Awaiting SAP activation + unit test run.
+  est-121-6-guard-extensions-and-unit-tests: done  # Tasks 15-17: EST-102 duplicate check + EST-106 parallel limit extensions for EXECREQ/RESTREQ + 7 unit tests + 7 RAP health check rows. Commits: b749002, 023c886, 8c22169, 77a287b, 68eaa29, 13d1484, 810f606, d38e577, 6e75128 (planner), 2026-03-24. All 27 health checks + 7 APJ guard unit tests pass in SAP.
 
   # ── EST-125: Fix Export Step BAL Logging ──────────────────────────────────
   # Goal: Fix ZCL_FI_ALLOC_STEP_EXTRACT to write meaningful data to application log (BAL)
