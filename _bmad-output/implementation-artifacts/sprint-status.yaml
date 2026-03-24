@@ -220,7 +220,15 @@ development_status:
   epic-est-121: in-progress  # EST-121: APJ Background Execution & Lifecycle Enhancement
   est-121-1-ddic-foundation: review  # Tasks 1-4: Domain values, data elements, table fields, exception text IDs — all complete
   est-121-2-job-class-and-catalog: in-progress  # Tasks 5-6: ZCL_FI_PROCESS_JOB class + APJ catalog entry & template
-  est-121-3-status-constants-and-request-methods: ready-for-dev  # Tasks 7-9: gc_status constants + request_execute() + request_restart()
+  est-121-3-status-constants-and-request-methods: review  # Tasks 7-9: gc_status constants + request_execute() + request_restart() — all complete
   est-121-4-lifecycle-extensions: ready-for-dev  # Tasks 10-12: Extend restart/cancel/execute for new statuses
   est-121-5-manager-delegation-and-job-status: ready-for-dev  # Tasks 13-14: check_job_status() + manager delegation methods
   est-121-6-guard-extensions-and-unit-tests: ready-for-dev  # Tasks 15-17: EST-102/EST-106 guard extensions + unit tests
+
+  # ── EST-125: Fix Export Step BAL Logging ──────────────────────────────────
+  # Goal: Fix ZCL_FI_ALLOC_STEP_EXTRACT to write meaningful data to application log (BAL)
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-125-export-step-bal-logging.md
+
+  epic-est-125: done  # EST-125 pseudo-epic grouping
+  est-125-fix-export-step-bal-logging: done  # commit d522096 (ovysledovka), 2026-03-24: Fixed class header, added context logging (year/period), fixed CATCH with log_exception_from_framework(), replaced orphan MESSAGE with log_and_set_result(), added extraction summary (row count), updated messages 600/601 with placeholders. Task 2 (validate guards) skipped per project lead — INIT step already validates.
