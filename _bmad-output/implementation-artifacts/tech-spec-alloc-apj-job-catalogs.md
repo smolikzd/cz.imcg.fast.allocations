@@ -558,3 +558,54 @@ Tasks are ordered by dependency — each task builds on the previous. Line numbe
 - **ALLOC_EXPORT hardcodes EXPORT=true**: The `ZCL_FI_ALLOC_JOB_EXPORT` class sets `ls_params-export = abap_true` unconditionally in `map_parameters()`. This process type exists solely to export — there's no scenario where you'd run ALLOC_EXPORT without wanting the export. The report `ZFI_ALLOC_PROC_EXPORT` is also updated to set this flag.
 
 - **Future consideration**: If additional process types need APJ catalogs in the future, follow the same pattern — one job class per process type, inheriting `ZCL_FI_PROCESS_JOB_BASE`.
+
+---
+
+## Post-Implementation: SAJC Catalog Enrichment (UI Refinement)
+
+### Problem
+
+After the initial 12-task implementation was complete and committed (`0eb39da`), manual testing on Fiori Application Jobs (F5264) revealed that several UI features were not rendering correctly:
+
+| Parameter | Expected | Actual | Root Cause |
+|-----------|----------|--------|------------|
+| FISCYEAR (GJAHR) | F4 value help | No F4 icon | `component_type='GJAHR'` in legacy interface does not drive VH |
+| FISCPER (POPER) | F4 value help | No F4 icon | Same — `component_type='POPER'` ignored for VH |
+| ACTION | Dropdown (listBox) | Plain text field | `list_ind=abap_true` in legacy interface not honored |
+| EXPORT | Checkbox | Checkbox | Working via `checkbox_ind` |
+| COMPCODE (BUKRS) | F4 value help | F4 works | BUKRS data element has DDIC search help attached |
+
+### Root Cause Analysis
+
+The classes implement the **legacy** `IF_APJ_DT_EXEC_OBJECT` + `IF_APJ_RT_EXEC_OBJECT` interfaces. SAP documentation states that `component_type` is "not supported" for driving UI behavior with these interfaces. The `checkbox_ind` and `list_ind` fields in `get_parameters()` have inconsistent effect — checkbox works, listbox does not.
+
+**Key discovery**: SAP standard classes using the same legacy interfaces (e.g., `CL_FCO_RKO7CJ8GH_LDGR_JOB_TMPL` for WBS/Project Settlement) have working value helps. The difference: their **catalog entries are configured with parameter-level metadata** (sections, groups, value help assignments, screen element types) stored in the APJ framework tables.
+
+### Solution: Enrich `.sajc.json` Files
+
+The SAP ABAP File Formats (AFF) schema for `.sajc.json` supports full parameter configuration at the catalog level. The official schema is at `SAP/abap-file-formats` on GitHub (`file-formats/sajc/sajc-v1.json`).
+
+**Schema supports**: `sections`, `groups`, `parameters` (with `valueHelp`, `valueHelpType`, `screenElement`, `mandatory`, `hidden`, `readOnly`, `enabledByParameter`, `backendCall`, `singleValues`, `radioButtonGroup`, `textEditorLines`).
+
+Both `.sajc.json` files were enriched with:
+
+- **Sections**: "Selection" and "Options" for visual organization
+- **Groups**: "Selection Parameters" and "Processing Options"
+- **Parameter config**:
+  - `COMPCODE`: mandatory (F4 already works via BUKRS data element search help)
+  - `FISCYEAR`: `valueHelp="I_FISCALYEARFORVARIANT"`, `valueHelpType="cdsView"` — SAP standard released CDS view
+  - `FISCPER`: `valueHelp="I_FISCALPERIODFORVARIANT"`, `valueHelpType="cdsView"` — SAP standard released CDS view
+  - `ALLOCID`: mandatory, no value help
+  - `EXPORT`: `screenElement="checkbox"`
+  - `ACTION`: `screenElement="listBox"`, `valueHelp="ZFI_PROCESS_ACTION"`, `valueHelpType="domain"` — fixed values from custom domain
+
+### Risk
+
+SAP Help documentation states: "If the class is not based on `IF_APJ_RT_RUN`, but on `IF_APJ_RT_EXEC_OBJECT`, the parameters, groups, and sections of the catalog entry are only displayed in ADT and can't be changed."
+
+This means ADT won't allow interactive editing of these fields. However, the AFF deserialization (via abapGit) should still populate the APJ framework tables (`APJ_W_JCE_ROOT` etc.), and the Fiori F5264 app may still respect the configuration at runtime. **Manual testing required to confirm.**
+
+### Commits
+
+- `facaa0a` on `cz.imcg.fast.ovysledovka` (main) — Enriched SAJC catalog files
+- Previous UI refinement attempt: `5ab3518` — ABAP-level `component_type`/`checkbox_ind`/`list_ind` changes (partially working)
