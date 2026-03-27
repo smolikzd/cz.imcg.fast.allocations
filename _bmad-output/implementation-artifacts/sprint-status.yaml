@@ -232,3 +232,35 @@ development_status:
 
   epic-est-125: done  # EST-125 pseudo-epic grouping
   est-125-fix-export-step-bal-logging: done  # commit d522096 (ovysledovka), 2026-03-24: Fixed class header, added context logging (year/period), fixed CATCH with log_exception_from_framework(), replaced orphan MESSAGE with log_and_set_result(), added extraction summary (row count), updated messages 600/601 with placeholders. Task 2 (validate guards) skipped per project lead — INIT step already validates.
+
+  # ── EST-127: APJ Job Catalog per Process Type (Mode 3 Framework) ──────────
+  # Goal: Abstract base class ZCL_FI_PROCESS_JOB_BASE for Mode 3 APJ execution
+  # Target repo: planner (cz.imcg.fast.planner)
+  # Dependency for EST-129
+
+  epic-est-127: done  # EST-127 pseudo-epic grouping
+  est-127-apj-job-base-safety-net-log: done  # commit be3a156 (planner), 2026-03-25: Safety-net BALI log to APJ job classes
+  est-127-apj-assign-to-appl-job: done  # commit ae271fd (planner), 2026-03-25: assign_to_appl_job in Mode 2 generic job class
+
+  # ── EST-129: Allocation APJ Job Catalogs and Templates ────────────────────
+  # Goal: Mode 3 (Fiori Application Jobs) support for ALLOCATIONS and ALLOC_EXPORT
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+  # Spec file: _bmad-output/implementation-artifacts/tech-spec-alloc-apj-job-catalogs.md
+  # Linear: EST-129
+
+  epic-est-129: done  # EST-129 pseudo-epic grouping
+  est-129-alloc-apj-job-catalogs: done  # commit 0eb39da (ovysledovka), 2026-03-26: All 12 tasks complete. ZCL_FI_ALLOC_JOB_ALLOC + ZCL_FI_ALLOC_JOB_EXPORT job classes, 4 SAJC/SAJT artifacts, EXPORT field on ZFI_ALLOC_PROCESS_PARAMS, skip logic in extract step, JOB_CATALOG_NAME registration in both reports.
+
+  # ── Follow-on: Fail-Hard Logger Hardening ─────────────────────────────────
+  # Goal: Remove defensive logging catches, propagate zcx_fi_process_error from all logging methods
+  # Target repos: planner + ovysledovka
+
+  fail-hard-logger-planner: done  # commits 40709e8, 6e657a4 (planner), 2026-03-26: RAISING added to zif_fi_process_logger, zif_fi_process_step, step/logger classes. UT fix for bal_object.
+  fail-hard-logger-ovysledovka: done  # commit e52dbac (ovysledovka), 2026-03-26: Propagated RAISING to all 5 allocation step classes + rules class + legacy program.
+
+  # ── Follow-on: ABAP Unit Test Reliability ─────────────────────────────────
+  # Goal: Fix ABAP Unit test timeouts and ensure consistent pass rate
+  # Target repo: planner (cz.imcg.fast.planner)
+
+  ut-fix-health-check-restructure: done  # commit fe293b3 (planner), 2026-03-27: ltcl_health_tests DURATION MEDIUM, class_setup for one-time DB setup, test_apj_job_base moved to ltcl_apj_e2e_tests.
+  ut-fix-apj-e2e-polling-timeout: done  # commits 570c204, 893d379 (planner), 2026-03-27: APJ E2E polling increased from 30s→55s→90s (360 x 0.25s per loop). All 36 tests pass.
