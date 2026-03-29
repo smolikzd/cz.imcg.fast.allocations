@@ -5,7 +5,7 @@ created: '2026-03-29'
 status: 'completed'
 stepsCompleted: [1, 2, 3, 4, 5]
 tech_stack: ['ABAP 7.58', 'RAP Custom Entity', 'IF_RAP_QUERY_PROVIDER', 'CDS Annotations', 'OData V4', 'Fiori Elements List Report + Object Page']
-files_to_modify: ['zfi_i_alloc_dashboard_ce.ddls.asddls', 'zfi_i_alloc_dash_step_ce.ddls.asddls (NEW)', 'zfi_i_alloc_dash_step_ce.ddls.xml (NEW)', 'zcl_fi_alloc_dash_step_qry.clas.abap (NEW)', 'zcl_fi_alloc_dash_step_qry.clas.xml (NEW)', 'zfi_ui_alloc_dashboard.srvd.srvdsrv']
+files_to_modify: ['zfi_i_alloc_dashboard_ce.ddls.asddls', 'zcl_fi_alloc_dash_query.clas.abap', 'zfi_i_alloc_dash_step_ce.ddls.asddls (NEW)', 'zfi_i_alloc_dash_step_ce.ddls.xml (NEW)', 'zcl_fi_alloc_dash_step_qry.clas.abap (NEW)', 'zcl_fi_alloc_dash_step_qry.clas.xml (NEW)', 'zfi_ui_alloc_dashboard.srvd.srvdsrv']
 code_patterns: ['Custom entity COMPOSITION OF child entity', 'IF_RAP_QUERY_PROVIDER per entity', 'SELECT from ZFI_I_PROCESS_STEP_STATS + JOIN zfi_proc_def for description', '@UI.facet for object page layout', 'format_timestamp pattern from parent query class']
 test_patterns: ['Manual Fiori Elements preview testing via service binding']
 ---
@@ -188,13 +188,13 @@ Add a Fiori Elements object page to the existing dashboard custom entity. The ob
 
 ### Acceptance Criteria
 
-- [ ] AC 1: Given the list report is displayed, when the user clicks a row (any fiscal period), then the object page opens showing the row's details organized in facets.
+- [ ] AC 1: Given the list report is displayed, when the user clicks a row (any fiscal period), then the object page opens showing the row's details organized in header area and body facets.
 
-- [ ] AC 2: Given the object page is open for a row with a real ProcessInstanceId (> 0), when the page loads, then the "General Information" facet shows CompanyCode, FiscalYear, FiscalPeriod, and AllocationId.
+- [ ] AC 2: Given the object page is open, when the page loads, then the header title shows the computed AllocationTitle (e.g., `1000/2024/001/1`) and description shows ProcessTypeDescription (e.g., "Allocations").
 
-- [ ] AC 3: Given the object page is open, when the page loads, then the "Business Status" facet shows "Ready for SAP reporting" and "Ready for external reporting" fields.
+- [ ] AC 3: Given the object page is open, when the page loads, then the header area shows an "Identification" field group with CompanyCode, FiscalYear, FiscalPeriod, and AllocationId, plus data points for "SAP Reporting" (BusinessStatus1) and "External Reporting" (BusinessStatus2).
 
-- [ ] AC 4: Given the object page is open, when the page loads, then the "Process Details" facet shows ProcessStatus (with criticality icon), ProcessType (with description text), ProcessInstanceId, StartedAt, EndedAt, and CreatedBy.
+- [ ] AC 4: Given the object page is open, when the page loads, then the "Process Details" body facet shows ProcessStatus (with criticality icon), ProcessType (with description text), ProcessInstanceId, StartedAt, EndedAt, and CreatedBy.
 
 - [ ] AC 5: Given the object page is open for a row with ProcessInstanceId > 0, when the page loads, then the "Process Steps" table facet displays step rows with columns: StepNumber, Description, StepStatus (with criticality icon), StepStartedAt, StepEndedAt, TotalSubsteps, CompletedSubsteps, FailedSubsteps, RunningSubsteps, QueuedSubsteps.
 
@@ -252,15 +252,29 @@ Add a Fiori Elements object page to the existing dashboard custom entity. The ob
 | **V — Error Handling** | Applies | Step query `select` method must wrap filter extraction in TRY-CATCH for `cx_rap_query_filter_no_range`. Return empty result on error (no crash — consistent with parent class pattern). |
 | **Code Documentation** | Applies | ABAP-Doc required on all public methods of `ZCL_FI_ALLOC_DASH_STEP_QRY`. |
 
+## Header Redesign
+
+After the core object page implementation, the header was redesigned to improve usability:
+
+- **Computed title field**: Added `AllocationTitle : abap.char(50)` to parent entity, populated in query class as `{CompanyCode}/{FiscalYear}/{FiscalPeriod}/{AllocationId}`. NOT marked `@UI.hidden` (hidden blocks headerInfo rendering — see discovery below). Not added to sort/filter whitelist (computed field, not in CDS view). Field won't appear in tables/forms because it has no `@UI.lineItem`/`@UI.fieldGroup`/`@UI.selectionField` annotations.
+- **headerInfo changes**: `title.value` changed from `CompanyCode` to `AllocationTitle`, `description.value` changed from `FiscalPeriod` to `ProcessTypeDescription` (changed from `ProcessStatusText` during iteration — status is already visible via criticality icons)
+- **Key fields moved to header**: All 4 key fields (CompanyCode, FiscalYear, FiscalPeriod, AllocationId) placed in a `fieldGroup` with qualifier `HeaderIdent`, displayed via `purpose: #HEADER` + `type: #FIELDGROUP_REFERENCE` facet in the Object Page header area
+- **Business statuses as header data points**: `BusinessStatus1` and `BusinessStatus2` moved from body facet to header using `@UI.dataPoint` with qualifiers `BusinessStatus1`/`BusinessStatus2` (titles: "SAP Reporting"/"External Reporting"), referenced via `purpose: #HEADER` + `type: #DATAPOINT_REFERENCE` facets
+- **Body facets simplified**: Removed "General Information" and "Business Status" body facets. Remaining: "Process Details" (position 10), "Process Steps" (position 20)
+- **`@UI.hidden` blocks headerInfo**: Fields referenced by `headerInfo.title.value` or `headerInfo.description.value` must NOT have `@UI.hidden: true` — Fiori Elements will not render them as Object Page title/subtitle. Fields without `@UI.lineItem`/`@UI.fieldGroup`/`@UI.selectionField` annotations won't appear in tables/forms anyway, so removing `@UI.hidden` is safe. Commit: `2e51444`.
+- **Positional column mapping bug in `resolve_type_descriptions`**: `SELECT process_type, description FROM zfi_proc_type INTO TABLE @lt_types` mapped columns positionally (process_type→MANDT, description→PROCESS_TYPE) because `lt_types` was typed with the full table structure. Changed to `INTO CORRESPONDING FIELDS OF TABLE` to map by name. This bug was present since EST-132 and caused `ProcessTypeDescription` to always be empty. Commit: `956e4ec`.
+- **Subtitle changed**: `description.value` was initially set to `ProcessStatusText` but was changed to `ProcessTypeDescription` (e.g., "Allocations") for better usability — the status is already shown via data points and criticality icons. Commit: `7cd14e1`.
+- **Commits**: `ef30330` (header redesign) → `2e51444` (hidden fix) → `7cd14e1` (subtitle change) → `956e4ec` (CORRESPONDING fix), all on `main` in ovysledovka repo
+
 ## Review Notes
 
 - Adversarial review completed with 14 findings
-- Findings: 14 total, 1 fixed, 13 skipped
-- Resolution approach: Walk-through (F1 fixed, F2-F14 skipped as accepted/noise)
+- Findings: 14 total, 2 fixed, 12 skipped
+- Resolution approach: Walk-through (F1, F7 fixed; F2-F6, F8-F14 skipped as accepted/noise)
 - **F1 (CRITICAL) — FIXED**: Added `association to parent ZFI_I_ALLOC_DASHBOARD_CE` to child entity `ZFI_I_ALLOC_DASH_STEP_CE`. SAP docs (`ABENCDS_F1_CUSTOM_TP_ASSOCIATION`, `ABENCDS_COMPOSITION_GLOSRY`) confirm to-parent association is required for a valid CDS composition tree, and custom entities fully support the syntax. The original tech spec claim was corrected.
+- **F7 (MEDIUM) — FIXED**: `CONV_NO_NUMBER` runtime dump — comparing CHAR(32) `ProcessInstanceId` to numeric `0` (`lv_instance_id = 0`) caused dump. Changed to `lv_instance_id IS INITIAL` only. Commit `d37222c`.
 - **F2 (HIGH) — SKIPPED**: StepStatus CDS CASE inferred type — handled by `CONV` in ABAP query class; CDS view is in planner repo (out of scope)
 - **F4 (MEDIUM) — SKIPPED**: No sorting support — ~5 rows with hardcoded `ORDER BY StepNumber`; acceptable for MVP
-- **F7 (MEDIUM) — SKIPPED**: Redundant `= 0` check on CHAR(32) — harmless defensive coding
 - **F3, F5, F6, F8-F14 (LOW/NOISE) — SKIPPED**: Code duplication (documented backlog item), minor label gaps, etc.
 
 ## Activation Order

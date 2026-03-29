@@ -264,3 +264,15 @@ development_status:
 
   ut-fix-health-check-restructure: done  # commit fe293b3 (planner), 2026-03-27: ltcl_health_tests DURATION MEDIUM, class_setup for one-time DB setup, test_apj_job_base moved to ltcl_apj_e2e_tests.
   ut-fix-apj-e2e-polling-timeout: done  # commits 570c204, 893d379 (planner), 2026-03-27: APJ E2E polling increased from 30s→55s→90s (360 x 0.25s per loop). All 36 tests pass.
+
+  # ── EST-132: Allocation Dashboard (Fiori Elements List Report + Object Page) ──
+  # Goal: Build Fiori Elements List Report showing allocation runs per company/year/period
+  #       with Object Page drill-down to process step details
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+  # Linear: EST-132
+  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-133-alloc-dashboard-object-page.md
+
+  epic-est-132: done  # EST-132: Allocation Dashboard
+  est-132-dashboard-list-report: done  # Core list report: custom entity ZFI_I_ALLOC_DASHBOARD_CE, query provider ZCL_FI_ALLOC_DASH_QUERY, service definition ZFI_UI_ALLOC_DASHBOARD. Commits up to 423d3cb (ovysledovka), 2026-03-28.
+  est-132-object-page-step-details: done  # Object Page: child entity ZFI_I_ALLOC_DASH_STEP_CE, step query ZCL_FI_ALLOC_DASH_STEP_QRY, composition tree, facets, header data points. Commits up to 956e4ec (ovysledovka), 2026-03-28.
+  est-132-ui-refinements: done  # UI polish: CompanyCode filter+column+name (T001), sort order, company code restriction (1000-4000), ProcessStatus column reorder, remove dead groupBy, fix RAP get_paging() protocol for unstarted-allocation Object Page navigation. Commits 68e4e4c→75af5c1 (ovysledovka), 2026-03-29.
