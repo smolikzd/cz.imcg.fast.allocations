@@ -2,7 +2,7 @@
 title: 'Add Process Management Actions to Allocation Dashboard'
 slug: 'est-134-alloc-dashboard-process-actions'
 created: '2026-03-29'
-revised: '2026-03-29'
+revised: '2026-03-30'
 status: 'done'
 stepsCompleted: [1, 2, 3, 4]
 baseline_commit: '75af5c163f1f144838f8007ff0ee88ac05b9de93'

@@ -51,3 +51,13 @@ Items surfaced during review that are not caused by the current story but worth 
 - **Description:** The saver currently only catches `zcx_fi_process_error`. If a manager method raises an unexpected exception (e.g., `cx_sy_zerodivide`, a database exception, or an APJ scheduling error that doesn't inherit from `zcx_fi_process_error`), the exception would propagate uncaught to the RAP framework, potentially causing a short dump.
 - **Possible approach:** Add a second `CATCH cx_root` after the `zcx_fi_process_error` catch to map any unexpected exception to `failed`/`reported` with a generic error message. This is defensive programming -- the manager methods should only raise `zcx_fi_process_error`, but belt-and-suspenders is prudent.
 - **Priority:** Medium — unlikely but impactful if it occurs in production.
+
+---
+
+## 6. Dashboard action to create a new process instance after supersede
+
+- **Source:** EST-134 implementation (state machine analysis)
+- **Date:** 2026-03-30
+- **Description:** After superseding a COMPLETED process instance, the SUPERSEDED status is terminal — no further actions are available on that row. The EST-110 design intent is that supersede unlocks the duplicate check so a new `create_process()` can be called. However, the dashboard currently has no "Create New Instance" action — the user must create the instance through other means. This breaks the self-contained operations cockpit workflow.
+- **Possible approach:** Add a 5th action `CreateProcess` to the dashboard BDEF that calls `zcl_fi_process_manager=>create_process()` with parameters derived from the current row's CompanyCode, FiscalYear, FiscalPeriod, AllocationId. Feature control: enabled only when no active instance exists (i.e., current row shows SUPERSEDED or CANCELLED, or no ProcessInstanceId).
+- **Priority:** Medium — workflow gap; users can work around by creating instances via other tools.

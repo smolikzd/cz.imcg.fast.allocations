@@ -276,3 +276,12 @@ development_status:
   est-132-dashboard-list-report: done  # Core list report: custom entity ZFI_I_ALLOC_DASHBOARD_CE, query provider ZCL_FI_ALLOC_DASH_QUERY, service definition ZFI_UI_ALLOC_DASHBOARD. Commits up to 423d3cb (ovysledovka), 2026-03-28.
   est-132-object-page-step-details: done  # Object Page: child entity ZFI_I_ALLOC_DASH_STEP_CE, step query ZCL_FI_ALLOC_DASH_STEP_QRY, composition tree, facets, header data points. Commits up to 956e4ec (ovysledovka), 2026-03-28.
   est-132-ui-refinements: done  # UI polish: CompanyCode filter+column+name (T001), sort order, company code restriction (1000-4000), ProcessStatus column reorder, remove dead groupBy, fix RAP get_paging() protocol for unstarted-allocation Object Page navigation. Commits 68e4e4c→75af5c1 (ovysledovka), 2026-03-29.
+
+  # ── EST-134: Process Management Actions on Allocation Dashboard ──────────
+  # Goal: Add Execute/Cancel/Supersede/Restart actions to ZFI_I_ALLOC_DASHBOARD_CE
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+  # Also modified: planner (iv_no_commit parameter for RAP-safe saving)
+  # Linear: EST-134 (consolidated from EST-111, EST-112, EST-113, EST-114)
+
+  epic-est-134: done
+  est-134-alloc-dashboard-process-actions: done  # 10 commits (ovysledovka) 57eae8a→fb45e21, 1 commit (planner) 037c8a5, 2026-03-29/30. BDEF (unmanaged strict(2), 4 actions with features:instance, side effects), handler+saver behavior pool, DDIC buffer structure/table type, @UI #FOR_ACTION annotations. 12 activation findings resolved (root keyword, authorization master(global), iv_no_commit for COMMIT WORK prohibition in RAP saver, SELECT replacing READ ENTITIES for custom entities, etc.). 5 deferred work items logged.
