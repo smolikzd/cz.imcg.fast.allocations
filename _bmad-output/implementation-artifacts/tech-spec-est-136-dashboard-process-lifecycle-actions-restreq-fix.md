@@ -4,8 +4,11 @@ slug: 'dashboard-process-lifecycle-actions-restreq-fix'
 linear_issue: 'EST-136'
 linear_url: 'https://linear.app/smolikzd/issue/EST-136/dashboard-process-lifecycle-actions-and-restreq-bug-fix'
 created: '2026-03-30'
-status: 'ready-for-dev'
-stepsCompleted: [1, 2, 3, 4]
+status: 'completed'
+baseline_commit: 'e4f9944'
+baseline_planner: '037c8a5'
+baseline_ovysledovka: 'fb45e21'
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]
 tech_stack: ['ABAP 7.58', 'RAP', 'CDS', 'Fiori Elements', 'APJ']
 files_to_modify:
   - 'zcl_fi_process_instance.clas.abap (planner)'
@@ -123,17 +126,21 @@ The allocation dashboard lacks full process lifecycle management, causing three 
 
 #### Part A: Framework Fixes (planner repo)
 
-- [ ] Task 1: Add `iv_no_commit` to `create_process()`
+- [x] Task 1: Add `iv_no_commit` to `create_process()`
   - File: `zcl_fi_process_manager.clas.abap`
   - Action: Add `iv_no_commit TYPE abap_bool DEFAULT abap_false` parameter to `create_process()` method signature (around line 30). Forward it to the instance creation flow via `zcl_fi_process_instance=>create()`.
   - Notes: Default `abap_false` preserves backward compatibility for all existing callers (test report, etc.). Currently `create_process()` always commits because `initialize_instance()` calls `save_instance()` without `iv_no_commit`.
 
-- [ ] Task 2: Thread `iv_no_commit` through instance creation chain
+- [x] Task 2: Thread `iv_no_commit` through instance creation chain
   - File: `zcl_fi_process_instance.clas.abap`
-  - Action: Thread `iv_no_commit` through the full chain: `create()` (line 445) -> `constructor()` (line 463) -> `initialize_instance()` (line 482) -> `save_instance()` (line 562). Each method needs the new parameter added and forwarded. The `save_instance()` method already supports `iv_no_commit` (line 640) -- only the callers above it need changes.
-  - Notes: The chain is: `create_process(iv_no_commit)` -> `create(iv_no_commit)` -> `NEW zcl_fi_process_instance(iv_no_commit)` -> `initialize_instance(iv_no_commit)` -> `save_instance(iv_no_commit)`.
+  - Action: Thread `iv_no_commit` through the full chain: `create()` (line 445) -> `constructor()` (line 463) -> `initialize_instance()` (starts line 482, calls `save_instance()` at line 562) -> `save_instance()` (already supports `iv_no_commit` at line 640). Each method needs the new parameter added in BOTH the class DEFINITION and IMPLEMENTATION sections:
+    - (a) `create()` static method: add `iv_no_commit TYPE abap_bool DEFAULT abap_false` to DEFINITION (PUBLIC SECTION, line ~52) and IMPLEMENTATION (line 445). Forward to `NEW` constructor call.
+    - (b) `constructor()`: add `iv_no_commit TYPE abap_bool DEFAULT abap_false` to DEFINITION (PRIVATE SECTION, line ~308) and IMPLEMENTATION (line 463). Store in instance attribute or forward directly to `initialize_instance()`. Note: constructor has both a load path (`iv_instance_id` provided) and a create path (`iv_process_type` provided). The `iv_no_commit` parameter only matters for the create path — the load path does not call `save_instance()`. Default `abap_false` means the load path is unaffected.
+    - (c) `initialize_instance()`: add `iv_no_commit TYPE abap_bool DEFAULT abap_false` to DEFINITION (PRIVATE SECTION, line ~318) and IMPLEMENTATION (line 482). Forward to `save_instance()` call at line 562.
+    - (d) Update the `load()` factory method call (line ~456) to pass the new constructor parameter as default (no change needed if using `DEFAULT abap_false` — ABAP allows omitting optional parameters).
+  - Notes: The chain is: `create_process(iv_no_commit)` -> `create(iv_no_commit)` -> `NEW zcl_fi_process_instance(iv_no_commit)` -> `initialize_instance(iv_no_commit)` -> `save_instance(iv_no_commit)`. The `load()` factory (line ~456) also calls the constructor but with `iv_instance_id` — it takes the load path and never calls `initialize_instance()`, so `iv_no_commit` is irrelevant there.
 
-- [ ] Task 3: Fix `execute()` status guard to accept RESTREQ
+- [x] Task 3: Fix `execute()` status guard to accept RESTREQ
   - File: `zcl_fi_process_instance.clas.abap`
   - Action: At lines 673-676, extend the guard condition. Change from:
     ```abap
@@ -150,11 +157,22 @@ The allocation dashboard lacks full process lifecycle management, causing three 
                    OR ms_instance-status = gc_status-restart_requested )
                  AND iv_start_from_step IS NOT INITIAL ).
     ```
-  - Notes: This allows `restart()` -> `execute(iv_start_from_step)` to succeed when instance is in RESTREQ status.
+  - Notes: This allows `restart()` -> `execute(iv_start_from_step)` to succeed when instance is in RESTREQ status. Add a code comment explaining why RESTREQ is accepted (the restart flow calls `execute()` with `iv_start_from_step` while instance is still in RESTREQ).
 
-- [ ] Task 4: Fix silent exception swallowing in APJ job class
-  - File: `zcl_fi_process_job.clas.abap`
-  - Action: Replace the empty CATCH block at lines 172-174 with error handling:
+- [x] Task 4: Fix silent exception swallowing in APJ job class + add `mark_as_failed()` method
+  - Files: `zcl_fi_process_instance.clas.abap` (new method) AND `zcl_fi_process_job.clas.abap` (CATCH fix)
+  - Action (part a — new method in `zcl_fi_process_instance.clas.abap`): Add a public `mark_as_failed()` method. This method does NOT exist yet — it must be added to both DEFINITION (PUBLIC SECTION) and IMPLEMENTATION:
+    - DEFINITION: `METHODS mark_as_failed.` (no parameters)
+    - IMPLEMENTATION:
+      ```abap
+      METHOD mark_as_failed.
+        ms_instance-status   = gc_status-failed.
+        ms_instance-ended_at = utclong_current( ).
+        save_instance( ).
+      ENDMETHOD.
+      ```
+    - Notes: No `iv_no_commit` — this method is called from the APJ job class (outside RAP saver), so COMMIT WORK is correct. The `save_instance()` default `iv_no_commit = abap_false` commits.
+  - Action (part b — CATCH fix in `zcl_fi_process_job.clas.abap`): Replace the empty CATCH block at lines 172-174 with error handling. Wrap `mark_as_failed()` in its own TRY/CATCH to prevent double-fault (if `save_instance()` inside `mark_as_failed()` fails, the original error is still logged):
     ```abap
     CATCH zcx_fi_process_error INTO DATA(lx_error).
       IF lo_instance IS BOUND.
@@ -172,15 +190,20 @@ The allocation dashboard lacks full process lifecycle management, causing three 
               iv_message_v4     = lx_error->if_t100_dyn_msg~msgv4
               iv_severity       = 'E' ).
           ENDIF.
-          lo_instance->mark_as_failed( ).
+          TRY.
+              lo_instance->mark_as_failed( ).
+            CATCH zcx_fi_process_error.
+              " mark_as_failed itself failed (e.g., DB lock)
+              " Instance stays stuck — error already logged above
+          ENDTRY.
         ENDIF.
       ENDIF.
     ```
-  - Notes: `mark_as_failed()` may not exist as a public method. During implementation, check available methods. If none exists, add a minimal public method that sets `ms_instance-status = gc_status-failed` and calls `save_instance()`. The key requirement: (a) log the error, (b) transition out of EXECREQ/RESTREQ to FAILED.
+  - Notes: The key requirements: (a) log the original error to application log, (b) transition out of EXECREQ/RESTREQ to FAILED, (c) if mark_as_failed fails, degrade gracefully — the error is already logged so the admin can investigate via SLG1.
 
 #### Part B: Dashboard Changes (ovysledovka repo)
 
-- [ ] Task 5: Add `CreateAndExecute` action to behavior definition
+- [x] Task 5: Add `CreateAndExecute` action to behavior definition
   - File: `zfi_i_alloc_dashboard_ce.bdef.asbdef`
   - Action: Add new action declaration after existing actions (line 13):
     ```
@@ -194,9 +217,9 @@ The allocation dashboard lacks full process lifecycle management, causing three 
                     action CreateAndExecute ),
       messages;
     ```
-    Also add `action CreateAndExecute` to the permissions list of all existing side effects blocks.
+    Also add `action CreateAndExecute` to the permissions list of all 4 existing side effects blocks (ExecuteProcess at line 16, CancelProcess at line 20, SupersedeProcess at line 24, RestartProcess at line 28).
 
-- [ ] Task 6: Add handler method for `CreateAndExecute`
+- [x] Task 6: Add handler method for `CreateAndExecute`
   - File: `zbp_fi_alloc_dashboard_ce.clas.locals_imp.abap`
   - Action: (a) Add method declaration in `lhc_dashboard` PRIVATE SECTION:
     ```abap
@@ -220,7 +243,7 @@ The allocation dashboard lacks full process lifecycle management, causing three 
     ```
   - Notes: No instance_id validation needed. The action is valid for rows without an instance. The saver creates the instance.
 
-- [ ] Task 7: Add saver branch for `CREATEEXEC`
+- [x] Task 7: Add saver branch for `CREATEEXEC`
   - File: `zbp_fi_alloc_dashboard_ce.clas.locals_imp.abap`
   - Action: In the `save` method, add WHEN branch before WHEN OTHERS (line 336):
     ```abap
@@ -241,7 +264,7 @@ The allocation dashboard lacks full process lifecycle management, causing three 
     ```
   - Notes: Depends on Task 1-2 (`iv_no_commit` on `create_process`). The duplicate check in `create_process()` blocks if RUNNING/FAILED/COMPLETED/EXECREQ/RESTREQ instance exists -- error propagates to Fiori UI via existing CATCH block.
 
-- [ ] Task 8: Update feature control for new action
+- [x] Task 8: Update feature control for new action
   - File: `zbp_fi_alloc_dashboard_ce.clas.locals_imp.abap`
   - Action: Modify `get_instance_features`:
     (a) Row-not-found block (lines 58-68): add `%features-%action-CreateAndExecute = if_abap_behv=>fc-o-disabled`.
@@ -259,15 +282,15 @@ The allocation dashboard lacks full process lifecycle management, causing three 
       CONTINUE.
     ENDIF.
     ```
-    (c) Status-based block (lines 84-111): add CreateAndExecute enablement:
+    (c) Status-based block (lines 84-111): add CreateAndExecute enablement for SUPERSEDED and CANCELLED:
     ```abap
     %features-%action-CreateAndExecute = COND #(
-      WHEN lv_status = 'SUPERSEDED'
+      WHEN lv_status = 'SUPERSEDED' OR lv_status = 'CANCELLED'
       THEN if_abap_behv=>fc-o-enabled
       ELSE if_abap_behv=>fc-o-disabled )
     ```
 
-- [ ] Task 9: Update `get_global_authorizations` for new action
+- [x] Task 9: Update `get_global_authorizations` for new action
   - File: `zbp_fi_alloc_dashboard_ce.clas.locals_imp.abap`
   - Action: Add at line 275:
     ```abap
@@ -278,11 +301,11 @@ The allocation dashboard lacks full process lifecycle management, causing three 
 
 - [ ] AC 1: Given an empty dashboard row (no process instance), when the user clicks CreateAndExecute, then a new process instance is created with process_type ALLOCATIONS and init params from the row keys, and execution is requested via APJ (instance status transitions to EXECREQ).
 
-- [ ] AC 2: Given a dashboard row with status SUPERSEDED, when the user clicks CreateAndExecute, then a new process instance is created with the same allocation params, and execution is requested via APJ (new instance with EXECREQ; old SUPERSEDED instance unchanged).
+- [ ] AC 2: Given a dashboard row with status SUPERSEDED or CANCELLED, when the user clicks CreateAndExecute, then a new process instance is created with the same allocation params, and execution is requested via APJ (new instance with EXECREQ; old SUPERSEDED/CANCELLED instance unchanged).
 
 - [ ] AC 3: Given a dashboard row with status COMPLETED, when the user views the row, then CreateAndExecute is disabled. The user must first Supersede, then CreateAndExecute.
 
-- [ ] AC 4: Given a dashboard row with status RUNNING, FAILED, EXECREQ, or RESTREQ, when the user views the row, then CreateAndExecute is disabled.
+- [ ] AC 4: Given a dashboard row with status RUNNING, FAILED, EXECREQ, RESTREQ, or COMPLETED, when the user views the row, then CreateAndExecute is disabled.
 
 - [ ] AC 5: Given a FAILED instance where the user clicks Restart, when the APJ job fires and calls `restart()` -> `execute(iv_start_from_step)`, then the execute method accepts RESTREQ status and the instance resumes from the failed step (RESTREQ -> RUNNING).
 
@@ -299,6 +322,7 @@ The allocation dashboard lacks full process lifecycle management, causing three 
 - EST-110 (SUPERSEDED status) -- already implemented, provides the supersede capability
 - EST-134 (dashboard actions) -- already implemented, provides the handler/saver pattern being extended
 - Tasks 1-2 (planner: `iv_no_commit` on `create_process`) must be completed before Task 7 (ovysledovka: saver CREATEEXEC branch)
+- **Deployment ordering**: planner repo changes (Tasks 1-4) must be transported to the development system BEFORE ovysledovka changes (Tasks 5-9) can be activated. The ovysledovka BDEF and handler reference `iv_no_commit` on `create_process()` which only exists after planner transport.
 - Task 3 (planner: execute guard fix) is independent, can be done in parallel
 - Task 4 (planner: job class fix) is independent, can be done in parallel
 
@@ -343,6 +367,34 @@ The allocation dashboard lacks full process lifecycle management, causing three 
 - The RESTREQ bug was confirmed via application log analysis (2026-03-30): two "Process instance loaded" messages on restart, no error, no step execution. The exception from `execute()` is silently swallowed by the job class.
 - Deferred-work.md item #6 ("Create New Instance action gap") is directly addressed by this spec.
 - The `EXPORT` field in `ZFI_ALLOC_PROCESS_PARAMS` is set to `abap_false` for normal execution. `FORCE_START` in additional params defaults to `abap_false`.
-- Task 4 references `lo_instance->mark_as_failed()` -- this method may not exist. During implementation, check available public methods. If none exists, add a minimal public method that sets status to FAILED and calls `save_instance()`.
+- Task 4 references `lo_instance->mark_as_failed()` — this method does NOT exist. Task 4 (part a) specifies the full method: set status to FAILED, set `ended_at`, call `save_instance()` (with default commit). The call in the job class is wrapped in TRY/CATCH to handle double-fault gracefully.
 - Threading `iv_no_commit` through instance creation (Task 2) touches the constructor. The full chain: `create_process(iv_no_commit)` -> `create(iv_no_commit)` -> `NEW zcl_fi_process_instance(iv_no_commit)` -> `initialize_instance(iv_no_commit)` -> `save_instance(iv_no_commit)`.
 - The `COMMIT WORK AND WAIT` constraint in RAP savers is absolute -- any COMMIT in the save phase causes a short dump. This is why Task 1-2 is a prerequisite for Task 7.
+- CANCELLED status: explicitly enabled for CreateAndExecute (decision made during pre-implementation review). The duplicate check already allows creation when only CANCELLED instances exist, so this is consistent.
+
+## Spec Change Log
+
+### Change 1 — Pre-implementation adversarial + edge case review (2026-03-30)
+
+**Triggering findings:**
+- M1 (bad_spec): Task 2 did not mention DEFINITION section changes or constructor load-path
+- M2 (bad_spec): Task 4 lacked explicit `mark_as_failed()` method spec and double-fault TRY/CATCH
+- M6 (intent_gap → resolved): CANCELLED status not addressed in feature control
+- M9 (patch): Missing deployment ordering note
+- M14 (patch): Missing code comment note on Task 3
+- M15 (patch): Side effects blocks not enumerated in Task 5
+
+**What was amended:**
+- Task 2: Expanded to list all 4 DEFINITION+IMPLEMENTATION changes (create, constructor, initialize_instance, load path)
+- Task 3: Added note about code comment for RESTREQ acceptance
+- Task 4: Split into part a (new `mark_as_failed()` method with full spec) and part b (CATCH fix with TRY/CATCH around mark_as_failed)
+- Task 5: Enumerated all 4 existing side effects blocks by line number
+- Task 8: Added CANCELLED to CreateAndExecute enablement alongside SUPERSEDED
+- AC 2: Updated to include CANCELLED
+- AC 4: Added COMPLETED to disabled list (was implicit, now explicit)
+- Dependencies: Added deployment ordering note (planner transport before ovysledovka activation)
+
+**Known-bad state avoided:**
+- Without M1 fix: developer would modify implementation but forget DEFINITION sections → compilation error
+- Without M2 fix: `mark_as_failed()` call in pseudocode won't compile; double-fault could lose error logging
+- Without M6 fix: CANCELLED rows locked out of re-execution despite duplicate check allowing it

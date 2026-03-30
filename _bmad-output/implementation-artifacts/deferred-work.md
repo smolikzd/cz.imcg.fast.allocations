@@ -61,3 +61,13 @@ Items surfaced during review that are not caused by the current story but worth 
 - **Description:** After superseding a COMPLETED process instance, the SUPERSEDED status is terminal — no further actions are available on that row. The EST-110 design intent is that supersede unlocks the duplicate check so a new `create_process()` can be called. However, the dashboard currently has no "Create New Instance" action — the user must create the instance through other means. This breaks the self-contained operations cockpit workflow.
 - **Possible approach:** Add a 5th action `CreateProcess` to the dashboard BDEF that calls `zcl_fi_process_manager=>create_process()` with parameters derived from the current row's CompanyCode, FiscalYear, FiscalPeriod, AllocationId. Feature control: enabled only when no active instance exists (i.e., current row shows SUPERSEDED or CANCELLED, or no ProcessInstanceId).
 - **Priority:** Medium — workflow gap; users can work around by creating instances via other tools.
+
+---
+
+## 7. Parallel instance limit check bypassed in APJ job execution path
+
+- **Source:** EST-136 pre-implementation review (edge case hunter, EC14)
+- **Date:** 2026-03-30
+- **Description:** The `check_parallel_limit()` method in `zcl_fi_process_manager` only runs inside `execute_process()` (manager method). However, the APJ job class calls `lo_instance->execute()` directly, bypassing the manager's parallel limit check. With the new `CreateAndExecute` dashboard action making it easier to rapidly create instances, users could exceed the configured `max_parallel_insts` limit. The APJ jobs would all fire and execute simultaneously without throttling.
+- **Possible approach:** Move the parallel limit check into `zcl_fi_process_instance->execute()` itself, or add it to `request_execute_process()` at scheduling time, or add it to the APJ job's execute method before calling `lo_instance->execute()`.
+- **Priority:** Low — only relevant for high-volume concurrent execution scenarios. The parallel limit was designed as a soft guardrail, not a hard constraint.
