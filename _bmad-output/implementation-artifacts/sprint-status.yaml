@@ -308,4 +308,4 @@ development_status:
   est-144-bal-logger-flush-interval: done                # LOW: Added mv_flush_interval/counter to zcl_fi_process_logger; factory methods accept iv_flush_interval (default 1). Commit: planner 7d29aae, 2026-03-31. Linear: EST-144
   est-145-server-side-status-validation: done            # LOW: Added status guards to cancelprocess/supersedeprocess/restartprocess handlers. Commit: ovysledovka 125dd91, 2026-03-31. Linear: EST-145
   est-146-extract-status-constants: done                 # LOW: Replaced 8 raw status literals in get_instance_features with zcl_fi_process_instance=>gc_status-*. Commit: ovysledovka 125dd91, 2026-03-31. Linear: EST-146
-  est-147-verify-est-132-deferred-items: backlog         # LOW: Verify F10/F11/F17/F21 runtime items from EST-132. Linear: EST-147
+  est-147-verify-est-132-deferred-items: done            # LOW: Code-verified 2026-03-31. F10: DESCR=CHAR40 sufficient (max text "Execution Requested"=19 chars). F11: to_upper() handles casing, no runtime risk. F17/F21: annotations present in CDS; low-risk UI checks deferred to service binding activation (EST-132 Tasks 7-8). No code changes needed. Linear: EST-147
