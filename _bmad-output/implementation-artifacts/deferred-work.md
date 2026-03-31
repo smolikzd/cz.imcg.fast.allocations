@@ -6,6 +6,7 @@ Items surfaced during review that are not caused by the current story but worth 
 
 ## 1. Performance throttling for high-volume BAL logging
 
+- **Linear:** https://linear.app/smolikzd/issue/EST-144/improvement-bal-logger-configurable-flush-interval-for-high-volume
 - **Source:** EST-120 review (edge case hunter)
 - **Date:** 2026-03-20
 - **Description:** With the every-message `flush_to_db()` pattern, each `message()` call triggers a DB round-trip via `save_with_2nd_connection()`. For steps that log hundreds or thousands of messages, this could degrade performance. The current spec explicitly defers this: "start with every-message flush and optimize only if performance is observed to be a problem."
@@ -16,6 +17,7 @@ Items surfaced during review that are not caused by the current story but worth 
 
 ## 2. Server-side status validation in handler action methods
 
+- **Linear:** https://linear.app/smolikzd/issue/EST-145/improvement-server-side-status-validation-in-dashboard-action-handlers
 - **Source:** EST-134 review (Blind Hunter finding BH-2)
 - **Date:** 2026-03-29
 - **Description:** The handler action methods currently only check whether `ProcessInstanceId IS INITIAL` but do not validate that `ProcessStatus` matches the expected status for the action (e.g., Execute should only run when status is `NEW`). Feature control disables buttons in the UI, but a direct OData call could bypass feature control and reach the handler. The backend manager methods have their own status guards and will reject invalid transitions with `zcx_fi_process_error`, so this is defense-in-depth rather than a security gap.
@@ -26,6 +28,7 @@ Items surfaced during review that are not caused by the current story but worth 
 
 ## 3. Extract status string literals to constants
 
+- **Linear:** https://linear.app/smolikzd/issue/EST-146/improvement-extract-process-status-string-literals-to-constants-in
 - **Source:** EST-134 review (Blind Hunter finding BH-5)
 - **Date:** 2026-03-29
 - **Description:** Status values like `'NEW'`, `'RUNNING'`, `'FAILED'`, `'COMPLETED'`, etc. are hard-coded string literals in `get_instance_features` and potentially in handler validation. If the status domain values change, multiple locations would need updating.
@@ -47,6 +50,7 @@ Items surfaced during review that are not caused by the current story but worth 
 
 ## 5. Consider catching CX_ROOT in saver for unexpected exceptions
 
+- **Linear:** https://linear.app/smolikzd/issue/EST-140/fix-cx-root-not-caught-in-dashboard-action-saver-short-dump-risk
 - **Source:** EST-134 review (Edge Case Hunter finding EC-2)
 - **Date:** 2026-03-29
 - **Description:** The saver currently only catches `zcx_fi_process_error`. If a manager method raises an unexpected exception (e.g., `cx_sy_zerodivide`, a database exception, or an APJ scheduling error that doesn't inherit from `zcx_fi_process_error`), the exception would propagate uncaught to the RAP framework, potentially causing a short dump.
@@ -57,6 +61,7 @@ Items surfaced during review that are not caused by the current story but worth 
 
 ## 6. Dashboard action to create a new process instance after supersede
 
+- **Linear:** https://linear.app/smolikzd/issue/EST-141/dashboard-add-createprocess-action-for-rows-after-supersedecancel
 - **Source:** EST-134 implementation (state machine analysis)
 - **Date:** 2026-03-30
 - **Description:** After superseding a COMPLETED process instance, the SUPERSEDED status is terminal — no further actions are available on that row. The EST-110 design intent is that supersede unlocks the duplicate check so a new `create_process()` can be called. However, the dashboard currently has no "Create New Instance" action — the user must create the instance through other means. This breaks the self-contained operations cockpit workflow.
@@ -67,6 +72,7 @@ Items surfaced during review that are not caused by the current story but worth 
 
 ## 7. Parallel instance limit check bypassed in APJ job execution path
 
+- **Linear:** https://linear.app/smolikzd/issue/EST-143/fix-parallel-instance-limit-bypassed-in-apj-job-execution-path
 - **Source:** EST-136 pre-implementation review (edge case hunter, EC14)
 - **Date:** 2026-03-30
 - **Description:** The `check_parallel_limit()` method in `zcl_fi_process_manager` only runs inside `execute_process()` (manager method). However, the APJ job class calls `lo_instance->execute()` directly, bypassing the manager's parallel limit check. With the new `CreateAndExecute` dashboard action making it easier to rapidly create instances, users could exceed the configured `max_parallel_insts` limit. The APJ jobs would all fire and execute simultaneously without throttling.

@@ -285,3 +285,27 @@ development_status:
 
   epic-est-134: done
   est-134-alloc-dashboard-process-actions: done  # 10 commits (ovysledovka) 57eae8a→fb45e21, 1 commit (planner) 037c8a5, 2026-03-29/30. BDEF (unmanaged strict(2), 4 actions with features:instance, side effects), handler+saver behavior pool, DDIC buffer structure/table type, @UI #FOR_ACTION annotations. 12 activation findings resolved (root keyword, authorization master(global), iv_no_commit for COMMIT WORK prohibition in RAP saver, SELECT replacing READ ENTITIES for custom entities, etc.). 5 deferred work items logged.
+  fix-message-030-wrong-in-dashboard-handler: done  # Message 030 was wrong semantic (logging msg, not error). Added message 036 to ZFI_PROCESS class. Updated CancelProcess/SupersedeProcess/RestartProcess handlers to use 036 with v1-v4 key vars. Commits: planner 4a35ac4, ovysledovka 9db92a1, 2026-03-31.
+
+  # ── EST-136: Dashboard Lifecycle Actions & RESTREQ Bug Fix ───────────────
+  # Goal: CreateAndExecute action for empty/superseded rows, fix RESTREQ restart bug, APJ error handling
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+  # Linear: EST-136
+  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-136-dashboard-process-lifecycle-actions-restreq-fix.md
+
+  epic-est-136: done  # All 9 implementation tasks complete (ovysledovka), 2026-03-30. 8 ACs pending verification (EST-139).
+  est-136-dashboard-lifecycle-actions-restreq-fix: done  # Implementation complete 2026-03-30. Commit hash: TODO(EST-139) — verify and fill in from ovysledovka repo.
+
+  # ── Deferred work backlog (tracked in Linear) ────────────────────────────
+  # Items below were created 2026-03-31 from deferred-work.md and WIP audit.
+  # Linear issues: EST-139 through EST-147
+
+  est-139-verify-est-136-sprint-status-and-acs: backlog  # HIGH: Record EST-136 in sprint-status + verify 8 ACs. Linear: EST-139
+  est-140-cx-root-not-caught-in-saver: backlog           # MEDIUM: Short-dump risk, add CATCH cx_root to dashboard saver. Linear: EST-140
+  est-141-dashboard-createprocess-after-supersede: backlog  # MEDIUM: Verify EST-136 covers gap; add CreateProcess if needed. Linear: EST-141
+  est-142-cds-base2-missing-sales-fields: backlog        # MEDIUM: ZFI_I_ALLOC_BASE2 missing ZZSalesGroup/ZZSalesOffice, blocks 4-7 integration tests. Linear: EST-142
+  est-143-parallel-limit-bypassed-apj: backlog           # MEDIUM: check_parallel_limit() bypassed in APJ path. Linear: EST-143
+  est-144-bal-logger-flush-interval: backlog             # LOW: Configurable flush interval for high-volume logging. Linear: EST-144
+  est-145-server-side-status-validation: backlog         # LOW: Add status validation to dashboard action handlers. Linear: EST-145
+  est-146-extract-status-constants: backlog              # LOW: Replace hard-coded status literals with constants. Linear: EST-146
+  est-147-verify-est-132-deferred-items: backlog         # LOW: Verify F10/F11/F17/F21 runtime items from EST-132. Linear: EST-147
