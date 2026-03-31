@@ -34,13 +34,14 @@ Items surfaced during review that are not caused by the current story but worth 
 
 ---
 
-## 4. Verify message ZFI_PROCESS/030 exists
+## 4. ~~Verify message ZFI_PROCESS/030 exists~~ RESOLVED
 
 - **Source:** EST-134 review (Edge Case Hunter finding EC-1)
 - **Date:** 2026-03-29
-- **Description:** The handler uses `new_message( id = 'ZFI_PROCESS' number = '030' )` for the "no process instance" error. If message number 030 does not exist in message class `ZFI_PROCESS`, the user will see a blank or generic message. This needs verification during activation in ADT.
-- **Possible approach:** Check message class `ZFI_PROCESS` in SE91/ADT. If 030 does not exist, create it with text like "No process instance exists for this allocation". If a suitable existing message exists, use that number instead.
-- **Priority:** High — must be verified before go-live to ensure proper error UX.
+- **Resolved:** 2026-03-31
+- **Description:** The handler used `new_message( id = 'ZFI_PROCESS' number = '030' )` for the "no process instance" error. Investigation revealed message 030 exists but has the wrong text (`"Execution requested for instance &1 (job &2/&3)"`) — a logging message, not an error message. Additionally, no message variables were being passed, so placeholders rendered as blanks.
+- **Resolution:** Created new message **036** (`"No process instance found for allocation &1/&2/&3/&4"`) in the ZFI_PROCESS message class (planner repo). Updated all 3 handler action methods (CancelProcess, SupersedeProcess, RestartProcess) in `zbp_fi_alloc_dashboard_ce` (ovysledovka repo) to use message 036 with `v1=CompanyCode`, `v2=FiscalYear`, `v3=FiscalPeriod`, `v4=AllocationId`.
+- **Priority:** ~~High~~ Resolved.
 
 ---
 
