@@ -301,10 +301,10 @@ development_status:
   # Linear issues: EST-139 through EST-147
 
   est-139-verify-est-136-sprint-status-and-acs: done  # Completed 2026-03-31. Commit hash filled in (c5f94f9), ACs 5/6/8 code-verified, item #6 resolved. ACs 1-4/7 left for SAP UI testing. Linear: EST-139
-  est-140-cx-root-not-caught-in-saver: backlog           # MEDIUM: Short-dump risk, add CATCH cx_root to dashboard saver. Linear: EST-140
+  est-140-cx-root-not-caught-in-saver: done              # MEDIUM: Added CATCH cx_root to lsc_dashboard save(). Commit: ovysledovka e18dcf3, 2026-03-31. Linear: EST-140
   est-141-dashboard-createprocess-after-supersede: backlog  # MEDIUM: Verify EST-136 covers gap; add CreateProcess if needed. Linear: EST-141
-  est-142-cds-base2-missing-sales-fields: backlog        # MEDIUM: ZFI_I_ALLOC_BASE2 missing ZZSalesGroup/ZZSalesOffice, blocks 4-7 integration tests. Linear: EST-142
-  est-143-parallel-limit-bypassed-apj: backlog           # MEDIUM: check_parallel_limit() bypassed in APJ path. Linear: EST-143
+  est-142-cds-base2-missing-sales-fields: done           # MEDIUM: Fields already present — added in ovysledovka commit 7a65871 (2026-03-13) as part of broader SalesGroup/SalesOffice adaptation. Issue filed against stale info. Closed 2026-03-31. Linear: EST-142
+  est-143-parallel-limit-bypassed-apj: done              # MEDIUM: Promoted check_parallel_limit() to public in manager; added call in APJ job before execute(). Commit: planner 09580d8, 2026-03-31. Linear: EST-143
   est-144-bal-logger-flush-interval: backlog             # LOW: Configurable flush interval for high-volume logging. Linear: EST-144
   est-145-server-side-status-validation: backlog         # LOW: Add status validation to dashboard action handlers. Linear: EST-145
   est-146-extract-status-constants: backlog              # LOW: Replace hard-coded status literals with constants. Linear: EST-146
