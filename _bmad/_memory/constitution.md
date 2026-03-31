@@ -219,4 +219,4 @@ Runtime development guidance is maintained in:
 
 These guidance files MUST stay aligned with constitution principles.
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): Requires confirmation from project lead | **Last Amended**: 2025-11-10
+**Version**: 1.0.0 | **Ratified**: 2025-11-10 | **Last Amended**: 2025-11-10

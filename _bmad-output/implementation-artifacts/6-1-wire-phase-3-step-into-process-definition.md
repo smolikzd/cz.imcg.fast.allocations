@@ -3,7 +3,7 @@ story: "6.1"
 title: "Wire Phase 3 step into process definition"
 epic: "6 — Wire Phase 3 into Pipeline"
 sprint: 3
-status: ready-for-dev
+status: done
 priority: moderate
 estimate: 30min
 source_findings:

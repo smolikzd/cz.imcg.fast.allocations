@@ -3,7 +3,7 @@ story: "7.1"
 title: "Remove ms_context dead field from all step classes"
 epic: "7 — Code Quality and Housekeeping"
 sprint: 3
-status: ready-for-dev
+status: done
 priority: low
 estimate: 30min
 source_findings:

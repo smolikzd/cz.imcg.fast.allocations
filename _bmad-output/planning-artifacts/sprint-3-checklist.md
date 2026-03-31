@@ -9,13 +9,13 @@
 **Files to modify**: 5 step classes  
 **Pattern**: Remove `DATA ms_context TYPE ...` and `ms_context = is_context` lines
 
-- [ ] INIT: Remove ms_context field and assignment
-- [ ] PHASE1: Remove ms_context field and assignment
-- [ ] PHASE2: Remove ms_context field and assignment
-- [ ] PHASE3: Remove ms_context field and assignment
-- [ ] CORR_BCHE: Remove ms_context field and assignment
-- [ ] Grep check: Verify no reads of ms_context remain
-- [ ] Commit with message: "Story 7.1: Remove dead ms_context field from all step classes"
+- [x] INIT: Remove ms_context field and assignment
+- [x] PHASE1: Remove ms_context field and assignment
+- [x] PHASE2: Remove ms_context field and assignment
+- [x] PHASE3: Remove ms_context field and assignment
+- [x] CORR_BCHE: Remove ms_context field and assignment
+- [x] Grep check: Verify no reads of ms_context remain
+- [x] Commit with message: "Story 7.1: Remove dead ms_context field from all step classes"
 
 ---
 
@@ -47,12 +47,12 @@
 *& Correction step: Update batch header flags based on item existence
 ```
 
-- [ ] Update INIT header
-- [ ] Update PHASE1 header
-- [ ] Update PHASE2 header
-- [ ] Update PHASE3 header
-- [ ] Update CORR_BCHE header
-- [ ] Commit with message: "Story 7.2: Update header comments in all step classes"
+- [x] Update INIT header
+- [x] Update PHASE1 header
+- [x] Update PHASE2 header
+- [x] Update PHASE3 header
+- [x] Update CORR_BCHE header
+- [x] Commit with message: "Story 7.2: Update header comments in all step classes"
 
 ---
 
@@ -61,21 +61,21 @@
 **Files to delete**: 6 files (3 per class: .abap, .xml, .locals_imp.abap if exists)
 
 ### Pre-deletion Checks
-- [ ] Grep for `PHASE2_ORIG` references (should be 0)
-- [ ] Grep for `PHASE3_ORIG` references (should be 0)
+- [x] Grep for `PHASE2_ORIG` references (should be 0)
+- [x] Grep for `PHASE3_ORIG` references (should be 0)
 
 ### SAP System Deletion
-- [ ] Delete ZCL_FI_ALLOC_STEP_PHASE2_ORIG from SE24/SE80
-- [ ] Delete ZCL_FI_ALLOC_STEP_PHASE3_ORIG from SE24/SE80
+- [x] Delete ZCL_FI_ALLOC_STEP_PHASE2_ORIG from SE24/SE80
+- [x] Delete ZCL_FI_ALLOC_STEP_PHASE3_ORIG from SE24/SE80
 
 ### Repository Cleanup
-- [ ] Delete `zcl_fi_alloc_step_phase2_orig.clas.abap`
-- [ ] Delete `zcl_fi_alloc_step_phase2_orig.clas.xml`
-- [ ] Delete `zcl_fi_alloc_step_phase2_orig.clas.locals_imp.abap` (if exists)
-- [ ] Delete `zcl_fi_alloc_step_phase3_orig.clas.abap`
-- [ ] Delete `zcl_fi_alloc_step_phase3_orig.clas.xml`
-- [ ] Delete `zcl_fi_alloc_step_phase3_orig.clas.locals_imp.abap` (if exists)
-- [ ] Commit with message: "Story 7.3: Delete obsolete *_ORIG snapshot classes"
+- [x] Delete `zcl_fi_alloc_step_phase2_orig.clas.abap`
+- [x] Delete `zcl_fi_alloc_step_phase2_orig.clas.xml`
+- [x] Delete `zcl_fi_alloc_step_phase2_orig.clas.locals_imp.abap` (if exists)
+- [x] Delete `zcl_fi_alloc_step_phase3_orig.clas.abap`
+- [x] Delete `zcl_fi_alloc_step_phase3_orig.clas.xml`
+- [x] Delete `zcl_fi_alloc_step_phase3_orig.clas.locals_imp.abap` (if exists)
+- [x] Commit with message: "Story 7.3: Delete obsolete *_ORIG snapshot classes"
 
 ---
 
@@ -85,12 +85,12 @@
 **Method**: `setup_process_data`
 
 ### Tasks
-- [ ] Locate commented-out step 0005 block in setup_process_data
-- [ ] Uncomment the PHASE3 step block
-- [ ] Verify `substep_mode = 'SERIAL'` (not 'QUEUE')
-- [ ] Check parameter passing to PHASE3
-- [ ] **RUN END-TO-END TEST** - verify PHASE3 executes
-- [ ] Commit with message: "Story 6.1: Wire PHASE3 step into process definition"
+- [x] Locate commented-out step 0005 block in setup_process_data
+- [x] Uncomment the PHASE3 step block
+- [x] Verify `substep_mode = 'SERIAL'` (not 'QUEUE')
+- [x] Check parameter passing to PHASE3
+- [x] **RUN END-TO-END TEST** - verify PHASE3 executes
+- [x] Commit with message: "Story 6.1: Wire PHASE3 step into process definition"
 
 ### Expected Pipeline Order
 ```
@@ -136,40 +136,40 @@ METHOD cleanup_old_instances.
 ENDMETHOD.
 ```
 
-- [ ] Read cleanup_old_instances method
-- [ ] Grep for all callers
-- [ ] Analyze caller commit patterns
-- [ ] Choose Option A or B
-- [ ] Implement chosen approach
-- [ ] Update callers if behavior changes
-- [ ] Commit with message: "Story 7.4: Document cleanup_old_instances commit behavior"
+- [x] Read cleanup_old_instances method
+- [x] Grep for all callers
+- [x] Analyze caller commit patterns
+- [x] Choose Option A or B
+- [x] Implement chosen approach
+- [x] Update callers if behavior changes
+- [x] Commit with message: "Story 7.4: Document cleanup_old_instances commit behavior"
 
 ---
 
 ## Sprint Completion Checklist
 
 ### Code Quality
-- [ ] All 5 stories committed to remote repo
-- [ ] All story artifacts updated with completion notes in local repo
-- [ ] Constitution compliance checks pass
-- [ ] No new warnings introduced
+- [x] All 5 stories committed to remote repo
+- [x] All story artifacts updated with completion notes in local repo
+- [x] Constitution compliance checks pass
+- [x] No new warnings introduced
 
 ### Testing
-- [ ] Full five-step pipeline executes end-to-end
-- [ ] PHASE3 processes allocation items correctly
-- [ ] BAL logs show entries for all five steps
-- [ ] Rollback scenarios tested (PHASE3 failure triggers rollback)
+- [x] Full five-step pipeline executes end-to-end
+- [x] PHASE3 processes allocation items correctly
+- [x] BAL logs show entries for all five steps
+- [x] Rollback scenarios tested (PHASE3 failure triggers rollback)
 
 ### Documentation
-- [ ] Sprint 3 marked complete in epic plan
-- [ ] All story artifacts have commit hashes
-- [ ] Sprint summary added to epic document
-- [ ] Migration epic closed
+- [x] Sprint 3 marked complete in epic plan
+- [x] All story artifacts have commit hashes
+- [x] Sprint summary added to epic document
+- [x] Migration epic closed
 
 ### Final Push
-- [ ] Push remote repo (cz.imcg.fast.ovysledovka)
-- [ ] Push local repo (cz.imcg.fast.planner)
-- [ ] Tag release (optional): `v1.0.0-migration-complete`
+- [x] Push remote repo (cz.imcg.fast.ovysledovka)
+- [x] Push local repo (cz.imcg.fast.planner)
+- [x] Tag release (optional): `v1.0.0-migration-complete`
 
 ---
 

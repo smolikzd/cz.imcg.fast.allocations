@@ -3,7 +3,7 @@ story: "7.4"
 title: "Document cleanup_old_instances commit intent"
 epic: "7 — Code Quality and Housekeeping"
 sprint: 3
-status: ready-for-dev
+status: done
 priority: low
 estimate: 30min
 source_findings:

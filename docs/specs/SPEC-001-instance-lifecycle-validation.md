@@ -290,27 +290,27 @@ METHODS execute
 ### Acceptance Criteria
 
 **Functional Requirements:**
-- [ ] `execute()` method raises `zcx_fi_process_error` when called on RUNNING instance
-- [ ] `execute()` method raises `zcx_fi_process_error` when called on FAILED instance
-- [ ] `execute()` method raises `zcx_fi_process_error` when called on COMPLETED instance
-- [ ] `execute()` method raises `zcx_fi_process_error` when called on CANCELLED instance
-- [ ] `execute()` method succeeds when called on NEW instance
-- [ ] Error messages include instance ID and current status
-- [ ] Error message for FAILED status mentions `restart()` method
-- [ ] `restart()` method continues to work (loads FAILED instance, calls execute with start_from_step)
+- [x] `execute()` method raises `zcx_fi_process_error` when called on RUNNING instance
+- [x] `execute()` method raises `zcx_fi_process_error` when called on FAILED instance
+- [x] `execute()` method raises `zcx_fi_process_error` when called on COMPLETED instance
+- [x] `execute()` method raises `zcx_fi_process_error` when called on CANCELLED instance
+- [x] `execute()` method succeeds when called on NEW instance
+- [x] Error messages include instance ID and current status
+- [x] Error message for FAILED status mentions `restart()` method
+- [x] `restart()` method continues to work (loads FAILED instance, calls execute with start_from_step)
 
 **Code Quality Requirements:**
-- [ ] All lines ≤ 120 characters
-- [ ] CASE statement properly formatted with indentation
-- [ ] ABAP-Doc comment updated with clear description
-- [ ] Exception handling follows constitution Principle V
-- [ ] No local types introduced (DDIC-First compliance)
+- [x] All lines ≤ 120 characters
+- [x] CASE statement properly formatted with indentation
+- [x] ABAP-Doc comment updated with clear description
+- [x] Exception handling follows constitution Principle V
+- [x] No local types introduced (DDIC-First compliance)
 
 **Testing Requirements:**
-- [ ] All 5 negative test scenarios pass (see Test Plan)
-- [ ] Positive test (NEW → execute → RUNNING) passes
-- [ ] Restart test (FAILED → restart → execute with start_from_step) passes
-- [ ] Demo program `ZFI_PROCESS_FRAMEWORK` runs without errors
+- [x] All 5 negative test scenarios pass (see Test Plan)
+- [x] Positive test (NEW → execute → RUNNING) passes
+- [x] Restart test (FAILED → restart → execute with start_from_step) passes
+- [x] Demo program `ZFI_PROCESS_FRAMEWORK` runs without errors
 
 ## Additional Context
 

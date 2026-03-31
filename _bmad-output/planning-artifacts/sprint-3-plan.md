@@ -1,7 +1,7 @@
 ---
 title: "Sprint 3 — Wire Phase 3 + Housekeeping"
 sprint: 3
-status: ready-for-dev
+status: done
 total_stories: 5
 total_effort: 2.25h
 created: 2026-03-09

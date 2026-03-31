@@ -3,7 +3,7 @@ story: "7.3"
 title: "Delete *_ORIG dead classes from system and repository"
 epic: "7 — Code Quality and Housekeeping"
 sprint: 3
-status: ready-for-dev
+status: done
 priority: low
 estimate: 30min
 source_findings:

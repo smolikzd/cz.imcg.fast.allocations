@@ -1,6 +1,6 @@
 # Project Status Consolidation
 
-**Generated**: 2026-03-10  
+**Generated**: 2026-03-31  
 **Project**: IMCG Fast Allocations  
 **Planning Repo**: cz.imcg.fast.allocations
 
@@ -8,164 +8,180 @@
 
 ## Executive Summary
 
-✅ **Project Status**: All planned work complete (Sprint 3 finished March 10, 2026)
+**Project Status**: Continuous flow — Sprints 1-4 complete, backlog tracked via EST-NNN Linear issues
 
-- **Total Stories**: 19 planned, 18 completed, 1 cancelled (95% completion)
-- **Sprint 1**: 6/6 ✅ (Unblock allocation pipeline)
-- **Sprint 2**: 7/8 ✅, 1 cancelled (Structural correctness)
-- **Sprint 3**: 5/5 ✅ (Wire Phase 3 + housekeeping)
+- **Sprints 1-3** (Migration): 18/19 stories complete, 1 cancelled — allocation pipeline running end-to-end with full error handling, BAL logging, PHASE3 active
+- **Sprint 4** (Logger Architecture): 8/8 stories complete — multi-language BAL logging, configurable bgRFC/BAL parameters
+- **Post-Sprint-4 Continuous Flow**: 20+ EST-NNN issues completed (APJ background execution, dashboard, process lifecycle actions)
+- **Active Backlog**: 9 items (EST-139 through EST-147) tracked in Linear, Triage status
 
 ---
 
 ## Repository State
 
 ### Planning Repository: cz.imcg.fast.allocations
-- **Status**: ✅ Initialized (March 10, 2026)
-- **Purpose**: Unified planning and coordination hub
-- **Latest Commit**: Initial commit (pending)
+- **Status**: Active planning hub
+- **Latest Commit**: `0563f4a` — Housekeeping: add Linear URLs to deferred-work.md; add backlog entries to sprint-status.yaml (EST-139–147)
 - **Branch**: master
 
 **Contains**:
 - Constitution v1.0.0 (source of truth)
-- All sprint planning artifacts from Sprints 1-3
-- Sprint status tracking
+- All sprint planning artifacts from Sprints 1-4
+- Sprint status tracking (canonical: sprint-status.yaml)
 - BMAD configuration and workflows
 - Cross-repository documentation
 
 ### Framework Repository: cz.imcg.fast.planner
-- **Status**: ✅ Clean, all commits pushed
-- **Latest Commit**: `fed4a46` - Update sprint-status.yaml: Mark Sprint 1 & 2 as complete
+- **Status**: Active
+- **Latest Commit**: `4a35ac4` — Fix: Added message 036 (No process instance found) to ZFI_PROCESS message class
 - **Branch**: main
 - **Remote**: https://github.com/smolikzd/cz.imcg.fast.planner.git
 
-**Recent Changes** (last 5 commits):
+**Recent Changes** (last 5 notable commits):
 ```
-fed4a46 Update sprint-status.yaml: Mark Sprint 1 & 2 as complete
-10fc592 Update sprint status: Story 6.1 done - Sprint 3 COMPLETE
-47b0c02 Update sprint status: Story 7.4 done (Epic 7 complete), 6.1 in-progress
-29436ab Story 7.4: Document and implement cleanup_old_instances commit behavior
-6db06d2 Update sprint status: Story 7.3 done, 7.4 in-progress
+4a35ac4  Fix: Added message 036 (No process instance found) to ZFI_PROCESS
+037c8a5  EST-134: Add iv_no_commit parameter to manager methods (RAP-safe)
+fe293b3  ABAP Unit: ltcl_health_tests DURATION MEDIUM, class_setup one-time DB setup
+570c204  APJ E2E: increase polling timeout 30s→55s
+be3a156  EST-127: Safety-net BALI log to APJ job classes
 ```
 
 **Component Inventory**:
-- 94 DDIC objects (tables, structures, types, domains)
-- 23 framework classes
+- 94+ DDIC objects (tables, structures, types, domains)
+- 25+ framework classes
 - bgRFC handlers for background processing
-- Process orchestration engine
-- UI monitoring components
+- APJ (Application Jobs) infrastructure: job base class, job catalog
+- Process orchestration engine with APJ lifecycle
+- UI monitoring components and BAL logging
 
 **Key Framework Classes**:
-- `ZCL_FI_PROCESS_MANAGER` - Process orchestration singleton
-- `ZCL_FI_PROCESS_INSTANCE` - Instance lifecycle management
-- `ZCL_FI_PROCESS_DEFINITION` - Process type configuration
-- `ZCL_FI_PROCESS_STEP_BASE` - Step base class
-- `ZCL_FI_BGRFC_*` - Background RFC handlers
+- `ZCL_FI_PROCESS_MANAGER` — Process orchestration singleton
+- `ZCL_FI_PROCESS_INSTANCE` — Instance lifecycle management (incl. APJ statuses)
+- `ZCL_FI_PROCESS_DEFINITION` — Process type configuration
+- `ZCL_FI_PROCESS_STEP_BASE` — Step base class
+- `ZCL_FI_PROCESS_JOB_BASE` — APJ job base class (Mode 3)
+- `ZCL_FI_PROCESS_LOGGER` / `ZIF_FI_PROCESS_LOGGER` — BAL logging interface
+- `ZCL_FI_BGRFC_*` — Background RFC handlers
 
 ### Implementation Repository: cz.imcg.fast.ovysledovka
-- **Status**: ✅ Clean, all commits pushed
-- **Latest Commit**: `d5c9e32` - Story 6.1: Wire PHASE3 step into allocation process pipeline
+- **Status**: Active
+- **Latest Commit**: `9db92a1` — Fix: dashboard handlers use message 036 with correct key variables
 - **Branch**: main
 - **Remote**: https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git
 
-**Recent Changes** (last 5 commits):
+**Recent Changes** (last 5 notable commits):
 ```
-d5c9e32 Story 6.1: Wire PHASE3 step into allocation process pipeline
-22a896e Story 7.3: Delete obsolete *_ORIG snapshot classes
-f92dcfc Story 7.2: Update class header comments to concise format
-6fb4ac3 Story 7.1: Remove dead ms_context field from all allocation step classes
-a430daf Story 5.4: Add BAL log initialization and logging to CORR_BCHE
+9db92a1  Fix: dashboard handlers use message 036 with correct key variables
+fb45e21  EST-134: Final UI refinements and activation fixes
+75af5c1  EST-132: Fix RAP get_paging() protocol, ProcessStatus column reorder
+0eb39da  EST-129: All 12 tasks — Allocation APJ job catalogs and templates
+e52dbac  Fail-hard logger: propagate RAISING to all 5 allocation step classes
 ```
 
 **Component Inventory**:
 - 3 packages: `zfi_alloc_process`, `zfi_ui`, `zfi_common`
 - 5 allocation step classes (implementing `ZIF_FI_PROCESS_STEP`)
-- 1 test program for allocation pipeline
+- 2 APJ job classes: `ZCL_FI_ALLOC_JOB_ALLOC`, `ZCL_FI_ALLOC_JOB_EXPORT`
+- 2 APJ job catalogs + templates (SAJC/SAJT)
+- Fiori Elements allocation dashboard (list report + object page)
+- RAP unmanaged BDEF with 5 actions (Execute, Cancel, Supersede, Restart, CreateAndExecute)
+- Dashboard query providers: `ZCL_FI_ALLOC_DASH_QUERY`, `ZCL_FI_ALLOC_DASH_STEP_QRY`
 
 **Allocation Step Classes**:
-- `ZCL_FI_ALLOC_STEP_INIT` - Process initialization
-- `ZCL_FI_ALLOC_STEP_PHASE1` - Phase 1 allocation logic
-- `ZCL_FI_ALLOC_STEP_PHASE2` - Phase 2 allocation logic
-- `ZCL_FI_ALLOC_STEP_PHASE3` - Phase 3 allocation logic
-- `ZCL_FI_ALLOC_STEP_CORR_BCHE` - Correction batch processing
+- `ZCL_FI_ALLOC_STEP_INIT` — Process initialization
+- `ZCL_FI_ALLOC_STEP_PHASE1` — Phase 1 allocation logic
+- `ZCL_FI_ALLOC_STEP_PHASE2` — Phase 2 allocation logic
+- `ZCL_FI_ALLOC_STEP_PHASE3` — Phase 3 allocation logic
+- `ZCL_FI_ALLOC_STEP_CORR_BCHE` — Correction batch processing
 
 ---
 
 ## Sprint Completion Summary
 
-### Sprint 1: Unblock Allocation Pipeline (6/6 stories ✅)
+### Sprint 1: Unblock Allocation Pipeline (6/6 stories)
 **Completed**: March 8, 2026  
 **Objective**: Enable allocation process to run end-to-end in serial mode
 
-**Stories**:
-1. ✅ Story 1.1: Add serial-mode stubs to all allocation steps
-2. ✅ Story 1.2: Remove WRITE statements from all allocation steps
-3. ✅ Story 1.3: Remove direct COMMIT WORK from all allocation steps
-4. ✅ Story 4.2: Fix INIT step to insert state row on first run
-5. ✅ Story 4.3: Fix lt_items type in CORR_BCHE to ZFI_PROCESS_TT_*
-6. ✅ Story 5.3: Fix lv_dummy variable type from TYPE c to TYPE string
-
+Stories: 1.1, 1.2, 2.2, 4.2, 4.3, 5.3 — all done.  
 **Outcome**: Pipeline successfully runs from INIT through CORR_BCHE without crashes.
 
-### Sprint 2: Structural Correctness (7/8 stories ✅, 1 cancelled)
+### Sprint 2: Structural Correctness (7/8 stories, 1 cancelled)
 **Completed**: March 9, 2026  
 **Objective**: Ensure proper error handling, state management, and constitution compliance
 
-**Stories**:
-1. ✅ Story 2.1: Implement rollback methods in allocation steps
-2. ✅ Story 3.1: Move mo_log initialization from execute to init (PHASE2)
-3. ✅ Story 3.2: Move final state write to on_success/on_error (PHASE2)
-4. ✅ Story 3.3: Fix PHASE2 catch block fall-through
-5. ✅ Story 5.1: Replace MESSAGE TYPE 'E' with RAISE EXCEPTION
-6. ✅ Story 5.2: Implement real validate guards
-7. ✅ Story 5.4: Add BAL log initialization to CORR_BCHE
-8. ❌ Story 4.1: BRAND/HIER1 filter restoration (implemented then reverted - feature not needed)
-
+Stories: 2.1, 3.1, 3.2, 3.3, 5.1, 5.2, 5.4 — done. Story 4.1 cancelled (feature not needed).  
 **Outcome**: Framework principles properly applied, error handling standardized.
 
-### Sprint 3: Wire Phase 3 + Housekeeping (5/5 stories ✅)
+### Sprint 3: Wire Phase 3 + Housekeeping (5/5 stories)
 **Completed**: March 10, 2026  
 **Objective**: Activate PHASE3 step and clean up technical debt
 
-**Stories**:
-1. ✅ Story 6.1: Wire PHASE3 step into allocation process pipeline
-2. ✅ Story 7.1: Remove dead `ms_context` field from allocation steps
-3. ✅ Story 7.2: Update class header comments to concise 2-line format
-4. ✅ Story 7.3: Delete obsolete `*_ORIG` snapshot classes
-5. ✅ Story 7.4: Document and implement cleanup_old_instances auto-commit
-
+Stories: 6.1, 7.1, 7.2, 7.3, 7.4 — all done.  
 **Outcome**: PHASE3 activated, codebase cleaned, documentation improved.
+
+### Sprint 4: Process Logger Architecture (8/8 stories)
+**Completed**: March 13, 2026  
+**Objective**: Implement multi-language logging with BAL + T100 messages
+
+Stories: 4-1 through 4-8 — all done. Includes logger infrastructure, message class expansion (50+ ZFI_PROCESS, 21 ZFI_ALLOC messages), BAL integration with bgRFC substeps, migration of all 5 step classes, English translations.  
+**Outcome**: Full BAL/SLG1 observability for all process steps.
+
+### Post-Sprint-4 Continuous Flow
+**Started**: March 14, 2026  
+**Tracking**: EST-NNN Linear issues (ENESTA team)
+
+Key completed items:
+- **EST-99**: bgRFC error propagation unit test
+- **EST-100**: Configurable bgRFC inbound destination per process type
+- **EST-101**: Configurable BAL object/subobject per process type
+- **EST-102**: Parameter hash duplicity check (prevents duplicate instances)
+- **EST-106**: Configurable max parallel instances per process type
+- **EST-110**: SUPERSEDED status + COMPLETED duplicate block
+- **EST-121**: APJ background execution & lifecycle (6 sub-stories)
+- **EST-125**: Fix export step BAL logging
+- **EST-126**: Background processing mode (APJ) in allocation reports
+- **EST-127**: APJ job base class (Mode 3 framework)
+- **EST-129**: Allocation APJ job catalogs and templates
+- **EST-132**: Allocation dashboard (Fiori Elements list report + object page)
+- **EST-134**: Process management actions on dashboard (Execute/Cancel/Supersede/Restart)
+- **EST-136**: Dashboard lifecycle actions + RESTREQ bug fix (CreateAndExecute)
+
+Plus numerous ad-hoc fixes: AMDP raising clauses, ZZ-prefix sync, row-selection bug, legacy logger type mismatch, fail-hard logger hardening, ABAP unit test reliability.
+
+---
+
+## Active Backlog (as of 2026-03-31)
+
+All items tracked in Linear (ENESTA team). See `_bmad-output/implementation-artifacts/deferred-work.md` for details.
+
+| Issue | Priority | Title |
+|-------|----------|-------|
+| EST-139 | High | Record EST-136 completion in sprint-status + verify 8 ACs |
+| EST-140 | Medium | CX_ROOT not caught in dashboard saver — short-dump risk |
+| EST-141 | Medium | Dashboard: Add CreateProcess action after Supersede/Cancel |
+| EST-142 | Medium | CDS view ZFI_I_ALLOC_BASE2 missing ZZSalesGroup/ZZSalesOffice — blocks integration testing |
+| EST-143 | Medium | Parallel instance limit bypassed in APJ job execution path |
+| EST-144 | Low | BAL logger configurable flush interval for high-volume steps |
+| EST-145 | Low | Server-side status validation in dashboard action handlers |
+| EST-146 | Low | Extract process status string literals to constants |
+| EST-147 | Low | Verify EST-132 deferred runtime items F10/F11/F17/F21 |
 
 ---
 
 ## Constitution Compliance Status
 
 **Constitution Version**: 1.0.0  
-**Last Updated**: 2025-11-10
+**Ratified**: 2025-11-10
 
 ### Core Principles Compliance
 
 | Principle | Status | Notes |
 |-----------|--------|-------|
-| I. DDIC-First Architecture | ✅ Compliant | All table types in DDIC, no local TYPE definitions |
-| II. SAP Standards Compliance | ✅ Compliant | Proper naming (ZCL_FI_*, ZIF_FI_*), ABAP-Doc present |
-| III. Consult SAP Documentation | ✅ Compliant | mcp-sap-docs consulted during development |
-| IV. Factory Pattern & Encapsulation | ✅ Compliant | Framework classes use factories, step classes public constructors |
-| V. Error Handling & Observability | ✅ Compliant | ZCX_FI_PROCESS_ERROR used, audit trail implemented |
-
-### Code Quality Metrics
-
-**Line Length Compliance**:
-- ✅ All ABAP files ≤ 120 characters per line
-- ✅ No parser errors from line length issues
-
-**Documentation**:
-- ✅ All public methods have ABAP-Doc
-- ✅ Class headers concise (2-line format)
-- ✅ Constitution principles documented
-
-**Testing**:
-- ✅ Demo program available: `ZFI_ALLOC_PROC_TEST`
-- ✅ End-to-end pipeline tested successfully
+| I. DDIC-First Architecture | Compliant | All table types in DDIC, no local TYPE definitions |
+| II. SAP Standards Compliance | Compliant | Proper naming (ZCL_FI_*, ZIF_FI_*), ABAP-Doc present |
+| III. Consult SAP Documentation | Compliant | mcp-sap-docs consulted during development |
+| IV. Factory Pattern & Encapsulation | Compliant | Framework classes use factories, step classes public constructors |
+| V. Error Handling & Observability | Compliant | ZCX_FI_PROCESS_ERROR used, audit trail implemented, BAL logging active |
 
 ---
 
@@ -175,87 +191,54 @@ a430daf Story 5.4: Add BAL log initialization and logging to CORR_BCHE
 
 ```
 ZCL_FI_PROCESS_MANAGER (Singleton)
-    ├── manages → ZCL_FI_PROCESS_DEFINITION
-    ├── creates → ZCL_FI_PROCESS_INSTANCE
-    └── orchestrates → ZIF_FI_PROCESS_STEP implementations
+    ├── manages  → ZCL_FI_PROCESS_DEFINITION
+    ├── creates  → ZCL_FI_PROCESS_INSTANCE
+    ├── executes → ZIF_FI_PROCESS_STEP implementations
+    └── schedules → APJ via request_execute_process / request_restart_process
 
 Background Processing:
-    ZCL_FI_BGRFC_HANDLER
-    ├── queues steps via bgRFC
-    └── handles → ZCL_FI_BGRFC_EXECUTE_STEP
+    ZCL_FI_BGRFC_HANDLER    — bgRFC queue management
+    ZCL_FI_PROCESS_JOB_BASE — APJ Mode 3 base class
+    ZCL_FI_PROCESS_LOGGER   — BAL write via second DB connection
 
 Database Tables:
-    ZFI_PROC_TYPE (process type customizing)
-    ZFI_PROC_DEF (process definitions - steps sequence)
-    ZFI_PROC_INST (process instances - runtime state)
+    ZFI_PROC_TYPE (process type customizing + BAL obj, bgRFC dest, max parallel, duplic check)
+    ZFI_PROC_DEF  (process definitions — steps sequence + business status columns)
+    ZFI_PROC_INST (process instances — runtime state + fin params + business status)
     ZFI_PROC_STEP (step execution records)
 ```
 
 ### Implementation Layer (cz.imcg.fast.ovysledovka)
 
 ```
-Allocation Pipeline:
-    1. ZCL_FI_ALLOC_STEP_INIT
-       └── Initializes process, creates state records
-    
-    2. ZCL_FI_ALLOC_STEP_PHASE1
-       └── Phase 1 allocation logic
-    
-    3. ZCL_FI_ALLOC_STEP_PHASE2
-       └── Phase 2 allocation logic
-    
-    4. ZCL_FI_ALLOC_STEP_PHASE3
-       └── Phase 3 allocation logic (newly activated)
-    
-    5. ZCL_FI_ALLOC_STEP_CORR_BCHE
-       └── Correction batch processing
+Allocation Pipeline (5 steps):
+    1. ZCL_FI_ALLOC_STEP_INIT       — Initializes process, creates state records
+    2. ZCL_FI_ALLOC_STEP_PHASE1     — Phase 1 allocation logic
+    3. ZCL_FI_ALLOC_STEP_PHASE2     — Phase 2 allocation logic
+    4. ZCL_FI_ALLOC_STEP_CORR_BCHE  — Correction batch processing
+    5. ZCL_FI_ALLOC_STEP_PHASE3     — Phase 3 allocation logic
 
-All steps implement: ZIF_FI_PROCESS_STEP
-    - init()
-    - validate()
-    - execute() / execute_substep()
-    - on_success() / on_error()
-    - rollback()
+APJ Integration:
+    ZCL_FI_ALLOC_JOB_ALLOC   — APJ job for ALLOCATIONS process type
+    ZCL_FI_ALLOC_JOB_EXPORT  — APJ job for ALLOC_EXPORT process type
+
+Fiori Dashboard:
+    ZFI_I_ALLOC_DASHBOARD_CE       — Custom entity (list report)
+    ZFI_I_ALLOC_DASH_STEP_CE       — Custom entity (object page — step details)
+    ZCL_FI_ALLOC_DASH_QUERY        — Query provider (list report)
+    ZCL_FI_ALLOC_DASH_STEP_QRY     — Query provider (object page)
+    zbp_fi_alloc_dashboard_ce      — Behavior pool: 5 actions + feature control + saver
 ```
 
 ---
 
 ## Known Issues & Technical Debt
 
-**None identified** - All sprint stories completed, technical debt cleared in Sprint 3.
+See active backlog above. The highest-risk items are:
 
-**Monitoring Points**:
-1. Performance of PHASE3 in production (newly activated)
-2. bgRFC queue depth monitoring during high load
-3. Database growth of ZFI_PROC_INST and ZFI_PROC_STEP tables
-
----
-
-## Next Steps
-
-### Immediate (Post-Sprint 3)
-
-1. ✅ **Repository Restructuring**
-   - Planning artifacts moved to `cz.imcg.fast.allocations`
-   - Constitution synced to code repositories
-   - Cross-repo documentation created
-
-2. **Production Readiness**
-   - [ ] Performance testing with production data volumes
-   - [ ] Production deployment planning
-   - [ ] Training materials for operations team
-
-3. **Documentation**
-   - [ ] End-user documentation for allocation process
-   - [ ] Operations runbook for monitoring and troubleshooting
-   - [ ] Architecture decision records (ADRs)
-
-### Future Enhancements (Sprint 4+)
-
-- Performance optimization for large datasets
-- Additional allocation phases if needed
-- Enhanced monitoring and alerting
-- Process template library for other FI processes
+1. **EST-140** (Medium) — `CX_ROOT` not caught in dashboard saver; an unexpected exception causes a short dump in production.
+2. **EST-142** (Medium) — `ZFI_I_ALLOC_BASE2` missing `ZZSalesGroup`/`ZZSalesOffice`; blocks Story 4-7 integration testing phases 2-6.
+3. **EST-143** (Medium) — Parallel instance limit check bypassed when APJ jobs call `lo_instance->execute()` directly.
 
 ---
 
@@ -263,7 +246,8 @@ All steps implement: ZIF_FI_PROCESS_STEP
 
 **Project Lead**: Zdenek Smolik (smolik@imcg.cz)  
 **Organization**: IMCG s.r.o.  
-**Development Methodology**: BMAD (Business Methodology for Agile Development)
+**Development Methodology**: BMAD (Business Methodology for Agile Development)  
+**Issue Tracking**: Linear (ENESTA team, EST-NNN convention)
 
 **Repository Ownership**:
 - Planning: smolikzd/cz.imcg.fast.allocations
@@ -276,5 +260,6 @@ All steps implement: ZIF_FI_PROCESS_STEP
 
 - Constitution: `_bmad/_memory/constitution.md`
 - Sprint Status: `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- Deferred Work: `_bmad-output/implementation-artifacts/deferred-work.md`
 - Epic Tracking: `_bmad-output/planning-artifacts/epics-alloc-remediation.md`
 - Repository Registry: `repos/registry.md`
