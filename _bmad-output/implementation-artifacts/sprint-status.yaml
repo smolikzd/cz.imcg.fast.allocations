@@ -305,7 +305,7 @@ development_status:
   est-141-dashboard-createprocess-after-supersede: backlog  # MEDIUM: Verify EST-136 covers gap; add CreateProcess if needed. Linear: EST-141
   est-142-cds-base2-missing-sales-fields: done           # MEDIUM: Fields already present — added in ovysledovka commit 7a65871 (2026-03-13) as part of broader SalesGroup/SalesOffice adaptation. Issue filed against stale info. Closed 2026-03-31. Linear: EST-142
   est-143-parallel-limit-bypassed-apj: done              # MEDIUM: Promoted check_parallel_limit() to public in manager; added call in APJ job before execute(). Commit: planner 09580d8, 2026-03-31. Linear: EST-143
-  est-144-bal-logger-flush-interval: backlog             # LOW: Configurable flush interval for high-volume logging. Linear: EST-144
-  est-145-server-side-status-validation: backlog         # LOW: Add status validation to dashboard action handlers. Linear: EST-145
-  est-146-extract-status-constants: backlog              # LOW: Replace hard-coded status literals with constants. Linear: EST-146
+  est-144-bal-logger-flush-interval: done                # LOW: Added mv_flush_interval/counter to zcl_fi_process_logger; factory methods accept iv_flush_interval (default 1). Commit: planner 7d29aae, 2026-03-31. Linear: EST-144
+  est-145-server-side-status-validation: done            # LOW: Added status guards to cancelprocess/supersedeprocess/restartprocess handlers. Commit: ovysledovka 125dd91, 2026-03-31. Linear: EST-145
+  est-146-extract-status-constants: done                 # LOW: Replaced 8 raw status literals in get_instance_features with zcl_fi_process_instance=>gc_status-*. Commit: ovysledovka 125dd91, 2026-03-31. Linear: EST-146
   est-147-verify-est-132-deferred-items: backlog         # LOW: Verify F10/F11/F17/F21 runtime items from EST-132. Linear: EST-147
