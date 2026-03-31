@@ -79,3 +79,33 @@ Items surfaced during review that are not caused by the current story but worth 
 - **Description:** The `check_parallel_limit()` method in `zcl_fi_process_manager` only runs inside `execute_process()` (manager method). However, the APJ job class calls `lo_instance->execute()` directly, bypassing the manager's parallel limit check. With the new `CreateAndExecute` dashboard action making it easier to rapidly create instances, users could exceed the configured `max_parallel_insts` limit. The APJ jobs would all fire and execute simultaneously without throttling.
 - **Possible approach:** Move the parallel limit check into `zcl_fi_process_instance->execute()` itself, or add it to `request_execute_process()` at scheduling time, or add it to the APJ job's execute method before calling `lo_instance->execute()`.
 - **Priority:** Low — only relevant for high-volume concurrent execution scenarios. The parallel limit was designed as a soft guardrail, not a hard constraint.
+
+---
+
+## 8. TOCTOU race on breakpoint toggle direction
+
+- **Source:** Dashboard step breakpoint toggle review (blind hunter + edge case hunter)
+- **Date:** 2026-03-31
+- **Description:** The `togglebreakpoint` handler reads the current `Breakpoint` value from `ZFI_I_PROCESS_STEP_STATS` and pre-resolves the toggle direction (SETBP or CLEARBP). If a concurrent session toggles the same step between the handler's SELECT and the saver's `set_step_breakpoint_process()` call, both will read the same initial state, both will buffer the same action code, and the net result is two SETBP (or two CLEARBP) calls instead of toggle→toggle. The breakpoint ends up in the wrong final state with no error.
+- **Possible approach:** Move the direction-resolution READ to the saver (read `zfi_proc_step` directly at save time), or add an optimistic lock check (compare expected value before update). This is a structural limitation of the buffer+saver RAP unmanaged pattern.
+- **Priority:** Low — requires two users to click Toggle on the exact same step within milliseconds. Acceptable for an operations cockpit use case.
+
+---
+
+## 9. `ACTION` field in `ZFI_ALLOC_S_ACTION_BUFFER` lacks a DDIC data element
+
+- **Source:** Dashboard step breakpoint toggle review (acceptance auditor)
+- **Date:** 2026-03-31
+- **Description:** The `ACTION` field in `ZFI_ALLOC_S_ACTION_BUFFER` is defined with raw built-in type attributes (`INTTYPE=C`, `INTLEN=20`) and has no `ROLLNAME` — i.e., no DDIC data element. Constitution Principle I requires all fields to be based on data elements. This is a pre-existing violation; the `STEP_NUMBER` field added by the breakpoint story correctly uses `ROLLNAME ZFI_PROCESS_STEP_NUMBER`.
+- **Possible approach:** Create a DDIC data element `ZFI_ALLOC_ACTION_CODE` (CHAR 20, no domain needed for a free-text internal code) and apply it to the `ACTION` field.
+- **Priority:** Low — internal buffer structure; no external exposure. Constitution compliance only.
+
+---
+
+## 10. `abap.int1` criticality fields in custom entity and query provider
+
+- **Source:** Dashboard step breakpoint toggle review (blind hunter + acceptance auditor)
+- **Date:** 2026-03-31
+- **Description:** `BreakpointCriticality` and `StatusCriticality` in `ZFI_I_ALLOC_DASH_STEP_CE` use `abap.int1` directly instead of a DDIC data element. The same pattern applies to the `ty_row.statuscriticality` / `ty_row.breakpointcriticality` fields in `ZCL_FI_ALLOC_DASH_STEP_QRY`. Constitution Principle I requires DDIC-based types. The pattern is consistent across the file (pre-existing), and the spec itself prescribed `abap.int1`, but it remains non-compliant.
+- **Possible approach:** Create a DDIC data element `ZFI_ALLOC_UI_CRITICALITY` (type INT1) and apply it to all criticality fields. Update the local type in the query class to use it.
+- **Priority:** Low — cosmetic/compliance; criticality rendering is not affected at runtime.
