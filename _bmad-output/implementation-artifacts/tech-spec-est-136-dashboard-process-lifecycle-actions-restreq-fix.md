@@ -299,6 +299,8 @@ The allocation dashboard lacks full process lifecycle management, causing three 
 
 ### Acceptance Criteria
 
+> **Verification status (2026-03-31):** ACs 5, 6, 8 verified from code (ADT). ACs 1, 2, 3, 4, 7 require live SAP/Fiori UI testing — pending transport to dev system.
+
 - [ ] AC 1: Given an empty dashboard row (no process instance), when the user clicks CreateAndExecute, then a new process instance is created with process_type ALLOCATIONS and init params from the row keys, and execution is requested via APJ (instance status transitions to EXECREQ).
 
 - [ ] AC 2: Given a dashboard row with status SUPERSEDED or CANCELLED, when the user clicks CreateAndExecute, then a new process instance is created with the same allocation params, and execution is requested via APJ (new instance with EXECREQ; old SUPERSEDED/CANCELLED instance unchanged).
@@ -307,13 +309,13 @@ The allocation dashboard lacks full process lifecycle management, causing three 
 
 - [ ] AC 4: Given a dashboard row with status RUNNING, FAILED, EXECREQ, RESTREQ, or COMPLETED, when the user views the row, then CreateAndExecute is disabled.
 
-- [ ] AC 5: Given a FAILED instance where the user clicks Restart, when the APJ job fires and calls `restart()` -> `execute(iv_start_from_step)`, then the execute method accepts RESTREQ status and the instance resumes from the failed step (RESTREQ -> RUNNING).
+- [x] AC 5: Given a FAILED instance where the user clicks Restart, when the APJ job fires and calls `restart()` -> `execute(iv_start_from_step)`, then the execute method accepts RESTREQ status and the instance resumes from the failed step (RESTREQ -> RUNNING). *(Code-verified 2026-03-31: `execute()` guard in `zcl_fi_process_instance` line 692 accepts `gc_status-restart_requested` when `iv_start_from_step` is provided.)*
 
-- [ ] AC 6: Given any APJ job where `execute()` or `restart()` raises an exception before step execution begins, when the exception is caught in the job class, then the error is logged to the application log AND the instance status is set to FAILED (not left stuck in EXECREQ/RESTREQ).
+- [x] AC 6: Given any APJ job where `execute()` or `restart()` raises an exception before step execution begins, when the exception is caught in the job class, then the error is logged to the application log AND the instance status is set to FAILED (not left stuck in EXECREQ/RESTREQ). *(Code-verified 2026-03-31: `zcl_fi_process_job` CATCH block line 172+ logs via logger then calls `mark_as_failed()` in nested TRY/CATCH.)*
 
-- [ ] AC 7: Given an empty row where a duplicate active instance exists (same params, status RUNNING/FAILED/COMPLETED/EXECREQ/RESTREQ), when the user clicks CreateAndExecute, then the duplicate check raises an error and the Fiori UI displays the error message.
+- [ ] AC 7: Given an empty row where a duplicate active instance exists (same params, status RUNNING/FAILED/COMPLETED/EXECREQ/RESTREQ), when the user clicks CreateAndExecute, then the duplicate check raises an error and the Fiori UI displays the error message. *(Pending SAP/Fiori UI verification.)*
 
-- [ ] AC 8: Given existing callers of `create_process()` that do not pass `iv_no_commit`, when they call `create_process()`, then behavior is unchanged (default `iv_no_commit = abap_false` preserves COMMIT WORK AND WAIT).
+- [x] AC 8: Given existing callers of `create_process()` that do not pass `iv_no_commit`, when they call `create_process()`, then behavior is unchanged (default `iv_no_commit = abap_false` preserves COMMIT WORK AND WAIT). *(Code-verified 2026-03-31: `zcl_fi_process_manager->create_process()` line 35 has `iv_no_commit TYPE abap_bool DEFAULT abap_false`.)*
 
 ## Additional Context
 

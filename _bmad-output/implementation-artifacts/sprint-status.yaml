@@ -294,13 +294,13 @@ development_status:
   # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-136-dashboard-process-lifecycle-actions-restreq-fix.md
 
   epic-est-136: done  # All 9 implementation tasks complete (ovysledovka), 2026-03-30. 8 ACs pending verification (EST-139).
-  est-136-dashboard-lifecycle-actions-restreq-fix: done  # Implementation complete 2026-03-30. Commit hash: TODO(EST-139) — verify and fill in from ovysledovka repo.
+  est-136-dashboard-lifecycle-actions-restreq-fix: done  # Implementation complete 2026-03-30. Commits: ovysledovka c5f94f9 (main), planner 3590d4b. ACs 5/6/8 code-verified 2026-03-31. ACs 1/2/3/4/7 pending SAP/Fiori UI verification.
 
   # ── Deferred work backlog (tracked in Linear) ────────────────────────────
   # Items below were created 2026-03-31 from deferred-work.md and WIP audit.
   # Linear issues: EST-139 through EST-147
 
-  est-139-verify-est-136-sprint-status-and-acs: backlog  # HIGH: Record EST-136 in sprint-status + verify 8 ACs. Linear: EST-139
+  est-139-verify-est-136-sprint-status-and-acs: done  # Completed 2026-03-31. Commit hash filled in (c5f94f9), ACs 5/6/8 code-verified, item #6 resolved. ACs 1-4/7 left for SAP UI testing. Linear: EST-139
   est-140-cx-root-not-caught-in-saver: backlog           # MEDIUM: Short-dump risk, add CATCH cx_root to dashboard saver. Linear: EST-140
   est-141-dashboard-createprocess-after-supersede: backlog  # MEDIUM: Verify EST-136 covers gap; add CreateProcess if needed. Linear: EST-141
   est-142-cds-base2-missing-sales-fields: backlog        # MEDIUM: ZFI_I_ALLOC_BASE2 missing ZZSalesGroup/ZZSalesOffice, blocks 4-7 integration tests. Linear: EST-142

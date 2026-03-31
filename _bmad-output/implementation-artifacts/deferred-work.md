@@ -59,14 +59,15 @@ Items surfaced during review that are not caused by the current story but worth 
 
 ---
 
-## 6. Dashboard action to create a new process instance after supersede
+## 6. ~~Dashboard action to create a new process instance after supersede~~ RESOLVED
 
 - **Linear:** https://linear.app/smolikzd/issue/EST-141/dashboard-add-createprocess-action-for-rows-after-supersedecancel
 - **Source:** EST-134 implementation (state machine analysis)
 - **Date:** 2026-03-30
+- **Resolved:** 2026-03-31
 - **Description:** After superseding a COMPLETED process instance, the SUPERSEDED status is terminal — no further actions are available on that row. The EST-110 design intent is that supersede unlocks the duplicate check so a new `create_process()` can be called. However, the dashboard currently has no "Create New Instance" action — the user must create the instance through other means. This breaks the self-contained operations cockpit workflow.
-- **Possible approach:** Add a 5th action `CreateProcess` to the dashboard BDEF that calls `zcl_fi_process_manager=>create_process()` with parameters derived from the current row's CompanyCode, FiscalYear, FiscalPeriod, AllocationId. Feature control: enabled only when no active instance exists (i.e., current row shows SUPERSEDED or CANCELLED, or no ProcessInstanceId).
-- **Priority:** Medium — workflow gap; users can work around by creating instances via other tools.
+- **Resolution:** EST-136 added `CreateAndExecute` action covering both empty rows (no instance) AND rows with SUPERSEDED/CANCELLED status. This fully addresses the gap — users can create and immediately execute from the dashboard in all cases where no active instance exists. A standalone `CreateProcess` (create without execute) was considered but deemed unnecessary given the typical workflow. EST-141 closed as resolved by EST-136.
+- **Priority:** ~~Medium~~ Resolved.
 
 ---
 
