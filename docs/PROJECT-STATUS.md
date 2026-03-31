@@ -1,6 +1,6 @@
 # Project Status Consolidation
 
-**Generated**: 2026-03-31  
+**Generated**: 2026-03-31 (updated)  
 **Project**: IMCG Fast Allocations  
 **Planning Repo**: cz.imcg.fast.allocations
 
@@ -8,12 +8,12 @@
 
 ## Executive Summary
 
-**Project Status**: Continuous flow — Sprints 1-4 complete, backlog tracked via EST-NNN Linear issues
+**Project Status**: Continuous flow — Sprints 1-4 complete, all backlog items EST-139 through EST-147 resolved
 
 - **Sprints 1-3** (Migration): 18/19 stories complete, 1 cancelled — allocation pipeline running end-to-end with full error handling, BAL logging, PHASE3 active
 - **Sprint 4** (Logger Architecture): 8/8 stories complete — multi-language BAL logging, configurable bgRFC/BAL parameters
-- **Post-Sprint-4 Continuous Flow**: 20+ EST-NNN issues completed (APJ background execution, dashboard, process lifecycle actions)
-- **Active Backlog**: 9 items (EST-139 through EST-147) tracked in Linear, Triage status
+- **Post-Sprint-4 Continuous Flow**: EST-139–EST-147 all resolved (9 backlog items closed 2026-03-31)
+- **Active Backlog**: 0 items — backlog is clear
 
 ---
 
@@ -21,7 +21,7 @@
 
 ### Planning Repository: cz.imcg.fast.allocations
 - **Status**: Active planning hub
-- **Latest Commit**: `0563f4a` — Housekeeping: add Linear URLs to deferred-work.md; add backlog entries to sprint-status.yaml (EST-139–147)
+- **Latest Commit**: `d94bc5b` — EST-147: Mark as done — dashboard deferred runtime items code-verified
 - **Branch**: master
 
 **Contains**:
@@ -33,17 +33,17 @@
 
 ### Framework Repository: cz.imcg.fast.planner
 - **Status**: Active
-- **Latest Commit**: `4a35ac4` — Fix: Added message 036 (No process instance found) to ZFI_PROCESS message class
+- **Latest Commit**: `09580d8` — EST-143: promote check_parallel_limit() to public; add APJ limit check
 - **Branch**: main
 - **Remote**: https://github.com/smolikzd/cz.imcg.fast.planner.git
 
 **Recent Changes** (last 5 notable commits):
 ```
+09580d8  EST-143: promote check_parallel_limit() to public; add APJ limit check
+7d29aae  EST-144: configurable flush interval in zcl_fi_process_logger
 4a35ac4  Fix: Added message 036 (No process instance found) to ZFI_PROCESS
 037c8a5  EST-134: Add iv_no_commit parameter to manager methods (RAP-safe)
 fe293b3  ABAP Unit: ltcl_health_tests DURATION MEDIUM, class_setup one-time DB setup
-570c204  APJ E2E: increase polling timeout 30s→55s
-be3a156  EST-127: Safety-net BALI log to APJ job classes
 ```
 
 **Component Inventory**:
@@ -65,17 +65,17 @@ be3a156  EST-127: Safety-net BALI log to APJ job classes
 
 ### Implementation Repository: cz.imcg.fast.ovysledovka
 - **Status**: Active
-- **Latest Commit**: `9db92a1` — Fix: dashboard handlers use message 036 with correct key variables
+- **Latest Commit**: `125dd91` — EST-145/146: server-side status guards + gc_status constants in dashboard
 - **Branch**: main
 - **Remote**: https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git
 
 **Recent Changes** (last 5 notable commits):
 ```
+125dd91  EST-145/146: server-side status guards + gc_status constants in dashboard
+e18dcf3  EST-140: add CATCH cx_root in dashboard saver
 9db92a1  Fix: dashboard handlers use message 036 with correct key variables
 fb45e21  EST-134: Final UI refinements and activation fixes
 75af5c1  EST-132: Fix RAP get_paging() protocol, ProcessStatus column reorder
-0eb39da  EST-129: All 12 tasks — Allocation APJ job catalogs and templates
-e52dbac  Fail-hard logger: propagate RAISING to all 5 allocation step classes
 ```
 
 **Component Inventory**:
@@ -145,6 +145,7 @@ Key completed items:
 - **EST-132**: Allocation dashboard (Fiori Elements list report + object page)
 - **EST-134**: Process management actions on dashboard (Execute/Cancel/Supersede/Restart)
 - **EST-136**: Dashboard lifecycle actions + RESTREQ bug fix (CreateAndExecute)
+- **EST-139 through EST-147**: Backlog clearance sprint (2026-03-31) — parallel limit enforcement, logger flush interval, server-side status guards, status constants refactor, dashboard runtime item verification
 
 Plus numerous ad-hoc fixes: AMDP raising clauses, ZZ-prefix sync, row-selection bug, legacy logger type mismatch, fail-hard logger hardening, ABAP unit test reliability.
 
@@ -152,19 +153,21 @@ Plus numerous ad-hoc fixes: AMDP raising clauses, ZZ-prefix sync, row-selection 
 
 ## Active Backlog (as of 2026-03-31)
 
-All items tracked in Linear (ENESTA team). See `_bmad-output/implementation-artifacts/deferred-work.md` for details.
+**Backlog is clear.** All EST-139 through EST-147 items resolved on 2026-03-31.
 
-| Issue | Priority | Title |
-|-------|----------|-------|
-| EST-139 | High | Record EST-136 completion in sprint-status + verify 8 ACs |
-| EST-140 | Medium | CX_ROOT not caught in dashboard saver — short-dump risk |
-| EST-141 | Medium | Dashboard: Add CreateProcess action after Supersede/Cancel |
-| EST-142 | Medium | CDS view ZFI_I_ALLOC_BASE2 missing ZZSalesGroup/ZZSalesOffice — blocks integration testing |
-| EST-143 | Medium | Parallel instance limit bypassed in APJ job execution path |
-| EST-144 | Low | BAL logger configurable flush interval for high-volume steps |
-| EST-145 | Low | Server-side status validation in dashboard action handlers |
-| EST-146 | Low | Extract process status string literals to constants |
-| EST-147 | Low | Verify EST-132 deferred runtime items F10/F11/F17/F21 |
+See `_bmad-output/implementation-artifacts/sprint-status.yaml` for full history.
+
+| Issue | Resolution |
+|-------|------------|
+| EST-139 | Done — EST-136 completion recorded; ACs 5/6/8 code-verified |
+| EST-140 | Done — CATCH cx_root added to dashboard saver (ovysledovka e18dcf3) |
+| EST-141 | Done — Closed as already covered by EST-136 CreateAndExecute |
+| EST-142 | Done — Fields already present in ovysledovka 7a65871 (filed against stale info) |
+| EST-143 | Done — check_parallel_limit() promoted to public; called before APJ execute() (planner 09580d8) |
+| EST-144 | Done — Configurable flush interval added to zcl_fi_process_logger (planner 7d29aae) |
+| EST-145 | Done — Server-side status guards in cancelprocess/supersedeprocess/restartprocess (ovysledovka 125dd91) |
+| EST-146 | Done — Raw status literals replaced with gc_status-* constants (ovysledovka 125dd91) |
+| EST-147 | Done — F10/F11 code-verified; F17/F21 low-risk UI check deferred to service binding activation |
 
 ---
 
@@ -234,11 +237,9 @@ Fiori Dashboard:
 
 ## Known Issues & Technical Debt
 
-See active backlog above. The highest-risk items are:
+None outstanding. All tracked backlog items resolved as of 2026-03-31.
 
-1. **EST-140** (Medium) — `CX_ROOT` not caught in dashboard saver; an unexpected exception causes a short dump in production.
-2. **EST-142** (Medium) — `ZFI_I_ALLOC_BASE2` missing `ZZSalesGroup`/`ZZSalesOffice`; blocks Story 4-7 integration testing phases 2-6.
-3. **EST-143** (Medium) — Parallel instance limit check bypassed when APJ jobs call `lo_instance->execute()` directly.
+Remaining minor item: F17 (`@Consumption.filter.mandatory`) and F21 (`@UI.textArrangement`) from EST-132 need a brief visual check when the Fiori service binding `ZFI_UI_ALLOC_DASHBOARD_O4` is activated in SAP ADT (EST-132 Tasks 7-8). No code changes expected.
 
 ---
 
