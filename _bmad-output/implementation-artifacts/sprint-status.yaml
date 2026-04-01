@@ -294,7 +294,7 @@ development_status:
   # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-136-dashboard-process-lifecycle-actions-restreq-fix.md
 
   epic-est-136: done  # All 9 implementation tasks complete (ovysledovka), 2026-03-30. 8 ACs pending verification (EST-139).
-  est-136-dashboard-lifecycle-actions-restreq-fix: done  # Implementation complete 2026-03-30. Commits: ovysledovka c5f94f9 (main), planner 3590d4b. ACs 5/6/8 code-verified 2026-03-31. ACs 1/2/3/4/7 pending SAP/Fiori UI verification.
+  est-136-dashboard-lifecycle-actions-restreq-fix: done  # Implementation complete 2026-03-30. Commits: ovysledovka c5f94f9 (main), planner 3590d4b. All 8 ACs verified 2026-03-31: ACs 1-4 via Fiori UI, AC 7 via unit tests, ACs 5/6/8 via code (ADT).
 
   # ── Deferred work backlog (tracked in Linear) ────────────────────────────
   # Items below were created 2026-03-31 from deferred-work.md and WIP audit.
@@ -302,10 +302,30 @@ development_status:
 
   est-139-verify-est-136-sprint-status-and-acs: done  # Completed 2026-03-31. Commit hash filled in (c5f94f9), ACs 5/6/8 code-verified, item #6 resolved. ACs 1-4/7 left for SAP UI testing. Linear: EST-139
   est-140-cx-root-not-caught-in-saver: done              # MEDIUM: Added CATCH cx_root to lsc_dashboard save(). Commit: ovysledovka e18dcf3, 2026-03-31. Linear: EST-140
-  est-141-dashboard-createprocess-after-supersede: backlog  # MEDIUM: Verify EST-136 covers gap; add CreateProcess if needed. Linear: EST-141
+  est-141-dashboard-createprocess-after-supersede: done  # Closed: EST-136 fully covers this. CreateAndExecute action handles empty rows + SUPERSEDED/CANCELLED rows. All ACs verified 2026-03-31. AC7 unit test coverage completed: test_apj_dup_cancelled added to ltcl_health_tests + ltcl_apj_status_guards (planner commit 2ec42c6, 2026-03-31). Linear: EST-141
   est-142-cds-base2-missing-sales-fields: done           # MEDIUM: Fields already present — added in ovysledovka commit 7a65871 (2026-03-13) as part of broader SalesGroup/SalesOffice adaptation. Issue filed against stale info. Closed 2026-03-31. Linear: EST-142
   est-143-parallel-limit-bypassed-apj: done              # MEDIUM: Promoted check_parallel_limit() to public in manager; added call in APJ job before execute(). Commit: planner 09580d8, 2026-03-31. Linear: EST-143
   est-144-bal-logger-flush-interval: done                # LOW: Added mv_flush_interval/counter to zcl_fi_process_logger; factory methods accept iv_flush_interval (default 1). Commit: planner 7d29aae, 2026-03-31. Linear: EST-144
   est-145-server-side-status-validation: done            # LOW: Added status guards to cancelprocess/supersedeprocess/restartprocess handlers. Commit: ovysledovka 125dd91, 2026-03-31. Linear: EST-145
   est-146-extract-status-constants: done                 # LOW: Replaced 8 raw status literals in get_instance_features with zcl_fi_process_instance=>gc_status-*. Commit: ovysledovka 125dd91, 2026-03-31. Linear: EST-146
   est-147-verify-est-132-deferred-items: done            # LOW: Code-verified 2026-03-31. F10: DESCR=CHAR40 sufficient (max text "Execution Requested"=19 chars). F11: to_upper() handles casing, no runtime risk. F17/F21: annotations present in CDS; low-risk UI checks deferred to service binding activation (EST-132 Tasks 7-8). No code changes needed. Linear: EST-147
+
+  # ── EST-116: Step-Level Breakpoint API ───────────────────────────────────
+  # Goal: Allow halting process execution at a specific step (breakpoint),
+  #       with per-instance set/clear API and restart-from-breakpoint flow.
+  # Target repo: planner (cz.imcg.fast.planner)
+  # Linear: EST-116
+
+  epic-est-116: done  # EST-116: Step-Level Breakpoint API
+  est-116-breakpoint-feature: done  # commits 9613f36, 0e35489, 32df931, a073923, cdad801, b38b29e (planner), 2026-03-31.
+                                    # DDIC: ZFI_PROCESS_BREAKPOINT dtel, BREAKPOINT field on ZFI_PROC_DEF+ZFI_PROC_STEP, SKIP_BREAKPOINTS on ZFI_PROC_INST, BREAKPOINT domain value.
+                                    # Logic: execute() halts at breakpoint step (status=BREAKPOINT); restart() finds first non-completed step; execute() guard extended for BREAKPOINT+CANCELLED with iv_start_from_step.
+                                    # API: set_step_breakpoint() on instance + set_step_breakpoint_process() on manager.
+                                    # Tests: ltcl_breakpoint_test (6 UTs), BREAKPOINT_HALT + BREAKPOINT_SET_CLEAR health checks, updated APJ_RESTART_CANCELLED test.
+                                    # Fix: ORDER BY removed from LOOP AT WHERE (syntax error); execute() CANCELLED guard fix; test assertions corrected to COMPLETED outcome.
+                                    # All unit tests passed 2026-03-31.
+  est-116-dashboard-ui: done        # Dashboard UI: stop icon + toggle action on step table (ovysledovka).
+                                    # commits ea01b98..53d57d3 (ovysledovka), 2026-04-01.
+                                    # CDS: ToggleBreakpoint FOR_ACTION, sap-icon://stop iconUrl, BreakpointCriticality (red when set).
+                                    # UI fix: Breakpoint field changed to char(1) ('X'/'') to suppress boolean Yes/No text rendering.
+                                    # Linear: EST-116 closed 2026-04-01.
