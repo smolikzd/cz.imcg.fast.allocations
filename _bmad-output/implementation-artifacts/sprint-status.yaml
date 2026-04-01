@@ -348,4 +348,22 @@ development_status:
                                                # fix 4c8a170 (ovysledovka), 2026-04-01: Suppress duration for EXECREQ/RESTREQ/NEW — prevents spurious elapsed time from initial/stale StartedAt.
                                                # fix cceae34 (planner), 2026-04-01: Remove premature started_at write at instance creation — StartedAt now initial until execute() runs.
                                                # fix 74e184f (ovysledovka), 2026-04-01: Show '0s' for sub-second COMPLETED processes (TotalRuntime=0 case).
-                                               # VERIFIED in SAP 2026-04-01. All cases confirmed working.
+                                                # VERIFIED in SAP 2026-04-01. All cases confirmed working.
+
+  # ── EST-150/151/152: Dashboard Filter UX & Action Confirmations ──────────
+  # Goal: Remove FiscalYear F4, add filter defaults (FiscalYear=2026, AllocationId=1),
+  #       add confirmation dialogs for Cancel/Supersede/Restart/CreateAndExecute actions.
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+  # Spec file: _bmad-output/implementation-artifacts/spec-est-150-151-152-dashboard-filter-ux-and-action-confirmations.md
+  # Linear: EST-150, EST-151, EST-152
+
+  epic-est-150-151-152: done
+  est-150-151-152-dashboard-filter-ux-and-action-confirmations: done  # commit 006b3a9 (ovysledovka), 2026-04-01.
+                                                                       # EST-150: removed @Consumption.valueHelpDefinition from FiscalYear.
+                                                                       # EST-151: added @Consumption.filter.defaultValue '2026' on FiscalYear, '1' on AllocationId.
+                                                                       # EST-152: added Common.IsActionCritical=true in annotation.xml for cancelProcess/supersedeProcess/restartProcess/createAndExecute.
+                                                                       # Fix: trailing newline added to annotation.xml.
+                                                                       # Code review: D1 (fixed '2026' accepted — dynamic default not possible in IF_RAP_QUERY_PROVIDER), P1 fixed, P2 manual verification pending post-activation.
+                                                                       # Bug fix commit 4d1aeed (ovysledovka), 2026-04-01: IsActionCritical targets corrected from entity-type property path
+                                                                       #   (ZFI_I_ALLOC_DASHBOARD_CEType/actionName) to bound action overload signature
+                                                                       #   (actionName(ZFI_I_ALLOC_DASHBOARD_CEType)) — the old targets were silently ignored by Fiori Elements.
