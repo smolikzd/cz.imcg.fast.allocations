@@ -348,3 +348,4 @@ development_status:
                                                # fix 4c8a170 (ovysledovka), 2026-04-01: Suppress duration for EXECREQ/RESTREQ/NEW — prevents spurious elapsed time from initial/stale StartedAt.
                                                # fix cceae34 (planner), 2026-04-01: Remove premature started_at write at instance creation — StartedAt now initial until execute() runs.
                                                # fix 74e184f (ovysledovka), 2026-04-01: Show '0s' for sub-second COMPLETED processes (TotalRuntime=0 case).
+                                               # VERIFIED in SAP 2026-04-01. All cases confirmed working.
