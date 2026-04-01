@@ -343,4 +343,6 @@ development_status:
   # Linear: EST-138
 
   epic-est-138: done  # EST-138: Dashboard Duration Visibility
-  est-138-dashboard-duration-visibility: done  # commit 61dd3c5 (ovysledovka), 2026-04-01. Duration column on process list report (TotalRuntime via CDS), StepDuration on step object page (ABAP-computed with live fallback). Code review: 2 patches (DATA in LOOP, ABAP-Doc), 1 deferred (CONV i truncation). Activate in SAP via abapgit pull.
+  est-138-dashboard-duration-visibility: done  # commit 61dd3c5 (ovysledovka), 2026-04-01. Duration column on process list report (TotalRuntime via CDS), StepDuration on step object page (ABAP-computed with live fallback). Code review: 2 patches (DATA in LOOP, ABAP-Doc), 1 deferred (CONV i truncation).
+                                               # fix ba1c904 (ovysledovka), 2026-04-01: Show '0s' for completed sub-second steps; lv_secs_i moved to method level.
+                                               # fix 4c8a170 (ovysledovka), 2026-04-01: Suppress duration for EXECREQ/RESTREQ/NEW — prevents spurious elapsed time from initial/stale StartedAt.
