@@ -357,7 +357,7 @@ development_status:
   # Spec file: _bmad-output/implementation-artifacts/spec-est-150-151-152-dashboard-filter-ux-and-action-confirmations.md
   # Linear: EST-150, EST-151, EST-152
 
-  epic-est-150-151-152: done
+  epic-est-150-151-152: done  # Linear: EST-150, EST-151, EST-152 closed Done 2026-04-01
   est-150-151-152-dashboard-filter-ux-and-action-confirmations: done  # commit 006b3a9 (ovysledovka), 2026-04-01.
                                                                        # EST-150: removed @Consumption.valueHelpDefinition from FiscalYear.
                                                                        # EST-151: added @Consumption.filter.defaultValue '2026' on FiscalYear, '1' on AllocationId.
