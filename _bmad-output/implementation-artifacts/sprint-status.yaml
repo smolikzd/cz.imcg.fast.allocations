@@ -324,8 +324,12 @@ development_status:
                                     # Tests: ltcl_breakpoint_test (6 UTs), BREAKPOINT_HALT + BREAKPOINT_SET_CLEAR health checks, updated APJ_RESTART_CANCELLED test.
                                     # Fix: ORDER BY removed from LOOP AT WHERE (syntax error); execute() CANCELLED guard fix; test assertions corrected to COMPLETED outcome.
                                     # All unit tests passed 2026-03-31.
-  est-116-dashboard-ui: done        # Dashboard UI: stop icon + toggle action on step table (ovysledovka).
-                                    # commits ea01b98..53d57d3 (ovysledovka), 2026-04-01.
-                                    # CDS: ToggleBreakpoint FOR_ACTION, sap-icon://stop iconUrl, BreakpointCriticality (red when set).
-                                    # UI fix: Breakpoint field changed to char(1) ('X'/'') to suppress boolean Yes/No text rendering.
+  est-116-dashboard-ui: done        # Dashboard UI: breakpoint icon + toggle action on step table (ovysledovka).
+                                    # commits ea01b98..2ab1690 (ovysledovka), 2026-04-01.
+                                    # CDS: BreakpointIcon char(1) with criticality=BreakpointCriticality + #WITH_ICON.
+                                    #      BreakpointCriticality=1 (Negative) → red status-negative icon shown.
+                                    #      BreakpointCriticality=0 (Neutral) → empty cell (no icon, no text).
+                                    #      Breakpoint char(1) hidden, carries FOR_ACTION ToggleBreakpoint only.
+                                    # Fix: @Semantics.imageUrl discarded — empty string rendered placeholder icon.
+                                    # Fix: planner f3ce530: load_steps() SELECT was missing BREAKPOINT field.
                                     # Linear: EST-116 closed 2026-04-01.
