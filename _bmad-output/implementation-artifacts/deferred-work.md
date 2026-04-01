@@ -109,3 +109,15 @@ Items surfaced during review that are not caused by the current story but worth 
 - **Description:** `BreakpointCriticality` and `StatusCriticality` in `ZFI_I_ALLOC_DASH_STEP_CE` use `abap.int1` directly instead of a DDIC data element. The same pattern applies to the `ty_row.statuscriticality` / `ty_row.breakpointcriticality` fields in `ZCL_FI_ALLOC_DASH_STEP_QRY`. Constitution Principle I requires DDIC-based types. The pattern is consistent across the file (pre-existing), and the spec itself prescribed `abap.int1`, but it remains non-compliant.
 - **Possible approach:** Create a DDIC data element `ZFI_ALLOC_UI_CRITICALITY` (type INT1) and apply it to all criticality fields. Update the local type in the query class to use it.
 - **Priority:** Low — cosmetic/compliance; criticality rendering is not affected at runtime.
+
+---
+
+## Deferred from: code review of spec-est-138-dashboard-duration-visibility (2026-04-01)
+
+### 11. `CONV i()` truncates fractional seconds (floor, not round)
+
+- **Source:** EST-138 review (blind hunter + edge case hunter)
+- **Date:** 2026-04-01
+- **Description:** Both `zcl_fi_alloc_dash_query.clas.abap:380` and `zcl_fi_alloc_dash_step_qry.clas.abap:340` use `CONV i( ... )` to convert packed/decfloat seconds to integer. This truncates (floor) rather than rounds. For a TotalRuntime of 1.9999999 the result is `1` not `2`. For the step elapsed case, `CL_ABAP_TSTMP=>SUBTRACT` returns `decfloat34` and the same truncation applies.
+- **Possible approach:** Use `CONV i( lv_seconds + '0.5' )` or explicit `ROUND` before the conversion to get round-half-up behaviour.
+- **Priority:** Low — sub-second precision is irrelevant for human-readable duration display strings.

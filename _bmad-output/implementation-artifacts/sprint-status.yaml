@@ -333,3 +333,14 @@ development_status:
                                     # Fix: @Semantics.imageUrl discarded — empty string rendered placeholder icon.
                                     # Fix: planner f3ce530: load_steps() SELECT was missing BREAKPOINT field.
                                     # Linear: EST-116 closed 2026-04-01.
+
+  # ── EST-138: Dashboard Duration Visibility ───────────────────────────────
+  # Goal: Add formatted Duration column to process list report and StepDuration
+  #       column to step object page. CDS-computed TotalRuntime used for process;
+  #       ABAP-computed from StepStartedAt/StepEndedAt for steps (with live fallback).
+  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
+  # Spec file: _bmad-output/implementation-artifacts/spec-est-138-dashboard-duration-visibility.md
+  # Linear: EST-138
+
+  epic-est-138: done  # EST-138: Dashboard Duration Visibility
+  est-138-dashboard-duration-visibility: done  # commit 61dd3c5 (ovysledovka), 2026-04-01. Duration column on process list report (TotalRuntime via CDS), StepDuration on step object page (ABAP-computed with live fallback). Code review: 2 patches (DATA in LOOP, ABAP-Doc), 1 deferred (CONV i truncation). Activate in SAP via abapgit pull.
