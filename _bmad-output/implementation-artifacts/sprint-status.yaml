@@ -364,6 +364,17 @@ development_status:
                                                                        # EST-152: added Common.IsActionCritical=true in annotation.xml for cancelProcess/supersedeProcess/restartProcess/createAndExecute.
                                                                        # Fix: trailing newline added to annotation.xml.
                                                                        # Code review: D1 (fixed '2026' accepted — dynamic default not possible in IF_RAP_QUERY_PROVIDER), P1 fixed, P2 manual verification pending post-activation.
-                                                                       # Bug fix commit 4d1aeed (ovysledovka), 2026-04-01: IsActionCritical targets corrected from entity-type property path
-                                                                       #   (ZFI_I_ALLOC_DASHBOARD_CEType/actionName) to bound action overload signature
-                                                                       #   (actionName(ZFI_I_ALLOC_DASHBOARD_CEType)) — the old targets were silently ignored by Fiori Elements.
+                                                                        # Bug fix commit 4d1aeed (ovysledovka), 2026-04-01: IsActionCritical targets corrected from entity-type property path
+                                                                        #   (ZFI_I_ALLOC_DASHBOARD_CEType/actionName) to bound action overload signature
+                                                                        #   (actionName(ZFI_I_ALLOC_DASHBOARD_CEType)) — the old targets were silently ignored by Fiori Elements.
+
+  # ── bgRFC Destination Suspend/Resume Utility ─────────────────────────────
+  # Goal: Standalone admin program ZFI_PROCESS_BGRFC_DEST_MANAGE to pause/resume
+  #       bgRFC inbound destination processing during maintenance/incident handling.
+  # Target repo: planner (cz.imcg.fast.planner)
+  # Spec file: _bmad-output/implementation-artifacts/spec-bgrfc-dest-manage.md
+
+  bgrfc-dest-manage: done  # commit 450a137 (planner), 2026-04-03. Linear: EST-157
+                           # ZFI_PROCESS_BGRFC_DEST_MANAGE: selection screen (P_DEST, P_SUSP checkbox),
+                           # uses SAP-internal CL_BGRFC_MONITOR_API / IF_BGRFC_MONITOR_INBOUND
+                           # (LOCK_DESTINATION / UNLOCK_DESTINATION). Messages 100-107 added to ZFI_PROCESS.
