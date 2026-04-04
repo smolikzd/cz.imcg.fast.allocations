@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-04  # Epic 2 code review complete — 5 patches applied
+last_updated: 2026-04-04  # Epic 3 started — 3 stories ready-for-dev
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -262,10 +262,10 @@ development_status:
   zen-epic-2-retrospective: optional
 
   # ── Epic 3: Adapter Framework ────────────────────────────────────────────
-  zen-epic-3: backlog
-  zen-3-1-create-adapter-interface: backlog
-  zen-3-2-create-adapter-factory: backlog
-  zen-3-3-create-mock-adapter: backlog
+  zen-epic-3: in-progress
+  zen-3-1-create-adapter-interface: ready-for-dev
+  zen-3-2-create-adapter-factory: ready-for-dev
+  zen-3-3-create-mock-adapter: ready-for-dev
   zen-epic-3-retrospective: optional
 
   # ── Epic 4: Engine Core ───────────────────────────────────────────────────
