@@ -1,6 +1,6 @@
 # Story zen-4-4: Implement Sequential Step Dispatch and Polling
 
-Status: review
+Status: done
 
 ## Story
 
