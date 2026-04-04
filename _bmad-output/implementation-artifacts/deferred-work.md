@@ -121,3 +121,40 @@ Items surfaced during review that are not caused by the current story but worth 
 - **Description:** Both `zcl_fi_alloc_dash_query.clas.abap:380` and `zcl_fi_alloc_dash_step_qry.clas.abap:340` use `CONV i( ... )` to convert packed/decfloat seconds to integer. This truncates (floor) rather than rounds. For a TotalRuntime of 1.9999999 the result is `1` not `2`. For the step elapsed case, `CL_ABAP_TSTMP=>SUBTRACT` returns `decfloat34` and the same truncation applies.
 - **Possible approach:** Use `CONV i( lv_seconds + '0.5' )` or explicit `ROUND` before the conversion to get round-half-up behaviour.
 - **Priority:** Low — sub-second precision is irrelevant for human-readable duration display strings.
+
+---
+
+## Deferred from: code review of spec-est-150-151-152-dashboard-filter-ux-and-action-confirmations (2026-04-01)
+
+### 12. AllocationId default '1' may return empty results in some systems
+
+- **Source:** EST-150/151/152 review (edge case hunter)
+- **Date:** 2026-04-01
+- **Description:** `@Consumption.filter.defaultValue: '1'` on AllocationId is hardcoded. In any system where ID 1 does not exist, the query provider's mandatory-filter guard is satisfied (a value is present) so no exception is raised, but the result set will be silently empty. Users unfamiliar with the system may assume the dashboard has no records.
+- **Possible approach:** No fix needed if '1' is always the correct default in this deployment. If multi-tenant / multi-system, consider documenting that this value must be adjusted per system.
+- **Priority:** Low — intentional design decision; acceptable for current deployment.
+
+### 13. Removing FiscalYear value help leaves no re-entry guidance
+
+- **Source:** EST-150/151/152 review (edge case hunter)
+- **Date:** 2026-04-01
+- **Description:** EST-150 intentionally removes `@Consumption.valueHelpDefinition` from FiscalYear. If the user clears the default and enters an invalid year, the field type `gjahr` provides implicit numeric validation but no F4 browsing. Pre-existing by design.
+- **Priority:** Low — intentional per EST-150 spec.
+
+### 14. refreshData has no IsActionCritical — intentional
+
+- **Source:** EST-150/151/152 review (edge case hunter)
+- **Date:** 2026-04-01
+- **Description:** `refreshData` was explicitly excluded from confirmation dialogs per spec constraint. Not a bug.
+- **Priority:** None — intentional, no action needed.
+
+---
+
+## Deferred from: code review of zen-2-1 and zen-2-2 (2026-04-04)
+
+### 15. if_t100_dyn_msg implemented but msgv1–v4 never populated
+
+- **Source:** zen-2-1 code review (blind hunter + edge case hunter)
+- **Date:** 2026-04-04
+- **Description:** `ZCX_EN_ORCH_ERROR` implements `if_t100_dyn_msg` but the constructor never populates `msgv1`–`msgv4`. Code that renders the exception via `MESSAGE lx TYPE 'E'` or reads `if_t100_dyn_msg~msgv1` will see empty values. T100-based display (SLG1, short dump) works correctly. Deferred: design gap inherited from pattern; no immediate runtime impact.
+- **Priority:** Low — only relevant if a caller uses the dynamic message interface explicitly.

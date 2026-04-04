@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-04  # Story zen-1-2 review
+last_updated: 2026-04-04  # Epic 2 code review complete — 5 patches applied
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -256,9 +256,9 @@ development_status:
   zen-epic-1-retrospective: optional
 
   # ── Epic 2: Error Handling & Logging Infrastructure ──────────────────────
-  zen-epic-2: backlog
-  zen-2-1-create-message-class-and-exception-class: backlog
-  zen-2-2-create-logger-interface-and-bal-implementation: backlog
+  zen-epic-2: done
+  zen-2-1-create-message-class-and-exception-class: done  # code review patches applied 2026-04-04
+  zen-2-2-create-logger-interface-and-bal-implementation: done  # code review patches applied 2026-04-04
   zen-epic-2-retrospective: optional
 
   # ── Epic 3: Adapter Framework ────────────────────────────────────────────
