@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-04  # Epic 3 started — 3 stories ready-for-dev
+last_updated: 2026-04-04  # zen-4-2 review: performance creation + score snapshot implemented
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -262,16 +262,16 @@ development_status:
   zen-epic-2-retrospective: optional
 
   # ── Epic 3: Adapter Framework ────────────────────────────────────────────
-  zen-epic-3: in-progress
-  zen-3-1-create-adapter-interface: ready-for-dev
-  zen-3-2-create-adapter-factory: ready-for-dev
-  zen-3-3-create-mock-adapter: ready-for-dev
+  zen-epic-3: done
+  zen-3-1-create-adapter-interface: done  # code review patches applied 2026-04-04
+  zen-3-2-create-adapter-factory: done  # code review patches applied 2026-04-04
+  zen-3-3-create-mock-adapter: done  # code review patches applied 2026-04-04
   zen-epic-3-retrospective: optional
 
   # ── Epic 4: Engine Core ───────────────────────────────────────────────────
-  zen-epic-4: backlog
-  zen-4-1-create-engine-singleton-with-status-constants: backlog
-  zen-4-2-implement-performance-creation-and-score-snapshot: backlog
+  zen-epic-4: in-progress
+  zen-4-1-create-engine-singleton-with-status-constants: done  # code review patches applied 2026-04-04
+  zen-4-2-implement-performance-creation-and-score-snapshot: review  # create_performance + snapshot_score implemented + unit tests; pending SAP ATC run
   zen-4-3-implement-json-parameter-resolution: backlog
   zen-4-4-implement-sequential-step-dispatch-and-polling: backlog
   zen-4-5-implement-gate-evaluation-and-loop-advancement: backlog
