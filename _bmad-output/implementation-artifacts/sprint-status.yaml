@@ -271,7 +271,7 @@ development_status:
   # ── Epic 4: Engine Core ───────────────────────────────────────────────────
   zen-epic-4: in-progress
   zen-4-1-create-engine-singleton-with-status-constants: done  # code review patches applied 2026-04-04
-  zen-4-2-implement-performance-creation-and-score-snapshot: review  # create_performance + snapshot_score implemented + unit tests; pending SAP ATC run
+  zen-4-2-implement-performance-creation-and-score-snapshot: done  # create_performance + snapshot_score; tests passed (cz.en.orch 314f2d9, 2026-04-04)
   zen-4-3-implement-json-parameter-resolution: backlog
   zen-4-4-implement-sequential-step-dispatch-and-polling: backlog
   zen-4-5-implement-gate-evaluation-and-loop-advancement: backlog

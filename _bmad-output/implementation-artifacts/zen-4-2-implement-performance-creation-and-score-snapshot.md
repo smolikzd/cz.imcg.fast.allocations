@@ -208,8 +208,8 @@ github-copilot/claude-sonnet-4.6
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-04-04 | Story file created | Dev Agent |
-| 2026-04-04 | Implementation complete; all ACs/tasks marked done; status → review | Dev Agent |
+| 2026-04-04 | Tests passed in SAP; status → done (cz.en.orch 314f2d9) | Dev Agent |
 
 ## Status
 
-review
+done
