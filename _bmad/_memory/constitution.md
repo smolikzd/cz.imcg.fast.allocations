@@ -131,6 +131,13 @@ DATA(ls_ctx) = VALUE ty_structure( field1 = value1 field2 = value2 field3 = valu
 - Complex business logic MUST include inline comments explaining WHY, not WHAT
 - Each class MUST have a purpose statement at the top
 
+**ABAP Doc comment placement (Non-Negotiable)**:
+- `"!` comments are ONLY allowed directly before an **individual declaration** (`METHODS`, `CLASS-METHODS`, `DATA`, `CLASS-DATA`) in the DEFINITION section
+- `"!` is **NOT valid** before compound block declarations such as `CONSTANTS: BEGIN OF ... END OF` — use regular `"` there
+- `"!` inside a method IMPLEMENTATION body is a **syntax error**
+- Use regular `"` for all comments inside IMPLEMENTATION (method bodies, SQL blocks, inline) and before `CONSTANTS` blocks
+- Violation produces: `ABAP Doc comment is in the wrong position.` or `"#" is not allowed here. "." is expected.`
+
 ### Database Conventions
 
 - All tables MUST include: MANDT, key fields, created_by, created_at, changed_by, changed_at
@@ -219,4 +226,4 @@ Runtime development guidance is maintained in:
 
 These guidance files MUST stay aligned with constitution principles.
 
-**Version**: 1.0.0 | **Ratified**: 2025-11-10 | **Last Amended**: 2025-11-10
+**Version**: 1.0.1 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-04
