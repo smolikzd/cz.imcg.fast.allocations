@@ -1,5 +1,6 @@
-# generated: 2026-03-09
-# project: cz.imcg.fast.planner
+# generated: 2026-04-04
+# last_updated: 2026-04-04
+# project: cz.imcg.fast.allocations
 # project_key: NOKEY
 # tracking_system: file-system
 # story_location: _bmad-output/implementation-artifacts
@@ -11,11 +12,15 @@
 #   - in-progress: Epic actively being worked on
 #   - done: All stories in epic completed
 #
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
 # Story Status:
 #   - backlog: Story only exists in epic file
-#   - ready-for-dev: Story file created, ready for development
+#   - ready-for-dev: Story file created in stories folder
 #   - in-progress: Developer actively working on implementation
-#   - review: Implementation complete, ready for review
+#   - review: Ready for code review (via Dev's code-review workflow)
 #   - done: Story completed
 #
 # Retrospective Status:
@@ -24,9 +29,10 @@
 #
 # WORKFLOW NOTES:
 # ===============
-# - Mark epic as 'in-progress' when starting work on its first story
-# - SM typically creates next story ONLY after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 #
 # SPRINT ASSIGNMENT (from epics-alloc-remediation.md):
 # =====================================================
@@ -36,14 +42,30 @@
 #   2-1, 3-1, 3-2, 3-3, 4-1, 5-1, 5-2, 5-4
 # Sprint 3 — Wire Phase 3 + housekeeping:
 #   6-1, 7-1, 7-2, 7-3, 7-4
+#
+# ZEN_ORCH PROJECT (from epics.md):
+# ===================================
+# Epic 1: Repository Bootstrap & DDIC Foundation (stories 1.1–1.4)
+# Epic 2: Error Handling & Logging Infrastructure (stories 2.1–2.2)
+# Epic 3: Adapter Framework (stories 3.1–3.3)
+# Epic 4: Engine Core (stories 4.1–4.7)
+# Epic 5: APJ Scheduling & Performance Lifecycle (stories 5.1–5.3)
+# Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
-generated: 2026-03-09
-project: cz.imcg.fast.planner
+generated: 2026-04-04
+last_updated: 2026-04-04  # Story zen-1-2 review
+project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
 development_status:
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # PROJECT: ZFI_ALLOC_PROCESS — Migration Remediation (epics-alloc-remediation.md)
+  # ALL EPICS AND STORIES COMPLETED
+  # ════════════════════════════════════════════════════════════════════════════
+
   # ── Epic 1: Unblock Pipeline Activation ──────────────────────────────────
   epic-1: done
   1-1-add-serial-mode-interface-stubs-to-init-phase1-corr-bche-phase3: done
@@ -92,10 +114,6 @@ development_status:
   epic-7-retrospective: done  # Comprehensive retro covering all 7 epics (2026-03-10)
 
   # ── Sprint 4: Process Logger Architecture ────────────────────────────────
-  # Epic: Exception Handling and Message Persistence
-  # Goal: Implement multi-language logging with BAL + T100 messages
-  # Related: ADR-008, Implementation Guide, Migration Guide
-  
   epic-sprint-4: done  # Sprint 4 pseudo-epic grouping
   sprint-4: done  # COMPLETED 2026-03-13: Logger architecture migration complete, deployed to SAP, runtime issue discovered (CDS view - not Sprint 4 related)
   4-1-create-logger-infrastructure: done  # Interface + Implementation + Unit Tests (commits 957d429, 693684c, 8cc0881, 2026-03-11)
@@ -106,275 +124,170 @@ development_status:
   4-6-translation-to-english: done  # COMPLETED 2026-03-13: English translations added for ZFI_PROCESS (~30 msgs) and ZFI_ALLOC (~97 msgs) via SE63
   4-7-integration-testing-and-regression: done  # Deployed to SAP, fixed 73 syntax errors + bgRFC deadlock + error message bug. Discovered CDS view issue (separate from Sprint 4) (2026-03-13)
   4-8-documentation-and-training: done  # ADR-008 updated, Implementation Guide v1.1, Migration Guide v1.1, training presentation + cheat sheet (commits 0770d2e, a4d0870, 0284c5b, 4eb33ba, 2026-03-12)
-  
+
   # ── Parallel Track: Testing & Quality Assurance ──────────────────────────
-  # Epic: Unit Test Depth and Reliability
-  # Goal: Comprehensive test coverage for critical bgRFC transaction fixes
-  # Related: Linear EST-99, Issue #1 (atomic COMMIT WORK), Issue #3 (logger save timing)
-  
   epic-est-99: done  # EST-99 pseudo-epic grouping
   est-99-bgrfc-error-propagation-test: done
 
   # ── EST-101: Configurable BAL Object/Subobject per Process Type ──────────
-  # Goal: Make SLG1 object+subobject configurable per process type in ZFI_PROC_TYPE
-  # Related: tech-spec-est-101-configurable-bal-object-subobject.md
-  # Target repo: planner (cz.imcg.fast.planner)
-
   epic-est-101: done  # EST-101 pseudo-epic grouping
   est-101-configurable-bal-object-subobject: done
 
   # ── EST-100: Configurable bgRFC Inbound Destination per Process Type ────
-  # Goal: Add BGRFC_DEST_NAME_INBOUND field to ZFI_PROC_TYPE; replace 3-tier heuristic
-  # Related: tech-spec-est-100-configurable-bgrfc-inbound-destination.md
-  # Target repo: planner (cz.imcg.fast.planner)
-
   epic-est-100: done  # EST-100 pseudo-epic grouping
   est-100-configurable-bgrfc-inbound-destination: done  # commit b85c1ca (planner), 2026-03-14
 
   # ── Ad-hoc Bug Fix: AMDP cx_amdp_execution_failed escaping bgRFC substeps ──
-  # Root cause: cx_amdp_execution_failed is cx_static_check — not caught by cx_root; requires RAISING clause in method declaration
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-
-  fix-amdp-raising-clauses-all-methods: done  # commit 0ebb267 (ovysledovka), 2026-03-15: Added RAISING cx_amdp_execution_failed to get_base_by_key, get_base_with_items_by_key, get_base_keys, get_unassigned declarations; wrapped get_base_keys (PHASE1) and get_unassigned (PHASE3) calls in TRY/CATCH; get_base_by_key_new was already done (a0be59b), PHASE2 TRY/CATCH was done (4da84ab)
-  fix-amdp-phase2-catch-block: done  # commits 4da84ab+a0be59b (ovysledovka), 2026-03-14: PHASE2 cx_amdp_execution_failed handling + CONV symsgv() safe truncation
-  fix-proc-test-cleanup: done  # commit 341184d (ovysledovka), 2026-03-14: DELETE zfi_proc_inst + COMMIT WORK AND WAIT in test cleanup
+  fix-amdp-raising-clauses-all-methods: done  # commit 0ebb267 (ovysledovka), 2026-03-15
+  fix-amdp-phase2-catch-block: done  # commits 4da84ab+a0be59b (ovysledovka), 2026-03-14
+  fix-proc-test-cleanup: done  # commit 341184d (ovysledovka), 2026-03-14
 
   # ── Story: Remove dead CONTEXT_DATA column from ZFI_PROC_INST ──────────────
-  # Target repo: planner (cz.imcg.fast.planner)
-  # Story file: _bmad-output/planning-artifacts/story-remove-context-data.md
-
-  story-remove-context-data: done  # commit 95e5b0f (planner), 2026-03-16: CONTEXT_DATA DD03P removed from zfi_proc_inst.tabl.xml; zfi_setup_demo_data removed at 3087aad
+  story-remove-context-data: done  # commit 95e5b0f (planner), 2026-03-16
 
   # ── EST-102: Parameter Hash Duplicity Check per Process Type ────────────────
-  # Goal: Prevent duplicate process instances with identical parameters per process type
-  # Target repo: planner (cz.imcg.fast.planner)
-
   epic-est-102: done  # EST-102 pseudo-epic grouping
-  est-102-parameter-hash-duplicity-check: done  # commits 91615fe, da56c89, 6cd73b1, c1088fb (planner), 2026-03-14/15: ZFI_PROC_DUPLIC_CHECK domain+field on ZFI_PROC_TYPE, parameter hash calc on create, get_instances_by_hash(), health check self-contained refactor. SAP activation: 31f5fcc
+  est-102-parameter-hash-duplicity-check: done  # commits 91615fe, da56c89, 6cd73b1, c1088fb (planner), 2026-03-14/15
 
   # ── Fix: Invalid table row selection (line_exists on method return) ──────────
-  # Root cause: line_exists() called directly on method return value — invalid ABAP
-  # Target repo: planner (cz.imcg.fast.planner)
-
-  fix-row-selection-line-exists: done  # commits 1ff4dd3, e541938, 0aeb4ea (planner), 2026-03-16: replaced line_exists()/READ TABLE directly on method return with local var + LOOP WHERE pattern across 3 locations in zcl_fi_process_instance
+  fix-row-selection-line-exists: done  # commits 1ff4dd3, e541938, 0aeb4ea (planner), 2026-03-16
 
   # ── ovysledovka: ZZ prefix SAP synchronization ───────────────────────────────
-  # SAP activation commit syncing ZZ prefix changes in CDS views and step classes
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-
-  fix-ovysledovka-zz-prefix-sync: done  # commit 600195f (ovysledovka), 2026-03-16: ZZ prefix sync in PHASE2, PHASE3 step classes and CDS views (zfi_i_alloc_base_keys, zfi_i_alloc_unassigned)
+  fix-ovysledovka-zz-prefix-sync: done  # commit 600195f (ovysledovka), 2026-03-16
 
   # ── Story: Process Instance Insight — Parameter Projection & Business Status
-  # Target repo: planner (cz.imcg.fast.planner)
-  # Story file: _bmad-output/planning-artifacts/story-process-insight-params-bs.md
-
-  story-process-insight-params-bs: done  # commit e27519e (planner), 2026-03-16: 3 domains+dtels, ZFI_PROCESS_S_FIN_PARAMS, ZFI_PROC_INST +12 cols, ZFI_PROC_DEF +6 BS cols, zcl_fi_process_instance BS lifecycle + param projection, CDS/BDEF. Fixes: 3085f66, deb2337, 0970717, 70cea8c
+  story-process-insight-params-bs: done  # commit e27519e (planner), 2026-03-16
 
   # ── Fix: Legacy zfi_alloc_phase_2 syntax error (logger type mismatch) ────────
-  # Root cause: lo_log typed as zcl_sp_ballog; zcl_fi_allocations_rules constructor expects zif_fi_process_logger
-  # Resolution: Added zcl_fi_process_null_logger (no-op stub) to planner; legacy program now instantiates it; removed invalid log_sy_msg/log_save calls
-  # Target repos: planner (new class) + ovysledovka (program fix)
-
-  fix-phase2-legacy-logger-type-mismatch: done  # commit 871472c (planner): zcl_fi_process_null_logger added; commit 6b18c7e (ovysledovka): zfi_alloc_phase_2 fixed. 2026-03-16
+  fix-phase2-legacy-logger-type-mismatch: done  # commit 871472c (planner) + 6b18c7e (ovysledovka), 2026-03-16
 
   # ── EST-106: Configurable Max Parallel Instances per Process Type ────────────
-  # Goal: Prevent over-parallelisation by adding MAX_PARALLEL_INSTS field to ZFI_PROC_TYPE;
-  #       check fires at execute_process(); 0 = unlimited (backward-compatible default)
-  # Target repo: planner (cz.imcg.fast.planner)
-  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-106-max-parallel-instances.md
-
   epic-est-106: done  # EST-106 pseudo-epic grouping
-  est-106-configurable-max-parallel-instances: done  # commits e55eaaa, e762ff2, a137f1b (planner), 2026-03-16: ZFI_PROC_MAX_PARALLEL_INSTS domain+dtel, MAX_PARALLEL_INSTS field on ZFI_PROC_TYPE, msg 017, parallel_limit_exceeded exception constant, check_parallel_limit() in manager execute_process(), PARALLEL_LIMIT health check test. Fixes: dtel label lengths (SCRLEN limits), CONV string() type-compat on raise. Tests passed.
+  est-106-configurable-max-parallel-instances: done  # commits e55eaaa, e762ff2, a137f1b (planner), 2026-03-16
 
   # ── EST-110: SUPERSEDED status and COMPLETED duplicate block ─────────────
-  # Goal: Introduce SUPERSEDED terminal status; extend duplicate check to also
-  #       block COMPLETED; cancel() guard narrowed to positive allowlist;
-  #       cleanup_old_instances() retargeted to CANCELLED+SUPERSEDED; unit tests.
-  # Target repo: planner (cz.imcg.fast.planner)
-  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-110-superseded-status-completed-duplicate-block.md
-
   epic-est-110: done  # EST-110 pseudo-epic grouping
-  est-110-superseded-status-completed-duplicate-block: done  # commit 0a55cb8 (planner), 2026-03-17: SUPERSEDED domain value, instance_superseded exception+msg 018, supersede() method, cancel() positive allowlist, execute() SUPERSEDED block, supersede_process() on manager, duplicate check extended to COMPLETED, cleanup_old_instances() RANGE table for CANCELLED+SUPERSEDED, test_blocks_when_completed+test_allows_when_superseded+test_double_supersede, 4-sub-scenario health check. Post-review fixes applied. Unit tests passed.
+  est-110-superseded-status-completed-duplicate-block: done  # commit 0a55cb8 (planner), 2026-03-17
 
   # ── EST-121: APJ Background Execution & Lifecycle Enhancement ─────────────
-  # Epic: APJ Background Execution & Lifecycle Enhancement
-  # Goal: Enable background execution and restart of process instances via SAP Application Jobs (APJ)
-  # Target repo: planner (cz.imcg.fast.planner)
-  # Linear: EST-121
-  # Planning commit: a855318 (cz.imcg.fast.allocations), 2026-03-19
-  #
-  # Source artifacts (GitHub):
-  #   Tech spec: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/tech-spec-est-121-apj-background-execution-lifecycle.md
-  #   Brainstorming: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/brainstorming/brainstorming-session-2026-03-17-000000.md
-  #
-  # Story artifacts (GitHub):
-  #   EST-121.1: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-1-ddic-foundation.md
-  #   EST-121.2: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-2-job-class-and-catalog.md
-  #   EST-121.3: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-3-status-constants-and-request-methods.md
-  #   EST-121.4: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-4-lifecycle-extensions.md
-  #   EST-121.5: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-5-manager-delegation-and-job-status.md
-  #   EST-121.6: https://github.com/smolikzd/cz.imcg.fast.allocations/blob/master/_bmad-output/implementation-artifacts/est-121-6-guard-extensions-and-unit-tests.md
-  #
-  # Dependency chain: EST-121.1 → .2 → .3 → .4 → .5 → .6
-
   epic-est-121: done  # EST-121: APJ Background Execution & Lifecycle Enhancement
-  est-121-1-ddic-foundation: done  # Tasks 1-4: Domain values, data elements, table fields, exception text IDs. Commits: 18f78f3, 2859d60, b9d8508 (planner), 2026-03-19
-  est-121-2-job-class-and-catalog: done  # Tasks 5-6: ZCL_FI_PROCESS_JOB class + APJ catalog/template. Commits: 144b74e, be384ce, bb96ae6, 8758833 (planner), 2026-03-19
-  est-121-3-status-constants-and-request-methods: done  # Tasks 7-9: gc_status constants + request_execute() + request_restart(). Commit: c09b495 (planner), 2026-03-20
-  est-121-4-lifecycle-extensions: done  # Tasks 10-12: Extend restart/cancel/execute for EXECREQ/RESTREQ statuses. Commit: 687f414 (planner), 2026-03-21
-  est-121-5-manager-delegation-and-job-status: done  # Tasks 13-14: check_job_status() + manager delegation methods. Commit: 04e43e7 (planner), 2026-03-24. Activated in SAP.
-  est-121-6-guard-extensions-and-unit-tests: done  # Tasks 15-17: EST-102 duplicate check + EST-106 parallel limit extensions for EXECREQ/RESTREQ + 7 unit tests + 7 RAP health check rows. Commits: b749002, 023c886, 8c22169, 77a287b, 68eaa29, 13d1484, 810f606, d38e577, 6e75128 (planner), 2026-03-24. All 27 health checks + 7 APJ guard unit tests pass in SAP.
+  est-121-1-ddic-foundation: done  # Commits: 18f78f3, 2859d60, b9d8508 (planner), 2026-03-19
+  est-121-2-job-class-and-catalog: done  # Commits: 144b74e, be384ce, bb96ae6, 8758833 (planner), 2026-03-19
+  est-121-3-status-constants-and-request-methods: done  # Commit: c09b495 (planner), 2026-03-20
+  est-121-4-lifecycle-extensions: done  # Commit: 687f414 (planner), 2026-03-21
+  est-121-5-manager-delegation-and-job-status: done  # Commit: 04e43e7 (planner), 2026-03-24
+  est-121-6-guard-extensions-and-unit-tests: done  # Commits: b749002→6e75128 (planner), 2026-03-24
 
   # ── EST-125: Fix Export Step BAL Logging ──────────────────────────────────
-  # Goal: Fix ZCL_FI_ALLOC_STEP_EXTRACT to write meaningful data to application log (BAL)
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-125-export-step-bal-logging.md
-
   epic-est-125: done  # EST-125 pseudo-epic grouping
-  est-125-fix-export-step-bal-logging: done  # commit d522096 (ovysledovka), 2026-03-24: Fixed class header, added context logging (year/period), fixed CATCH with log_exception_from_framework(), replaced orphan MESSAGE with log_and_set_result(), added extraction summary (row count), updated messages 600/601 with placeholders. Task 2 (validate guards) skipped per project lead — INIT step already validates.
+  est-125-fix-export-step-bal-logging: done  # commit d522096 (ovysledovka), 2026-03-24
 
   # ── EST-127: APJ Job Catalog per Process Type (Mode 3 Framework) ──────────
-  # Goal: Abstract base class ZCL_FI_PROCESS_JOB_BASE for Mode 3 APJ execution
-  # Target repo: planner (cz.imcg.fast.planner)
-  # Dependency for EST-129
-
   epic-est-127: done  # EST-127 pseudo-epic grouping
-  est-127-apj-job-base-safety-net-log: done  # commit be3a156 (planner), 2026-03-25: Safety-net BALI log to APJ job classes
-  est-127-apj-assign-to-appl-job: done  # commit ae271fd (planner), 2026-03-25: assign_to_appl_job in Mode 2 generic job class
+  est-127-apj-job-base-safety-net-log: done  # commit be3a156 (planner), 2026-03-25
+  est-127-apj-assign-to-appl-job: done  # commit ae271fd (planner), 2026-03-25
 
   # ── EST-129: Allocation APJ Job Catalogs and Templates ────────────────────
-  # Goal: Mode 3 (Fiori Application Jobs) support for ALLOCATIONS and ALLOC_EXPORT
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-  # Spec file: _bmad-output/implementation-artifacts/tech-spec-alloc-apj-job-catalogs.md
-  # Linear: EST-129
-
   epic-est-129: done  # EST-129 pseudo-epic grouping
-  est-129-alloc-apj-job-catalogs: done  # commit 0eb39da (ovysledovka), 2026-03-26: All 12 tasks complete. ZCL_FI_ALLOC_JOB_ALLOC + ZCL_FI_ALLOC_JOB_EXPORT job classes, 4 SAJC/SAJT artifacts, EXPORT field on ZFI_ALLOC_PROCESS_PARAMS, skip logic in extract step, JOB_CATALOG_NAME registration in both reports.
+  est-129-alloc-apj-job-catalogs: done  # commit 0eb39da (ovysledovka), 2026-03-26
 
   # ── Follow-on: Fail-Hard Logger Hardening ─────────────────────────────────
-  # Goal: Remove defensive logging catches, propagate zcx_fi_process_error from all logging methods
-  # Target repos: planner + ovysledovka
-
-  fail-hard-logger-planner: done  # commits 40709e8, 6e657a4 (planner), 2026-03-26: RAISING added to zif_fi_process_logger, zif_fi_process_step, step/logger classes. UT fix for bal_object.
-  fail-hard-logger-ovysledovka: done  # commit e52dbac (ovysledovka), 2026-03-26: Propagated RAISING to all 5 allocation step classes + rules class + legacy program.
+  fail-hard-logger-planner: done  # commits 40709e8, 6e657a4 (planner), 2026-03-26
+  fail-hard-logger-ovysledovka: done  # commit e52dbac (ovysledovka), 2026-03-26
 
   # ── Follow-on: ABAP Unit Test Reliability ─────────────────────────────────
-  # Goal: Fix ABAP Unit test timeouts and ensure consistent pass rate
-  # Target repo: planner (cz.imcg.fast.planner)
+  ut-fix-health-check-restructure: done  # commit fe293b3 (planner), 2026-03-27
+  ut-fix-apj-e2e-polling-timeout: done  # commits 570c204, 893d379 (planner), 2026-03-27
 
-  ut-fix-health-check-restructure: done  # commit fe293b3 (planner), 2026-03-27: ltcl_health_tests DURATION MEDIUM, class_setup for one-time DB setup, test_apj_job_base moved to ltcl_apj_e2e_tests.
-  ut-fix-apj-e2e-polling-timeout: done  # commits 570c204, 893d379 (planner), 2026-03-27: APJ E2E polling increased from 30s→55s→90s (360 x 0.25s per loop). All 36 tests pass.
-
-  # ── EST-132: Allocation Dashboard (Fiori Elements List Report + Object Page) ──
-  # Goal: Build Fiori Elements List Report showing allocation runs per company/year/period
-  #       with Object Page drill-down to process step details
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-  # Linear: EST-132
-  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-133-alloc-dashboard-object-page.md
-
+  # ── EST-132: Allocation Dashboard ─────────────────────────────────────────
   epic-est-132: done  # EST-132: Allocation Dashboard
-  est-132-dashboard-list-report: done  # Core list report: custom entity ZFI_I_ALLOC_DASHBOARD_CE, query provider ZCL_FI_ALLOC_DASH_QUERY, service definition ZFI_UI_ALLOC_DASHBOARD. Commits up to 423d3cb (ovysledovka), 2026-03-28.
-  est-132-object-page-step-details: done  # Object Page: child entity ZFI_I_ALLOC_DASH_STEP_CE, step query ZCL_FI_ALLOC_DASH_STEP_QRY, composition tree, facets, header data points. Commits up to 956e4ec (ovysledovka), 2026-03-28.
-  est-132-ui-refinements: done  # UI polish: CompanyCode filter+column+name (T001), sort order, company code restriction (1000-4000), ProcessStatus column reorder, remove dead groupBy, fix RAP get_paging() protocol for unstarted-allocation Object Page navigation. Commits 68e4e4c→75af5c1 (ovysledovka), 2026-03-29.
+  est-132-dashboard-list-report: done  # Commits up to 423d3cb (ovysledovka), 2026-03-28
+  est-132-object-page-step-details: done  # Commits up to 956e4ec (ovysledovka), 2026-03-28
+  est-132-ui-refinements: done  # Commits 68e4e4c→75af5c1 (ovysledovka), 2026-03-29
 
   # ── EST-134: Process Management Actions on Allocation Dashboard ──────────
-  # Goal: Add Execute/Cancel/Supersede/Restart actions to ZFI_I_ALLOC_DASHBOARD_CE
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-  # Also modified: planner (iv_no_commit parameter for RAP-safe saving)
-  # Linear: EST-134 (consolidated from EST-111, EST-112, EST-113, EST-114)
-
   epic-est-134: done
-  est-134-alloc-dashboard-process-actions: done  # 10 commits (ovysledovka) 57eae8a→fb45e21, 1 commit (planner) 037c8a5, 2026-03-29/30. BDEF (unmanaged strict(2), 4 actions with features:instance, side effects), handler+saver behavior pool, DDIC buffer structure/table type, @UI #FOR_ACTION annotations. 12 activation findings resolved (root keyword, authorization master(global), iv_no_commit for COMMIT WORK prohibition in RAP saver, SELECT replacing READ ENTITIES for custom entities, etc.). 5 deferred work items logged.
-  fix-message-030-wrong-in-dashboard-handler: done  # Message 030 was wrong semantic (logging msg, not error). Added message 036 to ZFI_PROCESS class. Updated CancelProcess/SupersedeProcess/RestartProcess handlers to use 036 with v1-v4 key vars. Commits: planner 4a35ac4, ovysledovka 9db92a1, 2026-03-31.
+  est-134-alloc-dashboard-process-actions: done  # 10 commits (ovysledovka) + 1 (planner), 2026-03-29/30
+  fix-message-030-wrong-in-dashboard-handler: done  # planner 4a35ac4, ovysledovka 9db92a1, 2026-03-31
 
   # ── EST-136: Dashboard Lifecycle Actions & RESTREQ Bug Fix ───────────────
-  # Goal: CreateAndExecute action for empty/superseded rows, fix RESTREQ restart bug, APJ error handling
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-  # Linear: EST-136
-  # Spec file: _bmad-output/implementation-artifacts/tech-spec-est-136-dashboard-process-lifecycle-actions-restreq-fix.md
+  epic-est-136: done  # All 9 implementation tasks + 8 ACs verified (2026-03-31)
+  est-136-dashboard-lifecycle-actions-restreq-fix: done  # ovysledovka c5f94f9 + planner 3590d4b, 2026-03-30/31
 
-  epic-est-136: done  # All 9 implementation tasks complete (ovysledovka), 2026-03-30. 8 ACs pending verification (EST-139).
-  est-136-dashboard-lifecycle-actions-restreq-fix: done  # Implementation complete 2026-03-30. Commits: ovysledovka c5f94f9 (main), planner 3590d4b. All 8 ACs verified 2026-03-31: ACs 1-4 via Fiori UI, AC 7 via unit tests, ACs 5/6/8 via code (ADT).
-
-  # ── Deferred work backlog (tracked in Linear) ────────────────────────────
-  # Items below were created 2026-03-31 from deferred-work.md and WIP audit.
-  # Linear issues: EST-139 through EST-147
-
-  est-139-verify-est-136-sprint-status-and-acs: done  # Completed 2026-03-31. Commit hash filled in (c5f94f9), ACs 5/6/8 code-verified, item #6 resolved. ACs 1-4/7 left for SAP UI testing. Linear: EST-139
-  est-140-cx-root-not-caught-in-saver: done              # MEDIUM: Added CATCH cx_root to lsc_dashboard save(). Commit: ovysledovka e18dcf3, 2026-03-31. Linear: EST-140
-  est-141-dashboard-createprocess-after-supersede: done  # Closed: EST-136 fully covers this. CreateAndExecute action handles empty rows + SUPERSEDED/CANCELLED rows. All ACs verified 2026-03-31. AC7 unit test coverage completed: test_apj_dup_cancelled added to ltcl_health_tests + ltcl_apj_status_guards (planner commit 2ec42c6, 2026-03-31). Linear: EST-141
-  est-142-cds-base2-missing-sales-fields: done           # MEDIUM: Fields already present — added in ovysledovka commit 7a65871 (2026-03-13) as part of broader SalesGroup/SalesOffice adaptation. Issue filed against stale info. Closed 2026-03-31. Linear: EST-142
-  est-143-parallel-limit-bypassed-apj: done              # MEDIUM: Promoted check_parallel_limit() to public in manager; added call in APJ job before execute(). Commit: planner 09580d8, 2026-03-31. Linear: EST-143
-  est-144-bal-logger-flush-interval: done                # LOW: Added mv_flush_interval/counter to zcl_fi_process_logger; factory methods accept iv_flush_interval (default 1). Commit: planner 7d29aae, 2026-03-31. Linear: EST-144
-  est-145-server-side-status-validation: done            # LOW: Added status guards to cancelprocess/supersedeprocess/restartprocess handlers. Commit: ovysledovka 125dd91, 2026-03-31. Linear: EST-145
-  est-146-extract-status-constants: done                 # LOW: Replaced 8 raw status literals in get_instance_features with zcl_fi_process_instance=>gc_status-*. Commit: ovysledovka 125dd91, 2026-03-31. Linear: EST-146
-  est-147-verify-est-132-deferred-items: done            # LOW: Code-verified 2026-03-31. F10: DESCR=CHAR40 sufficient (max text "Execution Requested"=19 chars). F11: to_upper() handles casing, no runtime risk. F17/F21: annotations present in CDS; low-risk UI checks deferred to service binding activation (EST-132 Tasks 7-8). No code changes needed. Linear: EST-147
+  # ── Deferred work backlog (Linear EST-139 through EST-147) ───────────────
+  est-139-verify-est-136-sprint-status-and-acs: done  # Completed 2026-03-31
+  est-140-cx-root-not-caught-in-saver: done  # Commit: ovysledovka e18dcf3, 2026-03-31
+  est-141-dashboard-createprocess-after-supersede: done  # Closed: EST-136 covers this; AC7 UT: planner 2ec42c6, 2026-03-31
+  est-142-cds-base2-missing-sales-fields: done  # Fields already present — closed 2026-03-31
+  est-143-parallel-limit-bypassed-apj: done  # Commit: planner 09580d8, 2026-03-31
+  est-144-bal-logger-flush-interval: done  # Commit: planner 7d29aae, 2026-03-31
+  est-145-server-side-status-validation: done  # Commit: ovysledovka 125dd91, 2026-03-31
+  est-146-extract-status-constants: done  # Commit: ovysledovka 125dd91, 2026-03-31
+  est-147-verify-est-132-deferred-items: done  # Code-verified 2026-03-31
 
   # ── EST-116: Step-Level Breakpoint API ───────────────────────────────────
-  # Goal: Allow halting process execution at a specific step (breakpoint),
-  #       with per-instance set/clear API and restart-from-breakpoint flow.
-  # Target repo: planner (cz.imcg.fast.planner)
-  # Linear: EST-116
-
   epic-est-116: done  # EST-116: Step-Level Breakpoint API
-  est-116-breakpoint-feature: done  # commits 9613f36, 0e35489, 32df931, a073923, cdad801, b38b29e (planner), 2026-03-31.
-                                    # DDIC: ZFI_PROCESS_BREAKPOINT dtel, BREAKPOINT field on ZFI_PROC_DEF+ZFI_PROC_STEP, SKIP_BREAKPOINTS on ZFI_PROC_INST, BREAKPOINT domain value.
-                                    # Logic: execute() halts at breakpoint step (status=BREAKPOINT); restart() finds first non-completed step; execute() guard extended for BREAKPOINT+CANCELLED with iv_start_from_step.
-                                    # API: set_step_breakpoint() on instance + set_step_breakpoint_process() on manager.
-                                    # Tests: ltcl_breakpoint_test (6 UTs), BREAKPOINT_HALT + BREAKPOINT_SET_CLEAR health checks, updated APJ_RESTART_CANCELLED test.
-                                    # Fix: ORDER BY removed from LOOP AT WHERE (syntax error); execute() CANCELLED guard fix; test assertions corrected to COMPLETED outcome.
-                                    # All unit tests passed 2026-03-31.
-  est-116-dashboard-ui: done        # Dashboard UI: breakpoint icon + toggle action on step table (ovysledovka).
-                                    # commits ea01b98..2ab1690 (ovysledovka), 2026-04-01.
-                                    # CDS: BreakpointIcon char(1) with criticality=BreakpointCriticality + #WITH_ICON.
-                                    #      BreakpointCriticality=1 (Negative) → red status-negative icon shown.
-                                    #      BreakpointCriticality=0 (Neutral) → empty cell (no icon, no text).
-                                    #      Breakpoint char(1) hidden, carries FOR_ACTION ToggleBreakpoint only.
-                                    # Fix: @Semantics.imageUrl discarded — empty string rendered placeholder icon.
-                                    # Fix: planner f3ce530: load_steps() SELECT was missing BREAKPOINT field.
-                                    # Linear: EST-116 closed 2026-04-01.
+  est-116-breakpoint-feature: done  # commits 9613f36→b38b29e (planner), 2026-03-31
+  est-116-dashboard-ui: done  # commits ea01b98→2ab1690 (ovysledovka), 2026-04-01; fix f3ce530 (planner)
 
   # ── EST-138: Dashboard Duration Visibility ───────────────────────────────
-  # Goal: Add formatted Duration column to process list report and StepDuration
-  #       column to step object page. CDS-computed TotalRuntime used for process;
-  #       ABAP-computed from StepStartedAt/StepEndedAt for steps (with live fallback).
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-  # Spec file: _bmad-output/implementation-artifacts/spec-est-138-dashboard-duration-visibility.md
-  # Linear: EST-138
-
   epic-est-138: done  # EST-138: Dashboard Duration Visibility
-  est-138-dashboard-duration-visibility: done  # commit 61dd3c5 (ovysledovka), 2026-04-01. Duration column on process list report (TotalRuntime via CDS), StepDuration on step object page (ABAP-computed with live fallback). Code review: 2 patches (DATA in LOOP, ABAP-Doc), 1 deferred (CONV i truncation).
-                                               # fix ba1c904 (ovysledovka), 2026-04-01: Show '0s' for completed sub-second steps; lv_secs_i moved to method level.
-                                               # fix 4c8a170 (ovysledovka), 2026-04-01: Suppress duration for EXECREQ/RESTREQ/NEW — prevents spurious elapsed time from initial/stale StartedAt.
-                                               # fix cceae34 (planner), 2026-04-01: Remove premature started_at write at instance creation — StartedAt now initial until execute() runs.
-                                               # fix 74e184f (ovysledovka), 2026-04-01: Show '0s' for sub-second COMPLETED processes (TotalRuntime=0 case).
-                                                # VERIFIED in SAP 2026-04-01. All cases confirmed working.
+  est-138-dashboard-duration-visibility: done  # commits 61dd3c5, ba1c904, 4c8a170 (ovysledovka) + cceae34, 74e184f (planner/ovysledovka), 2026-04-01
 
   # ── EST-150/151/152: Dashboard Filter UX & Action Confirmations ──────────
-  # Goal: Remove FiscalYear F4, add filter defaults (FiscalYear=2026, AllocationId=1),
-  #       add confirmation dialogs for Cancel/Supersede/Restart/CreateAndExecute actions.
-  # Target repo: ovysledovka (cz.imcg.fast.ovysledovka)
-  # Spec file: _bmad-output/implementation-artifacts/spec-est-150-151-152-dashboard-filter-ux-and-action-confirmations.md
-  # Linear: EST-150, EST-151, EST-152
-
-  epic-est-150-151-152: done  # Linear: EST-150, EST-151, EST-152 closed Done 2026-04-01
-  est-150-151-152-dashboard-filter-ux-and-action-confirmations: done  # commit 006b3a9 (ovysledovka), 2026-04-01.
-                                                                       # EST-150: removed @Consumption.valueHelpDefinition from FiscalYear.
-                                                                       # EST-151: added @Consumption.filter.defaultValue '2026' on FiscalYear, '1' on AllocationId.
-                                                                       # EST-152: added Common.IsActionCritical=true in annotation.xml for cancelProcess/supersedeProcess/restartProcess/createAndExecute.
-                                                                       # Fix: trailing newline added to annotation.xml.
-                                                                       # Code review: D1 (fixed '2026' accepted — dynamic default not possible in IF_RAP_QUERY_PROVIDER), P1 fixed, P2 manual verification pending post-activation.
-                                                                        # Bug fix commit 4d1aeed (ovysledovka), 2026-04-01: IsActionCritical targets corrected from entity-type property path
-                                                                        #   (ZFI_I_ALLOC_DASHBOARD_CEType/actionName) to bound action overload signature
-                                                                        #   (actionName(ZFI_I_ALLOC_DASHBOARD_CEType)) — the old targets were silently ignored by Fiori Elements.
+  epic-est-150-151-152: done  # Linear: EST-150, EST-151, EST-152 closed 2026-04-01
+  est-150-151-152-dashboard-filter-ux-and-action-confirmations: done  # commits 006b3a9, 4d1aeed (ovysledovka), 2026-04-01
 
   # ── bgRFC Destination Suspend/Resume Utility ─────────────────────────────
-  # Goal: Standalone admin program ZFI_PROCESS_BGRFC_DEST_MANAGE to pause/resume
-  #       bgRFC inbound destination processing during maintenance/incident handling.
-  # Target repo: planner (cz.imcg.fast.planner)
-  # Spec file: _bmad-output/implementation-artifacts/spec-bgrfc-dest-manage.md
-
   bgrfc-dest-manage: done  # commit 450a137 (planner), 2026-04-03. Linear: EST-157
-                           # ZFI_PROCESS_BGRFC_DEST_MANAGE: selection screen (P_DEST, P_SUSP checkbox),
-                           # uses SAP-internal CL_BGRFC_MONITOR_API / IF_BGRFC_MONITOR_INBOUND
-                           # (LOCK_DESTINATION / UNLOCK_DESTINATION). Messages 100-107 added to ZFI_PROCESS.
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # PROJECT: ZEN_ORCH — Process Orchestration Engine (epics.md)
+  # Target repository: cz.en.orch
+  # Phase: 1 (Foundation + Engine + Adapters). Phase 2 (BSR, Dashboard) deferred.
+  # ════════════════════════════════════════════════════════════════════════════
+
+  # ── Epic 1: Repository Bootstrap & DDIC Foundation ───────────────────────
+  zen-epic-1: in-progress
+  zen-1-1-initialize-repository-and-package-scaffold: done
+  zen-1-2-create-zen-orch-domains: done
+  zen-1-3-create-data-elements-structures-and-table-types: done
+  zen-1-4-create-database-tables: done
+  zen-epic-1-retrospective: optional
+
+  # ── Epic 2: Error Handling & Logging Infrastructure ──────────────────────
+  zen-epic-2: backlog
+  zen-2-1-create-message-class-and-exception-class: backlog
+  zen-2-2-create-logger-interface-and-bal-implementation: backlog
+  zen-epic-2-retrospective: optional
+
+  # ── Epic 3: Adapter Framework ────────────────────────────────────────────
+  zen-epic-3: backlog
+  zen-3-1-create-adapter-interface: backlog
+  zen-3-2-create-adapter-factory: backlog
+  zen-3-3-create-mock-adapter: backlog
+  zen-epic-3-retrospective: optional
+
+  # ── Epic 4: Engine Core ───────────────────────────────────────────────────
+  zen-epic-4: backlog
+  zen-4-1-create-engine-singleton-with-status-constants: backlog
+  zen-4-2-implement-performance-creation-and-score-snapshot: backlog
+  zen-4-3-implement-json-parameter-resolution: backlog
+  zen-4-4-implement-sequential-step-dispatch-and-polling: backlog
+  zen-4-5-implement-gate-evaluation-and-loop-advancement: backlog
+  zen-4-6-implement-run-until-blocked-sweep: backlog
+  zen-4-7-implement-breakpoint-paused-support: backlog
+  zen-epic-4-retrospective: optional
+
+  # ── Epic 5: APJ Scheduling & Performance Lifecycle ───────────────────────
+  zen-epic-5: backlog
+  zen-5-1-create-apj-sweep-job-class: backlog
+  zen-5-2-implement-schedule-driven-performance-creation: backlog
+  zen-5-3-implement-cancel-and-restart-lifecycle-operations: backlog
+  zen-epic-5-retrospective: optional
+
+  # ── Epic 6: Integration Testing & Repository Finalization ────────────────
+  zen-epic-6: backlog
+  zen-6-1-abap-unit-test-suite-for-engine-core: backlog
+  zen-6-2-integration-test-program-and-repository-finalization: backlog
+  zen-epic-6-retrospective: optional
