@@ -248,7 +248,7 @@ development_status:
   # ════════════════════════════════════════════════════════════════════════════
 
   # ── Epic 1: Repository Bootstrap & DDIC Foundation ───────────────────────
-  zen-epic-1: in-progress
+  zen-epic-1: done  # Code review complete + patches applied 2026-04-04
   zen-1-1-initialize-repository-and-package-scaffold: done
   zen-1-2-create-zen-orch-domains: done
   zen-1-3-create-data-elements-structures-and-table-types: done
