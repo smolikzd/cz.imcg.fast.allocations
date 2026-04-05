@@ -11,7 +11,10 @@ constitution_principles:
   - "Principle III - Consult SAP Docs"
   - "Principle IV - Factory Pattern"
   - "Principle V - Error Handling"
-status: "review"
+status: "done"
+completion_date: "2026-04-05"
+commit_hash: "264bbdc"
+commit_repository: "cz.en.orch"
 created: "2026-04-05"
 ---
 
@@ -569,3 +572,16 @@ github-copilot/claude-sonnet-4.6
 | Date | Change |
 |------|--------|
 | 2026-04-05 | Implementation complete; abaplint clean (no line_length, no check_syntax); status → review; commit ef1d600 (cz.en.orch) |
+| 2026-04-05 | Code review complete — 3 patches, 4 deferred, 4 dismissed. Patches committed and pushed; commit 264bbdc (cz.en.orch). Status → done. |
+
+## Tasks / Subtasks
+
+### Review Findings
+
+- [x] [Review][Patch] PAUSED step not excluded from terminal count in T2.3 [`src/zcl_en_orch_engine.clas.abap:406`] — T2.3 `SELECT COUNT(*)` excludes completed/cancelled/failed but not paused. A step in STATUS='B' is skipped in the dispatch loop (treated as terminal) but still counted as non-terminal in T2.3, preventing performance from ever reaching COMPLETED if any step is paused. Fix: add `AND status <> @gc_status-paused` to the COUNT query.
+- [x] [Review][Patch] `lv_cur_status` not cleared before SELECT SINGLE re-reads [`src/zcl_en_orch_engine.clas.abap:320,334,390`] — `lv_cur_status` is reused across multiple SELECT SINGLE calls without being cleared. If any SELECT SINGLE returns SY-SUBRC <> 0 (row gone), the variable retains its prior value and may trigger a false RUNNING or false not-completed detection. Fix: add `CLEAR lv_cur_status` before each of the three SELECT SINGLE statements inside advance_performance.
+- [x] [Review][Patch] `check_sweep_all` uses INSERT for score/step — duplicate key risk on retry [`src/zcl_en_orch_health_chk_query.clas.abap:+50-58`] — If a prior health check run crashed before `cleanup_check_data` was called, the `INSERT zen_orch_score` and `INSERT zen_orch_s_step` will fail with a duplicate-key error on retry, causing a RED result instead of GREEN. All other check methods use MODIFY for idempotent inserts. Fix: replace `INSERT zen_orch_score FROM` and `INSERT zen_orch_s_step FROM` with `MODIFY zen_orch_score FROM` and `MODIFY zen_orch_s_step FROM`.
+- [x] [Review][Defer] Empty inner catch swallows logger failure silently [`src/zcl_en_orch_engine.clas.abap:210-214`] — deferred, pre-existing pattern (`#EC NEEDED` suppress marker intentional; same in poll_step_status)
+- [x] [Review][Defer] LOOP new inner steps not in snapshot — not dispatched in same pass [`src/zcl_en_orch_engine.clas.abap:371-384`] — deferred, intentional by design (documented in spec and code comments)
+- [x] [Review][Defer] UPDATE in CATCH block unguarded — lock failure leaves performance in indeterminate state [`src/zcl_en_orch_engine.clas.abap:207-209`] — deferred, out of scope; resilience hardening targeted at zen-5-x
+- [x] [Review][Defer] `check_sweep_all` cleanup_check_data called after row appended — pre-existing cleanup sequencing risk [`src/zcl_en_orch_health_chk_query.clas.abap`] — deferred, pre-existing pattern across all check methods
