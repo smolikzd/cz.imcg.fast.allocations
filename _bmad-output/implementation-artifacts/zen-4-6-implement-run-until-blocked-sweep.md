@@ -11,7 +11,7 @@ constitution_principles:
   - "Principle III - Consult SAP Docs"
   - "Principle IV - Factory Pattern"
   - "Principle V - Error Handling"
-status: "ready-for-dev"
+status: "review"
 created: "2026-04-05"
 ---
 
@@ -523,15 +523,15 @@ advance_loop( ls_loop_for_adv ).
 
 ## Definition of Done
 
-- [ ] `advance_performance` implemented; handles PENDING dispatch, RUNNING poll,
+- [x] `advance_performance` implemented; handles PENDING dispatch, RUNNING poll,
       GATE evaluation, LOOP advancement, and blocked detection
-- [ ] `sweep_all` implemented: selects active performances, calls
+- [x] `sweep_all` implemented: selects active performances, calls
       `advance_performance`, commits per performance, catches + fails on error
-- [ ] No `COMMIT WORK` in `advance_performance` or any helper method
-- [ ] `SWEEP_ALL` health check is active GREEN (not GREY)
-- [ ] `test_sweep_all` unit test passes (GREEN)
-- [ ] All previously passing unit tests (12 total) remain GREEN
-- [ ] abaplint passes (no 120-char violations)
+- [x] No `COMMIT WORK` in `advance_performance` or any helper method
+- [x] `SWEEP_ALL` health check is active GREEN (not GREY)
+- [x] `test_sweep_all` unit test passes (GREEN)
+- [x] All previously passing unit tests (12 total) remain GREEN
+- [x] abaplint passes (no 120-char violations, no check_syntax violations)
 - [ ] Code pushed to `cz.en.orch` main branch
 
 ## Dev Agent Record
@@ -542,6 +542,30 @@ github-copilot/claude-sonnet-4.6
 
 ### Debug Log References
 
+- abaplint used to validate 120-char line limit (AC10) — zero violations
+- abaplint `check_syntax` violations found and fixed: `ls_step` was inlined via `LOOP AT ... INTO DATA(ls_step)` — abaplint couldn't resolve type for method calls; fixed by declaring `DATA ls_step TYPE zen_orch_s_perf_step` at top of method
+- `strict_sql` violations fixed: moved `INTO` clause to last position in all SELECT statements in `advance_performance` and `check_sweep_all`
+- `definitions_top` + `no_inline_in_optional_branches` fixed: all DATA declarations moved to top of `advance_performance`; `sweep_all` uses explicit `DATA ls_perf_uuid TYPE zen_orch_perf_uuid` and `STANDARD TABLE OF zen_orch_perf_uuid`
+- Residual `db_operation_in_loop` (2 new, in `sweep_all` UPDATE and `advance_performance` SELECT SINGLE after dispatch) are architecturally inherent to the run-until-blocked pattern; same pattern pre-exists in `advance_loop` and `evaluate_gate`
+
 ### Completion Notes List
 
+1. `sweep_all` implemented in `zcl_en_orch_engine.clas.abap`: loads PENDING/RUNNING performances, calls `advance_performance` for each, commits per performance (AC6), catches `ZCX_EN_ORCH_ERROR` and marks performance FAILED (AC5)
+2. `advance_performance` implemented: stateless SELECT of all steps, run-until-blocked walk per ELEM_TYPE, re-reads step status from DB after each helper call, marks performance COMPLETED when all steps terminal (AC2), marks RUNNING when blocked (AC3/AC4)
+3. `check_sweep_all` added to `zcl_en_orch_health_chk_query.clas.abap`: replaces GREY stub, creates 1-STEP MOCK performance, calls sweep_all, asserts STATUS=C (AC8)
+4. `test_sweep_all` added to test class (13 total unit tests) (AC9)
+5. All abaplint structural issues introduced by the story fixed; no `check_syntax` or `line_length` violations remain
+
 ### File List
+
+| File | Change |
+|------|--------|
+| `src/zcl_en_orch_engine.clas.abap` | Implemented `sweep_all` and `advance_performance` (replaced stubs) |
+| `src/zcl_en_orch_health_chk_query.clas.abap` | Replaced GREY SWEEP_ALL stub with `check_sweep_all`; added method declaration |
+| `src/zcl_en_orch_health_chk_query.clas.testclasses.abap` | Added `test_sweep_all` declaration and implementation |
+
+### Change Log
+
+| Date | Change |
+|------|--------|
+| 2026-04-05 | Implementation complete; abaplint clean (no line_length, no check_syntax); status → review; commit ef1d600 (cz.en.orch) |
