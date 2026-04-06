@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-05  # zen-4-6 done
+last_updated: 2026-04-06  # Epic 5 closed; Epic 6 stories promoted to ready-for-dev
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -269,25 +269,25 @@ development_status:
   zen-epic-3-retrospective: optional
 
   # ── Epic 4: Engine Core ───────────────────────────────────────────────────
-  zen-epic-4: in-progress
+  zen-epic-4: done
   zen-4-1-create-engine-singleton-with-status-constants: done  # code review patches applied 2026-04-04
   zen-4-2-implement-performance-creation-and-score-snapshot: done  # create_performance + snapshot_score; tests passed (cz.en.orch 314f2d9, 2026-04-04)
   zen-4-3-implement-json-parameter-resolution: done  # code review patches applied 2026-04-04
   zen-4-4-implement-sequential-step-dispatch-and-polling: done  # dispatch_step + poll_step_status + 3 unit tests; syntax fixes pushed (cz.en.orch 99ff18a, 2026-04-04)
   zen-4-5-implement-gate-evaluation-and-loop-advancement: done  # evaluate_gate + advance_loop + health checks (cz.en.orch 5714643, 2026-04-05)
   zen-4-6-implement-run-until-blocked-sweep: done  # commit 264bbdc (cz.en.orch), 2026-04-05
-  zen-4-7-implement-breakpoint-paused-support: backlog
+  zen-4-7-implement-breakpoint-paused-support: done  # code review patches applied 2026-04-05
   zen-epic-4-retrospective: optional
 
   # ── Epic 5: APJ Scheduling & Performance Lifecycle ───────────────────────
-  zen-epic-5: backlog
-  zen-5-1-create-apj-sweep-job-class: backlog
-  zen-5-2-implement-schedule-driven-performance-creation: backlog
-  zen-5-3-implement-cancel-and-restart-lifecycle-operations: backlog
+  zen-epic-5: done  # All 3 stories done, code review complete (2026-04-06)
+  zen-5-1-create-apj-sweep-job-class: done
+  zen-5-2-implement-schedule-driven-performance-creation: done  # all patches + decisions resolved (2026-04-06)
+  zen-5-3-implement-cancel-and-restart-lifecycle-operations: done  # code review complete: 9 patches applied, DDIC last_fired_ts added (2026-04-06)
   zen-epic-5-retrospective: optional
 
   # ── Epic 6: Integration Testing & Repository Finalization ────────────────
-  zen-epic-6: backlog
-  zen-6-1-abap-unit-test-suite-for-engine-core: backlog
-  zen-6-2-integration-test-program-and-repository-finalization: backlog
+  zen-epic-6: ready-for-dev  # Story files created 2026-04-06
+  zen-6-1-abap-unit-test-suite-for-engine-core: ready-for-dev  # Story file created 2026-04-06
+  zen-6-2-integration-test-program-and-repository-finalization: ready-for-dev  # Story file created 2026-04-06
   zen-epic-6-retrospective: optional
