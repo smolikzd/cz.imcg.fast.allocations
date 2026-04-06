@@ -33,6 +33,43 @@ This file tracks the code repositories that belong to this planning project.
 - `ZCL_FI_PROCESS_STEP_BASE` - Base class for steps
 - `ZCL_FI_BGRFC_*` - bgRFC handlers
 
+### Orchestration Engine Repository: cz.en.orch
+- **Remote**: https://github.com/smolikzd/cz.en.orch.git
+- **Local Path**: /Users/smolik/DEV/cz.en.orch
+- **Purpose**: ZEN_ORCH process orchestration engine (framework-agnostic)
+- **Owner**: Zdenek Smolik
+- **Constitution Copy**: `src/zen_orch/.constitution.md` (synced from planning repo)
+
+**Phase 1 Status**: Complete (2026-04-06)
+
+| Epic | Title | Completion Date |
+|------|-------|-----------------|
+| Epic 1 | Repository Bootstrap & DDIC Foundation | 2026-04-04 |
+| Epic 2 | Error Handling & Logging Infrastructure | 2026-04-04 |
+| Epic 3 | Adapter Framework | 2026-04-04 |
+| Epic 4 | Engine Core | 2026-04-05 |
+| Epic 5 | APJ Scheduling & Performance Lifecycle | 2026-04-06 |
+| Epic 6 | Integration Testing & Repository Finalization | 2026-04-06 |
+
+**Contents**:
+- 60+ DDIC objects (domains, data elements, tables, structures, table types)
+- 6 classes (`ZCL_EN_ORCH_*`) including engine, adapters, logger, health check
+- 2 interfaces (`ZIF_EN_ORCH_*`): adapter and logger contracts
+- 1 exception class (`ZCX_EN_ORCH_ERROR`)
+- Message class `ZEN_ORCH`
+- APJ Job Catalog and Template (`ZEN_ORCH_JOB_CAT`, `ZEN_ORCH_JOB_TMPL`)
+- CDS view and OData V4 service for health check monitoring
+- Integration test report `ZEN_ORCH_TEST`
+- Gate-based process orchestration engine
+- Adapter framework (no compile-time dependency on ZFI_PROCESS or ZFI_ALLOC_PROCESS)
+
+**Key Classes**:
+- `ZCL_EN_ORCH_ENGINE` - Engine singleton (sweep_all, create/cancel/restart/resume performance)
+- `ZCL_EN_ORCH_ADAPTER_FACTORY` - Adapter instantiation from registry
+- `ZCL_EN_ORCH_ADAPTER_MOCK` - Mock adapter for testing (synchronous COMPLETED)
+- `ZCL_EN_ORCH_LOGGER` - BAL logger implementation
+- `ZCL_EN_ORCH_HEALTH_CHK_QUERY` - Health check OData query class
+
 ### Implementation Repository: cz.imcg.fast.ovysledovka
 - **Remote**: https://github.com/smolikzd/cz.imcg.fast.ovysledovka.git
 - **Local Path**: /Users/smolik/DEV/cz.imcg.fast.ovysledovka
@@ -67,6 +104,7 @@ The constitution must be synced to both code repositories whenever it changes:
 This copies `_bmad/_memory/constitution.md` to:
 - `../cz.imcg.fast.planner/src/.constitution.md`
 - `../cz.imcg.fast.ovysledovka/src/.constitution.md`
+- `../cz.en.orch/src/zen_orch/.constitution.md`
 
 ### Planning Artifact Sync
 When creating new stories/tasks in `_bmad-output/planning-artifacts/`, ensure they reference the correct repository for implementation.

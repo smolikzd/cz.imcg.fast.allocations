@@ -158,3 +158,118 @@ Items surfaced during review that are not caused by the current story but worth 
 - **Date:** 2026-04-04
 - **Description:** `ZCX_EN_ORCH_ERROR` implements `if_t100_dyn_msg` but the constructor never populates `msgv1`–`msgv4`. Code that renders the exception via `MESSAGE lx TYPE 'E'` or reads `if_t100_dyn_msg~msgv1` will see empty values. T100-based display (SLG1, short dump) works correctly. Deferred: design gap inherited from pattern; no immediate runtime impact.
 - **Priority:** Low — only relevant if a caller uses the dynamic message interface explicitly.
+
+---
+
+## Deferred from: code review of zen-3-2, zen-3-3 (2026-04-04)
+
+### 16. Status literal 'C' not a named constant (zen-3-2, zen-3-3)
+
+- **Source:** zen-3-2/zen-3-3 code review (Blind Hunter F5)
+- **Date:** 2026-04-04
+- **Description:** Status values (`'C'` for COMPLETED) are hard-coded string literals in `ZCL_EN_ORCH_ADAPTER_MOCK` and the factory error path. A named constant (e.g., `gc_status-completed`) tied to the `zen_orch_de_status` domain would make intent explicit and prevent silent breakage if the domain fixed values change.
+- **Priority:** Low — domain values are stable by design; extract constants in Epic 4 when the engine introduces its own status constants.
+
+### 17. Mock adapter does not validate handles (zen-3-3)
+
+- **Source:** zen-3-3 code review (Edge Case Hunter F6)
+- **Date:** 2026-04-04
+- **Description:** `get_status`, `cancel`, `restart`, and `get_result` in `ZCL_EN_ORCH_ADAPTER_MOCK` silently succeed for any handle including empty/foreign ones. This reduces engine integration test fidelity (cannot detect missing handle propagation). Consider a configurable fault-injection mode or at minimum an `IS INITIAL` guard for unit tests in Epic 4.
+- **Priority:** Low — intentional for a basic mock; revisit when Epic 4 engine unit tests are written.
+
+### 18. `get_detail_link` no RAISING clause forecloses error reporting for real adapters (zen-3-1)
+
+- **Source:** zen-3-3 code review (Edge Case Hunter F8)
+- **Date:** 2026-04-04
+- **Description:** `ZIF_EN_ORCH_ADAPTER~get_detail_link` deliberately has no RAISING clause (best-effort contract). Real adapters that do I/O to build a URL cannot raise the domain exception; they must swallow errors or return an empty string. If an adapter ever needs error reporting from this method, the interface contract must be changed — a breaking change. Document this constraint when implementing the first real adapter.
+- **Priority:** Low — acceptable for current use case; document before first non-mock adapter is implemented.
+
+### 19. `cl_system_uuid=>create_uuid_c26_static` is classic API (not released for ABAP Cloud) (zen-3-3)
+
+- **Source:** zen-3-3 code review (Acceptance Auditor F9)
+- **Date:** 2026-04-04
+- **Description:** The mock uses `cl_system_uuid=>create_uuid_c26_static` which is a classic on-premise API. Project targets ABAP 7.58 (on-premise), so this is acceptable now. If the project ever migrates to ABAP Cloud / BTP, replace with `xco_cp=>uuid->version_4->as_string( )` or equivalent released API.
+- **Priority:** Low — no impact on current on-premise target.
+
+---
+
+## Deferred from: code review of zen-4-1-create-engine-singleton-with-status-constants (2026-04-04)
+
+### 20. Stub methods return no value/raise no exception — silent empty UUID / empty JSON
+
+- **Source:** zen-4-1 code review (Blind Hunter + Edge Case Hunter)
+- **Date:** 2026-04-04
+- **Description:** `create_performance` returns initial (all-zero) UUID, `resolve_params` returns empty string, other stubs do nothing and raise no exception. Callers in any integrated test environment before 4.2–4.7 are implemented silently receive bad data. Intentional stub design.
+- **Priority:** Low — will be resolved as stories 4.2–4.7 are implemented.
+
+### 21. `sweep_all` has no RAISING clause — error propagation strategy not yet defined
+
+- **Source:** zen-4-1 code review (Edge Case Hunter)
+- **Date:** 2026-04-04
+- **Description:** `sweep_all` is the APJ entry point and has no `RAISING` clause, which means `advance_performance` errors must be caught and logged internally. The catch strategy (catch-per-performance vs. catch-all) is not yet committed. The design is by-spec for the public API.
+- **Priority:** Medium — the catch strategy must be defined in story 4.6 before any production use.
+
+### 22. FINAL class with no interface is untestable via test doubles
+
+- **Source:** zen-4-1 code review (Blind Hunter)
+- **Date:** 2026-04-04
+- **Description:** `ZCL_EN_ORCH_ENGINE` is `FINAL` with no interfaces, making it impossible to mock in unit tests of dependent classes. All private algorithm methods are also private with no seam. Test strategy must be addressed in story 4.6 (engine implementation) or epic 6 (integration testing).
+- **Priority:** Medium — blocking for any unit test that depends on the engine singleton.
+
+### 23. Singleton `go_instance` is never cleared — no reset path for tests or poisoned-instance recovery
+
+- **Source:** zen-4-1 code review (Blind Hunter + Edge Case Hunter)
+- **Date:** 2026-04-04
+- **Description:** `CLASS-DATA go_instance` is assigned once and never reset. In APJ work-process reuse scenarios, a failed/internally-inconsistent engine state persists for the session lifetime. No `reset_instance` method exists. To be revisited in epic 6 integration testing.
+- **Priority:** Low — only relevant for APJ work-process reuse or unit test isolation.
+
+---
+
+## Deferred from: code review of zen-4-3-implement-json-parameter-resolution (2026-04-04)
+
+- **Non-string JSON values (numbers, booleans, nulls) silently produce empty string in resolved params.** `cl_sxml_string_reader` parses non-string value nodes differently; the `IF co_nt_value` branch is skipped, leaving the key with an empty value. Pre-existing gap; architecture §2 enforces string-only values but nothing validates at DB boundary.
+
+- **`{{loop_iteration}}` REPLACE operates on full serialized JSON string — can corrupt a key name that matches the placeholder.** Key names are fixed snake_case per architecture §2, so this cannot occur in practice today. Worth guarding if the key contract ever relaxes.
+
+- **Both levels empty → returns `{}` — no error, no test.** AC3 does not require an error for this case. Callers receiving `{}` should handle it; downstream behavior is not specified here.
+
+- **sXML `element_close` node consumed via `CHECK` skip — fragile but idiomatic.** The parser loop silently discards `element_close` nodes. Works correctly for flat JSON; revisit if nested structures are ever introduced.
+
+- **`FRIENDS zcl_en_orch_engine_test` on production class definition.** Standard SAP ABAP Unit pattern acknowledged in story Dev Notes. Creates a compile-time reference from production code to test artifact. Revisit if a cleaner test-include approach is adopted.
+
+- **`resolve_params` SELECT SINGLE has no concurrency lock.** Read-only computation; engine transaction scope handles consistency. No lock needed for this method in isolation.
+
+---
+
+## Deferred from: code review of story-zen-4-6 (2026-04-05)
+
+- **Empty inner catch swallows logger failure silently** (`sweep_all`, line 210-214). The `#EC NEEDED` suppress marker is intentional and follows the same pattern as `poll_step_status`. Not a defect; revisit if structured error observability is added to the engine.
+- **LOOP new inner steps not in snapshot — not dispatched in same pass** (`advance_performance`, line 371-384). By design: after `advance_loop` clones the next iteration's steps, they are not in the `lt_steps` snapshot and will be dispatched on the next sweep. Documented in spec and code comments. Acceptable for the run-until-blocked contract.
+- **UPDATE in CATCH block unguarded — lock failure leaves performance in indeterminate state** (`sweep_all`, line 207-209). If the `UPDATE zen_orch_perf SET status = FAILED` fails (lock timeout, network), `COMMIT WORK` proceeds with no status change. Resilience hardening (retry, re-check) is targeted at zen-5-x lifecycle work.
+- **`check_sweep_all` cleanup_check_data called after row appended — pre-existing cleanup sequencing risk.** If `cleanup_check_data` raises, the test row is in `mt_rows` but DB state is dirty. Pre-existing pattern across all check methods. Address as part of health-check framework hardening.
+
+## Deferred from: code review of story-zen-4-7 (2026-04-05)
+
+- **`evaluate_gate` treats empty group (no STEP children) as fully satisfied.** When no STEP rows exist for the gate's `ref_id`, the LOOP exits without returning early, so the gate is immediately promoted to PAUSED or COMPLETED. Pre-existing structural assumption in evaluate_gate; not introduced by zen-4-7. Revisit when validating score structure on `create_performance`.
+- **`evaluate_gate` blocks gate forever when a group step is FAILED or CANCELLED.** When a group STEP reaches FAILED/CANCELLED, `evaluate_gate` keeps returning early (not COMPLETED) on every sweep pass, resulting in an infinite busy-loop on the stuck performance. No compensation path for the gate. Pre-existing design gap; not introduced by zen-4-7. Address as part of zen-5-3 cancel/restart lifecycle or a dedicated failure-recovery story.
+
+## Deferred from: code review of story-zen-5-2 (2026-04-06)
+
+- **No idempotency guard — same schedule fires on every `sweep_all` within the same minute.** `is_schedule_due` evaluates only the CRON expression; it does not compare against `changed_at` to prevent re-fire within the same time window. Multiple `sweep_all` calls in the same minute create duplicate performances. Spec explicitly accepts this limitation; revisit in a future scheduling story if APJ overlap becomes a problem.
+- **`changed_at` stores date only (`sy-datum`), losing sub-minute precision.** `AEDAT` field type; no timestamp companion. Future idempotency logic would require a paired `changed_time` field. Spec-compliant as written.
+- **Permanently broken schedule re-fires on every sweep with no circuit-breaker.** If `create_performance` fails (SCORE_NOT_FOUND etc.), the error is caught/logged and the schedule retries indefinitely. No auto-deactivation or retry-count limit. Address in a future scheduling-reliability story.
+- **`APPEND`-based Sakamoto DOW lookup table is fragile to future edits.** 12 sequential `APPEND` statements — a VALUE #(...) constructor would be safer. Low risk; refactor opportunity only.
+
+## Deferred from: code review of zen-6-1-abap-unit-test-suite-for-engine-core (2026-04-06)
+
+- **`sweep_all` has no score_id filter — operates on ALL system P/R performances.** Any call to `sweep_all` in a unit test advances all globally active performances, including live production data. This is a pre-existing engine design constraint (sweep is deliberately system-wide). Mitigate in integration test environments by running tests in an isolated client or ensuring no active performances exist. A future story could add a test-mode flag or scoped sweep variant.
+- **Singleton engine `mo_logger` can become stale across tests.** `ZCL_EN_ORCH_ENGINE` lazy-initialises `mo_logger` once via `get_logger()`. If the BAL log handle becomes invalid after a prior test's `COMMIT WORK AND WAIT`, subsequent `log_exception()` calls in sweep error handlers silently fail. Pre-existing logger singleton design. Revisit if test diagnostics become a problem — consider resetting `mo_logger` to INITIAL in teardown or adding a logger reset method.
+
+## Deferred from: code review of zen-6-2-integration-test-program-and-repository-finalization (2026-04-06)
+
+- **W1: `restart_performance` sy-dbcnt=0 guard ambiguity.** The guard after `UPDATE p_step WHERE status=FAILED` cannot distinguish a concurrent reset (another process already reset the steps) from a genuine data inconsistency (no FAILED steps exist). Pre-existing design gap in concurrent-access handling. Acceptable for Phase 1 single-process context; revisit if concurrent restarts are ever supported.
+- **W2: `cancel_performance` LUW split-brain.** `adapter->cancel()` is an irreversible external side effect called before the DB `UPDATE`. If a failure occurs between the adapter call and the `COMMIT WORK`, the external work unit is cancelled but the DB retains the old step status (RUNNING). This is an accepted best-effort-cancel design trade-off for Phase 1. A future story could introduce a two-phase cancel-request protocol.
+- **W3: Story traceability — zen-5-2/5-3/zen-4-7 implementations bundled in zen-6-2 commit.** The implementations of `check_schedules`, `cancel_performance`, `restart_performance`, and `resume_performance` (all previously stubs) were committed as part of zen-6-2 work rather than in their respective stories. The stories are marked done, but commit hashes in sprint-status.yaml do not reference these implementations. Future sprint reviews should cross-check commit content against story deliverables.
+- **W4: Named cron macros (`@yearly`, `@monthly`, etc.) silently never fire.** `matches_cron_field` passes named macros to `CONV i()`, which raises `cx_sy_conversion_no_number`, causing silent abap_false return. Out of stated Phase 1 feature scope for the cron parser. Add support or explicit validation/logging in a future cron enhancement story.
+- **W5: Cron range (`1-5`) and list (`1,3,5`) syntax unhandled.** Same silent-false behaviour as W4. Standard cron syntax extensions not implemented in Phase 1. Deferred to Phase 2 cron enhancement.
+- **W6: `resolve_params` local TYPE definitions (`ty_kv`, `ty_kv_map`).** Pre-existing Principle I violation from a prior story (zen-4-3 or earlier). Should be extracted to DDIC types `ZEN_ORCH_S_KV` and `ZEN_ORCH_TT_KV` in a housekeeping story.

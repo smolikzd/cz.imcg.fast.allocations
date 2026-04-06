@@ -8,6 +8,8 @@ techniques_used: ['Question Storming', 'Morphological Analysis', 'Chaos Engineer
 ideas_generated: ['Generic APJ Job Template', 'Request/Process Split Pattern', 'Cooperative Cancellation via Status Check', 'Cancel as Cleanup Gateway', 'Timestamp-Based Immediate Start', 'Two New Fields on ZFI_PROC_INST', 'Status Reconciliation (Open)', 'Check Status Action', 'Job-Side Status Guard', 'Cancel is Fire-and-Forget Cleanup', 'Schedule-First Status-Second', 'Background Restart Reuses Existing Mechanics', 'Job References Always Reflect Current Job', 'Job References Persist After Completion', 'Requested Counts as Running for Parallel Limits', 'Requested Statuses Are Active for Duplicate Detection']
 session_active: false
 workflow_completed: true
+session_closed: true
+closed_date: '2026-04-01'
 context_file: ''
 ---
 

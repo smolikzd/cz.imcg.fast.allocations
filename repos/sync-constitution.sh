@@ -8,6 +8,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PLANNING_REPO="$SCRIPT_DIR/.."
 PLANNER_REPO="$PLANNING_REPO/../cz.imcg.fast.planner"
 OVYSLEDOVKA_REPO="$PLANNING_REPO/../cz.imcg.fast.ovysledovka"
+ZEN_ORCH_REPO="$PLANNING_REPO/../cz.en.orch"
 
 CONSTITUTION_SOURCE="$PLANNING_REPO/_bmad/_memory/constitution.md"
 
@@ -28,20 +29,23 @@ echo "📄 Constitution Version: $VERSION"
 echo ""
 
 # Function to sync to a repository
+# Usage: sync_to_repo <repo_path> <repo_name> <relative_target_path>
+# Example: sync_to_repo "/path/to/repo" "my-repo" "src/.constitution.md"
 sync_to_repo() {
   local repo_path=$1
   local repo_name=$2
-  local target_file="$repo_path/src/.constitution.md"
-  
+  local relative_target=${3:-"src/.constitution.md"}
+  local target_file="$repo_path/$relative_target"
+
   if [ ! -d "$repo_path" ]; then
     echo "⚠️  WARNING: Repository not found: $repo_name ($repo_path)"
     echo "   Skipping..."
     return
   fi
-  
-  # Create src directory if it doesn't exist
-  mkdir -p "$repo_path/src"
-  
+
+  # Create target directory if it doesn't exist
+  mkdir -p "$(dirname "$target_file")"
+
   # Add sync header
   {
     echo "<!-- SYNCED FROM PLANNING REPOSITORY -->"
@@ -51,13 +55,14 @@ sync_to_repo() {
     echo ""
     cat "$CONSTITUTION_SOURCE"
   } > "$target_file"
-  
+
   echo "✅ Synced to $repo_name: $target_file"
 }
 
-# Sync to both repositories
-sync_to_repo "$PLANNER_REPO" "cz.imcg.fast.planner"
-sync_to_repo "$OVYSLEDOVKA_REPO" "cz.imcg.fast.ovysledovka"
+# Sync to all repositories
+sync_to_repo "$PLANNER_REPO"     "cz.imcg.fast.planner"     "src/.constitution.md"
+sync_to_repo "$OVYSLEDOVKA_REPO" "cz.imcg.fast.ovysledovka" "src/.constitution.md"
+sync_to_repo "$ZEN_ORCH_REPO"    "cz.en.orch"               "src/zen_orch/.constitution.md"
 
 echo ""
 echo "===================================="

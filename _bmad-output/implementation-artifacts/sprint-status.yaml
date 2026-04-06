@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-06  # Epic 5 closed; Epic 6 stories promoted to ready-for-dev
+last_updated: 2026-04-06  # zen-6-2 code review complete; all P1-P13 patches applied; marked done
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -287,7 +287,7 @@ development_status:
   zen-epic-5-retrospective: optional
 
   # ── Epic 6: Integration Testing & Repository Finalization ────────────────
-  zen-epic-6: ready-for-dev  # Story files created 2026-04-06
-  zen-6-1-abap-unit-test-suite-for-engine-core: ready-for-dev  # Story file created 2026-04-06
-  zen-6-2-integration-test-program-and-repository-finalization: ready-for-dev  # Story file created 2026-04-06
+  zen-epic-6: done  # zen-6-1 done; zen-6-2 done (code review + all patches applied 2026-04-06)
+
+  zen-6-2-integration-test-program-and-repository-finalization: done  # Code review complete; P1–P13 patched (2026-04-06); T12 (manual SAP execution) deferred to first SAP system access
   zen-epic-6-retrospective: optional
