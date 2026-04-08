@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-06  # zen-6-2 code review complete; all P1-P13 patches applied; marked done
+last_updated: 2026-04-08  # T12 resolved (ZEN_ORCH_TEST deleted; unit tests + health check run in SAP); BH-4-4-5 + evaluate_gate bugs fixed
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -274,10 +274,10 @@ development_status:
   # ── Epic 4: Engine Core ───────────────────────────────────────────────────
   zen-epic-4: done
   zen-4-1-create-engine-singleton-with-status-constants: done  # code review patches applied 2026-04-04
-  zen-4-2-implement-performance-creation-and-score-snapshot: done  # create_performance + snapshot_score; tests passed (cz.en.orch 314f2d9, 2026-04-04)
+  zen-4-2-implement-performance-creation-and-score-snapshot: done  # create_performance + snapshot_score; tests passed (cz.en.orch 314f2d9, 2026-04-04); code review complete 2026-04-08 — 0 patches, 5 items deferred
   zen-4-3-implement-json-parameter-resolution: done  # code review patches applied 2026-04-04
-  zen-4-4-implement-sequential-step-dispatch-and-polling: done  # dispatch_step + poll_step_status + 3 unit tests; syntax fixes pushed (cz.en.orch 99ff18a, 2026-04-04)
-  zen-4-5-implement-gate-evaluation-and-loop-advancement: done  # evaluate_gate + advance_loop + health checks (cz.en.orch 5714643, 2026-04-05)
+  zen-4-4-implement-sequential-step-dispatch-and-polling: done  # dispatch_step + poll_step_status + 3 unit tests (cz.en.orch 99ff18a, 2026-04-04); code review complete 2026-04-08 — 6 patch areas applied; BH-4-4-5 permanent-error classification RESOLVED 2026-04-08
+  zen-4-5-implement-gate-evaluation-and-loop-advancement: done  # evaluate_gate + advance_loop + health checks (cz.en.orch 5714643, 2026-04-05); code review complete 2026-04-08 — 10 patches applied (incl. critical LOOP clobber F7); evaluate_gate FAILED/CANCELLED infinite-loop RESOLVED 2026-04-08
   zen-4-6-implement-run-until-blocked-sweep: done  # commit 264bbdc (cz.en.orch), 2026-04-05
   zen-4-7-implement-breakpoint-paused-support: done  # code review patches applied 2026-04-05
   zen-epic-4-retrospective: optional
@@ -292,5 +292,5 @@ development_status:
   # ── Epic 6: Integration Testing & Repository Finalization ────────────────
   zen-epic-6: done  # zen-6-1 done; zen-6-2 done (code review + all patches applied 2026-04-06)
 
-  zen-6-2-integration-test-program-and-repository-finalization: done  # Code review complete; P1–P13 patched (2026-04-06); T12 (manual SAP execution) deferred to first SAP system access
+  zen-6-2-integration-test-program-and-repository-finalization: done  # Code review complete; P1–P13 patched (2026-04-06); T12 resolved — ZEN_ORCH_TEST deleted (overlap with unit tests/health check); unit tests + health check successfully run in SAP
   zen-epic-6-retrospective: optional

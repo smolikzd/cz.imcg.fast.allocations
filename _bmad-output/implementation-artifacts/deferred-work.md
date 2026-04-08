@@ -251,7 +251,7 @@ Items surfaced during review that are not caused by the current story but worth 
 ## Deferred from: code review of story-zen-4-7 (2026-04-05)
 
 - **`evaluate_gate` treats empty group (no STEP children) as fully satisfied.** When no STEP rows exist for the gate's `ref_id`, the LOOP exits without returning early, so the gate is immediately promoted to PAUSED or COMPLETED. Pre-existing structural assumption in evaluate_gate; not introduced by zen-4-7. Revisit when validating score structure on `create_performance`.
-- **`evaluate_gate` blocks gate forever when a group step is FAILED or CANCELLED.** When a group STEP reaches FAILED/CANCELLED, `evaluate_gate` keeps returning early (not COMPLETED) on every sweep pass, resulting in an infinite busy-loop on the stuck performance. No compensation path for the gate. Pre-existing design gap; not introduced by zen-4-7. Address as part of zen-5-3 cancel/restart lifecycle or a dedicated failure-recovery story.
+- **~~`evaluate_gate` blocks gate forever when a group step is FAILED or CANCELLED.~~ RESOLVED 2026-04-08.** `evaluate_gate` now propagates failure: FAILED group step → gate marked FAILED + error logged; CANCELLED group step → gate marked CANCELLED. `advance_performance` GATE branch now detects a FAILED gate status and raises `zcx_en_orch_error=>engine_sweep_failed` instead of setting `lv_blocked`, so the performance terminates with FAILED rather than looping indefinitely.
 
 ## Deferred from: code review of story-zen-5-2 (2026-04-06)
 
@@ -273,3 +273,26 @@ Items surfaced during review that are not caused by the current story but worth 
 - **W4: Named cron macros (`@yearly`, `@monthly`, etc.) silently never fire.** `matches_cron_field` passes named macros to `CONV i()`, which raises `cx_sy_conversion_no_number`, causing silent abap_false return. Out of stated Phase 1 feature scope for the cron parser. Add support or explicit validation/logging in a future cron enhancement story.
 - **W5: Cron range (`1-5`) and list (`1,3,5`) syntax unhandled.** Same silent-false behaviour as W4. Standard cron syntax extensions not implemented in Phase 1. Deferred to Phase 2 cron enhancement.
 - **W6: `resolve_params` local TYPE definitions (`ty_kv`, `ty_kv_map`).** Pre-existing Principle I violation from a prior story (zen-4-3 or earlier). Should be extracted to DDIC types `ZEN_ORCH_S_KV` and `ZEN_ORCH_TT_KV` in a housekeeping story.
+
+---
+
+## Deferred from: code review of zen-4-2-implement-performance-creation-and-score-snapshot (2026-04-08)
+
+- **BH-4-2-3: No rollback on partial snapshot failure.** If `snapshot_score` raises after the `ZEN_ORCH_PERF` header is inserted, an orphaned PERF row with no PERF_STEP children remains in the DB. No `ROLLBACK WORK` in the caller. Priority: Low — deferred to a cleanup/lifecycle story.
+- **BH-4-2-4: `CREATED_AT` stores date only (`sy-datum`, `AEDAT`).** Sub-second precision lost; cannot order within a single day. A `CREATED_TIME` companion or `TIMESTAMP` field would be needed. Priority: Low — spec-compliant as written.
+- **BH-4-2-10: Unit tests use `RISK LEVEL DANGEROUS` with real DB writes.** Logic branches not covered by in-memory doubles. Acceptable for Phase 1; revisit in Epic 6. Priority: Low.
+- **ECH-4-2-3: Malformed `iv_params_json` stored verbatim at creation time.** No schema validation; `resolve_params` will fail later at dispatch time. Spec-compliant; deferred to a future validation story. Priority: Low.
+- **ECH-4-2-7: `SELECT * FROM zen_orch_score_step` in `snapshot_score` has no `ORDER BY` clause.** Row order is non-deterministic. PK uniqueness is unaffected; deterministic ordering aids debugging. Priority: Low.
+
+---
+
+## Deferred from: code review of zen-4-4-implement-sequential-step-dispatch-and-polling (2026-04-08)
+
+- **~~BH-4-4-5: No distinction between permanent and transient adapter errors.~~ RESOLVED 2026-04-08.** `poll_step_status` now classifies `ZCX_EN_ORCH_ERROR` by `msgno`: `adapter_not_registered` (027) and `invalid_score_structure` (061) are treated as permanent — the step is immediately marked FAILED and an error is logged. All other `zcx_en_orch_error` instances remain transient (warn + RETURN). `cx_root` remains transient.
+- **BH-4-4-7: Dead `RAISING zcx_en_orch_error` on `poll_step_status` signature.** By design the method never raises (NFR3 catch-and-swallow), making the RAISING clause misleading. Signature cleanup only; no behavioral impact. Priority: Low.
+
+---
+
+## Deferred from: code review of zen-4-5-implement-gate-evaluation-and-loop-advancement (2026-04-08)
+
+- **F-01: `evaluate_gate` treats empty group (no STEP children) as fully satisfied.** When no STEP rows exist for the gate's `ref_id`, the gate is immediately promoted to PAUSED or COMPLETED. Pre-existing structural assumption; spec decision needed (should this be an error or a no-op?). Priority: Low — deferred to score validation story.

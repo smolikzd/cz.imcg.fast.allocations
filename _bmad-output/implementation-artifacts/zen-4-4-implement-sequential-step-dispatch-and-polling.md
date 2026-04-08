@@ -267,9 +267,48 @@ github-copilot/claude-sonnet-4.6
 | `src/zcl_en_orch_engine.clas.abap` | cz.en.orch | Implemented `dispatch_step` and `poll_step_status` (lines ~260–313) |
 | `src/zcl_en_orch_engine_test.clas.abap` | cz.en.orch | Added 3 test methods + MOCK adapter registration in setup |
 
+## Review Findings
+
+**Code review performed:** 2026-04-08
+**Reviewer model:** github-copilot/claude-sonnet-4.6
+**Review layers:** Blind Hunter · Edge Case Hunter · Acceptance Auditor
+
+### Summary
+
+6 patch areas applied. 2 items deferred. Several findings dismissed.
+
+### Findings — Patched
+
+| ID | Layer | Finding | Patch Applied |
+|----|-------|---------|---------------|
+| BH-4-4-1/2 | Blind Hunter | `dispatch_step`: no `sy-subrc` check after `UPDATE zen_orch_p_step` — phantom step row (race delete, wrong PK) would silently produce a no-op. | Added `IF sy-subrc <> 0` check; logs warning via `get_logger()->log_warning( )`; step dispatch still reported as done (caller continues). |
+| BH-4-4-3 | Blind Hunter | `poll_step_status`: no `sy-subrc` check after `UPDATE zen_orch_p_step` — same phantom row risk. | Added `IF sy-subrc <> 0` guard + warning log. |
+| BH-4-4-4 + ECH-4-4-3 | Blind Hunter + Edge Case Hunter | `dispatch_step`: unknown status value returned by `adapter->start( )` or `adapter->get_status( )` stored verbatim without validation. Invalid status could corrupt DB and confuse the engine state machine. | Added status whitelist validation on both `start()` and `get_status()` return paths; unknown status → FAILED + warning log. |
+| ECH-4-4-1 | Edge Case Hunter | `poll_step_status`: only `ZCX_EN_ORCH_ERROR` caught; a non-`ZCX` adapter exception (e.g., `cx_sy_no_handler`) propagates uncaught and would bypass the NFR3 resilience contract. | Added `CATCH cx_root` after `ZCX_EN_ORCH_ERROR`; treats as transient, logs warning, returns (preserves NFR3). |
+| ECH-4-4-2 | Edge Case Hunter | `sweep_all` CATCH block: on `ZCX_EN_ORCH_ERROR` from `advance_performance`, only the PERF header is marked FAILED; any PENDING step rows remain PENDING. `restart_performance` refuses to restart because it cannot find a FAILED step. | Added UPDATE in CATCH block to mark PENDING steps FAILED so `restart_performance` can locate the failed step. |
+| P-4-4-5 / ECH-4-4-5 | Blind Hunter | `poll_step_status` error path: `log_warning()` called but `save()` never invoked; BAL entries are buffered but not flushed to DB (never visible in SLG1). | Switched from ephemeral `zcl_en_orch_logger=>create()` to engine's `get_logger()` singleton; added `get_logger()->save()` after each `log_warning()` call. |
+
+### Findings — Deferred
+
+| ID | Layer | Finding | Priority |
+|----|-------|---------|----------|
+| BH-4-4-5 | Blind Hunter | No distinction between permanent and transient adapter errors — `poll_step_status` treats all `ZCX_EN_ORCH_ERROR` as transient and retries forever. A spec change is needed to define which error codes are terminal (e.g., `adapter_not_found` should fail the step immediately). | Medium — requires spec decision; deferred to Phase 2 adapter lifecycle story. |
+| BH-4-4-7 | Blind Hunter | `poll_step_status` has `RAISING zcx_en_orch_error` in its signature but by design never raises (NFR3 catch-and-swallow). Dead RAISING clause is misleading. | Low — signature cleanup only; no behavioral impact. Deferred to housekeeping. |
+
+### Findings — Dismissed
+
+- BH-4-4-6: `dispatch_step` called with non-STEP elem_type — dismissed; `advance_performance` ensures only STEP elements are dispatched.
+- BH-4-4-8: `resolve_params` errors not explicitly tested — dismissed; covered by AC4 propagation contract.
+- BH-4-4-9: `ACCEPTING DUPLICATE KEYS` in test setup — dismissed; intentional test isolation pattern.
+- BH-4-4-10: Test teardown deletes MOCK row from `zen_orch_adpt_r` — dismissed; intentional for test isolation.
+- AUD-4-4-AC1: AC1 step STATUS verified — dismissed; MOCK adapter returns 'C' (COMPLETED) synchronously; assertion confirmed correct.
+- AUD-4-4-AC2: AC2 poll RUNNING → COMPLETED — dismissed; confirmed by test `poll_step_status_completed`.
+- AUD-4-4-AC4: AC4 fail-stop contract — dismissed; `dispatch_step` correctly propagates `ZCX_EN_ORCH_ERROR`.
+
 ## Change Log
 
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-04-04 | Story file created | Dev Agent |
 | 2026-04-04 | dispatch_step and poll_step_status implemented; 3 tests added; abaplint validated | Dev Agent |
+| 2026-04-08 | Code review complete; 6 patch areas applied; 2 items deferred | Dev Agent |

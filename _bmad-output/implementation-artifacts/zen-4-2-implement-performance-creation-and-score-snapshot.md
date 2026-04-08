@@ -203,12 +203,45 @@ github-copilot/claude-sonnet-4.6
 | `zcl_en_orch_engine.clas.abap` | Modified — `create_performance` + `snapshot_score` implemented | `src/zen_orch/` |
 | `zcl_en_orch_engine.clas.testclasses.abap` | Created — `ltcl_create_perf` unit tests (4 methods) | `src/zen_orch/` |
 
+## Review Findings
+
+**Code review performed:** 2026-04-08
+**Reviewer model:** github-copilot/claude-sonnet-4.6
+**Review layers:** Blind Hunter · Edge Case Hunter · Acceptance Auditor
+
+### Summary
+
+No patches applied. All acceptance criteria verified as met. Five items deferred to backlog.
+
+### Findings — Patched
+
+None.
+
+### Findings — Deferred
+
+| ID | Layer | Finding | Priority |
+|----|-------|---------|----------|
+| BH-4-2-3 | Blind Hunter | No rollback on partial snapshot failure — if `snapshot_score` raises after the `ZEN_ORCH_PERF` header is inserted, an orphaned PERF row with no PERF_STEP children remains in the DB. No `ROLLBACK WORK` in the caller. | Low |
+| BH-4-2-4 | Blind Hunter | `CREATED_AT` stored as `sy-datum` (date only, `AEDAT`). Sub-second precision lost; `CREATED_AT` cannot be used for ordering within a single calendar day. A `CREATED_TIME` companion field or a `TIMESTAMP` field would be needed for ordering. | Low |
+| BH-4-2-10 | Blind Hunter | Unit tests use `RISK LEVEL DANGEROUS` with real DB writes — no mock/test-double isolation. Tests are smoke-tests only; logic branches are not covered by in-memory doubles. Acceptable for Phase 1; revisit in Epic 6. | Low |
+| ECH-4-2-3 | Edge Case Hunter | Malformed `iv_params_json` (invalid JSON syntax) is accepted at `create_performance` time and stored verbatim in `ZEN_ORCH_PERF.PARAMS_JSON`. No schema validation at creation time; `resolve_params` will fail later at dispatch time. Spec-compliant; deferred to a future validation story. | Low |
+| ECH-4-2-7 | Edge Case Hunter | `SELECT * FROM zen_orch_score_step` in `snapshot_score` has no `ORDER BY` clause. Row order in `lt_score_steps` is non-deterministic. `ZEN_ORCH_PERF_STEP` primary key is `PERF_UUID + SCORE_SEQ + LOOP_ITERATION`; INSERT order does not affect key uniqueness, but deterministic snapshot ordering aids debugging. | Low |
+
+### Findings — Dismissed
+
+All remaining Blind Hunter and Edge Case Hunter findings were dismissed as intentional by spec or as non-defects:
+- BH-4-2-1: No `sy-subrc` check on `INSERT zen_orch_perf` — duplicate UUID probability from 128-bit random UUID is negligible; `ZCX_EN_ORCH_ERROR` would propagate from a DB exception anyway.
+- BH-4-2-2: No `sy-subrc` check on individual `INSERT zen_orch_perf_step` rows — score step `SCORE_SEQ` uniqueness is enforced by DDIC PK; insert failure is a structural error that propagates correctly.
+- BH-4-2-5 through BH-4-2-9, ECH-4-2-1/2/4/5/6/8/9/10: Confirmed non-defects — correct by spec or pre-existing by design.
+- Acceptance Auditor: All 7 ACs verified as met.
+
 ## Change Log
 
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-04-04 | Story file created | Dev Agent |
 | 2026-04-04 | Tests passed in SAP; status → done (cz.en.orch 314f2d9) | Dev Agent |
+| 2026-04-08 | Code review complete; 0 patches applied; 5 items deferred | Dev Agent |
 
 ## Status
 
