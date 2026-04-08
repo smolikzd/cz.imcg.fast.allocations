@@ -241,6 +241,9 @@ development_status:
   # ── bgRFC Destination Suspend/Resume Utility ─────────────────────────────
   bgrfc-dest-manage: done  # commit 450a137 (planner), 2026-04-03. Linear: EST-157
 
+  # ── EST-161: Fix stale ended_at on process restart ───────────────────────
+  est-161-fix-stale-ended-at-on-process-restart: done  # commit 02dbd00 (planner), 2026-04-08
+
   # ════════════════════════════════════════════════════════════════════════════
   # PROJECT: ZEN_ORCH — Process Orchestration Engine (epics.md)
   # Target repository: cz.en.orch
