@@ -296,3 +296,80 @@ Items surfaced during review that are not caused by the current story but worth 
 ## Deferred from: code review of zen-4-5-implement-gate-evaluation-and-loop-advancement (2026-04-08)
 
 - **F-01: `evaluate_gate` treats empty group (no STEP children) as fully satisfied.** When no STEP rows exist for the gate's `ref_id`, the gate is immediately promoted to PAUSED or COMPLETED. Pre-existing structural assumption; spec decision needed (should this be an error or a no-op?). Priority: Low — deferred to score validation story.
+
+---
+
+## Deferred from: code review of story-7.2 (2026-04-09)
+
+### 23. Hash Type Fragility
+
+- **Source:** Story 7.2 review (Blind Hunter BH-5)
+- **Date:** 2026-04-09
+- **Description:** `iv_params_hash` uses `CHAR 64` which is exactly the length of a hex-encoded SHA-256 hash. If the project switches to a different algorithm (e.g., SHA-512) or needs a binary hash, multiple DDIC objects and interface signatures will need breaking changes.
+- **Possible approach:** Consider a domain for the hash or a more generic `STRING` / `XSTRING` type to allow algorithm agility in Phase 3.
+- **Priority:** Low — SHA-256 is stable and sufficient for current requirements.
+
+### 24. Overview Performance for Large Datasets
+
+- **Source:** Story 7.2 review (Blind Hunter BH-6)
+- **Date:** 2026-04-09
+- **Description:** `get_overview` returns a full table of all BSR entries. As the system ages, this table will grow to include thousands of stale terminal registrations (terminal runs that were never cleaned up or re-used). Returning this full set to a UI dashboard will eventually cause timeouts or memory issues.
+- **Possible approach:** Add filtering (e.g., return only active registrations) or implement a background cleanup job to purge terminal entries from `ZEN_ORCH_BSR` after a retention period.
+- **Priority:** Low — only relevant once a significant volume of runs is reached.
+
+---
+
+## Deferred from: code review of zen-7-3-zcl-en-orch-bsr-implementation (2026-04-09)
+
+### 25. N+1 SELECT Pattern in `check_collision` and `get_overview`
+
+- **Source:** Story zen-7-3 review (Blind Hunter + Edge Case Hunter)
+- **Date:** 2026-04-09
+- **Description:** Both `check_collision` and `get_overview` use a loop-inside-SELECT pattern — one outer SELECT for BSR candidates, then one `SELECT SINGLE` per row to resolve live status from `ZEN_ORCH_PERF`. For small BSR tables this is acceptable, but at scale this will degrade performance.
+- **Possible approach:** Replace with a single SELECT with JOIN between `ZEN_ORCH_BSR` and `ZEN_ORCH_PERF`, or use FOR ALL ENTRIES.
+- **Priority:** Low — optimization only, no correctness issue; deferred until volume warrants it.
+
+### 26. Concurrent `register` Race: No Guard on INSERT Duplicate-Key DB Error
+
+- **Source:** Story zen-7-3 review (Edge Case Hunter)
+- **Date:** 2026-04-09
+- **Description:** `register` does a SELECT then INSERT without atomicity. Two concurrent calls with the same `iv_bsr_key` could both pass the SELECT guard and then the second INSERT would produce an unhandled duplicate-key DB exception. The engine's LUW is designed to be single-threaded per performance, so this is unlikely in normal operation, but is theoretically possible.
+- **Possible approach:** Wrap the INSERT in `TRY...CATCH cx_sy_open_sql_error` and re-raise as `bsr_key_collision`, or use `MODIFY` with a uniqueness check.
+- **Priority:** Low — engine LUW is single-threaded by design; relevant only if that assumption ever changes.
+
+---
+
+## Deferred from: code review of zen-7-4-engine-integration-collision-and-bsr-lifecycle (2026-04-09)
+
+### 27. Missing secondary index on ZEN_ORCH_PERF for collision check
+
+- **Source:** zen-7-4 review (Edge Case Hunter)
+- **Date:** 2026-04-09
+- **Description:** The collision check `SELECT SINGLE FROM zen_orch_perf WHERE score_id = ... AND params_hash = ... AND status NOT IN (...)` has no supporting secondary index. For systems with many concurrent performances per score, this results in a full table scan on `ZEN_ORCH_PERF` every time `create_performance` is called.
+- **Possible approach:** Add a secondary index on `(SCORE_ID, PARAMS_HASH, STATUS)` to `ZEN_ORCH_PERF`.
+- **Priority:** Low — only relevant at high concurrency / large volumes; correctness is unaffected.
+
+### 28. `register` failure leaves orphaned PERF row (pre-existing LUW design)
+
+- **Source:** zen-7-4 review (Edge Case Hunter)
+- **Date:** 2026-04-09
+- **Description:** If `mo_bsr->register` raises after the `INSERT zen_orch_perf` and `snapshot_score` have already written to the DB, there is no `ROLLBACK WORK` in `create_performance`. An orphaned PERF row with STEP children but no BSR entry remains. The PREREQ_GATE consumers will never find this performance in the BSR and will block indefinitely.
+- **Possible approach:** Add `ROLLBACK WORK` in the `CATCH zcx_en_orch_error` after the `register` call, or move `register` before `INSERT zen_orch_perf` and use optimistic rollback.
+- **Priority:** Low — `register` is unlikely to fail in practice; the underlying `INSERT zen_orch_bsr` only fails on duplicate key (see #26). Deferred to lifecycle hardening story.
+
+### 29. Magic constant `'SHA256'` in `calculate_hash_for_char` call
+
+- **Source:** zen-7-4 review (Blind Hunter)
+- **Date:** 2026-04-09
+- **Description:** The algorithm name `'SHA256'` is a string literal embedded directly in the `if_algorithm` parameter. If the project needs to change algorithm (e.g., for compliance), it must be found and updated everywhere it appears.
+- **Possible approach:** Define a constant `gc_hash_algorithm TYPE string VALUE 'SHA256'` in a shared constants class or in `ZCL_EN_ORCH_ENGINE` and reference it everywhere hashing is needed.
+- **Priority:** Low — SHA-256 is stable; cosmetic improvement only.
+
+### 30. `set_bsr` FRIENDS declaration missing for test classes (deferred to zen-7-6)
+
+- **Source:** zen-7-4 review (Blind Hunter)
+- **Date:** 2026-04-09
+- **Description:** `set_bsr` is PRIVATE. `GLOBAL FRIENDS` currently only lists `zcl_en_orch_health_chk_query`. Test classes for zen-7-6 that need to inject a mock BSR via `set_bsr` will require the test class to be added to `GLOBAL FRIENDS`.
+- **Possible approach:** Add `zcl_en_orch_engine_test` (or the zen-7-6 test class name) to `GLOBAL FRIENDS` in zen-7-6 when the test class is created.
+- **Priority:** Medium — blocking for zen-7-6 BSR mock injection; address in zen-7-6 story.
+

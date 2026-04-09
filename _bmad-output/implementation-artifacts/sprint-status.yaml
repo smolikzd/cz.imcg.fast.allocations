@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-09  # zen-7-3 done (4d82c45). zen-7-4 up next.
+last_updated: 2026-04-09  # zen-7-4 patches applied, ready to commit.
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -316,7 +316,12 @@ development_status:
     commit_hash: "4d82c45"
     commit_repository: "cz.en.orch"
     notes: "ZCL_EN_ORCH_BSR + ZIF_EN_ORCH_BSR + overview DDIC. Review patches: bsr_invalid_param guard (msg 072), score_id on collision, deregister error guard, msag indent normalised."
-  zen-7-4-engine-integration-collision-and-bsr-lifecycle: backlog
+  zen-7-4-engine-integration-collision-and-bsr-lifecycle:
+    status: "done"
+    completion_date: "2026-04-09"
+    commit_hash: "7258f69"
+    commit_repository: "cz.en.orch"
+    notes: "Collision detection + BSR register/deregister lifecycle. Review patches: BUG-1 register missing iv_perf_uuid+iv_score_id (CRITICAL), BUG-2 deregister missing iv_perf_uuid (CRITICAL), BUG-3 cancel_performance missing BSR deregister (IMPORTANT), BUG-4 XML indentation normalised."
   zen-7-5-prereq-gate-engine-support: backlog
   zen-7-6-unit-tests-bsr-and-prereq-gate: backlog
   zen-epic-7-retrospective: optional
