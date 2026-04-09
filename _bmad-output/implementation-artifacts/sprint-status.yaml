@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-09  # Phase 1 closed (all unit tests GREEN, 16803ab). Phase 2 BSR planning complete — Epic 7 (6 stories) added.
+last_updated: 2026-04-09  # zen-7-3 done (4d82c45). zen-7-4 up next.
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -303,9 +303,19 @@ development_status:
 
   # ── Epic 7: Business State Registry (BSR) ────────────────────────────────
   zen-epic-7: in-progress
-  zen-7-1-bsr-ddic-foundation: ready-for-dev
-  zen-7-2-zif-en-orch-bsr-interface: ready-for-dev
-  zen-7-3-zcl-en-orch-bsr-implementation: backlog
+  zen-7-1-bsr-ddic-foundation:
+    status: "done"
+    completion_date: "2026-04-09"
+    commit_hash: "7cb0f2e"
+    commit_repository: "cz.en.orch"
+    notes: "BSR DDIC Foundation (domains, elements, BSR table) implemented and reviewed."
+  zen-7-2-zif-en-orch-bsr-interface: done
+  zen-7-3-zcl-en-orch-bsr-implementation:
+    status: "done"
+    completion_date: "2026-04-09"
+    commit_hash: "4d82c45"
+    commit_repository: "cz.en.orch"
+    notes: "ZCL_EN_ORCH_BSR + ZIF_EN_ORCH_BSR + overview DDIC. Review patches: bsr_invalid_param guard (msg 072), score_id on collision, deregister error guard, msag indent normalised."
   zen-7-4-engine-integration-collision-and-bsr-lifecycle: backlog
   zen-7-5-prereq-gate-engine-support: backlog
   zen-7-6-unit-tests-bsr-and-prereq-gate: backlog
