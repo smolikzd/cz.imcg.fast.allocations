@@ -9,7 +9,7 @@ depends_on: ["zen-7-4"]
 constitution_principles:
   - "Principle II — SAP Standards"
   - "Principle V — Error Handling"
-status: "review"
+status: "done"
 ```
 
 ---
@@ -164,6 +164,19 @@ Because we need a controllable BSR mock, the test directly inserts a BSR entry f
 - [x] 5. Add `check_prereq_gate` method to `zcl_en_orch_health_chk_query.clas.abap`
 - [x] 6. Add `test_prereq_gate` FOR TESTING method to `zcl_en_orch_health_chk_query.clas.testclasses.abap`
 - [x] 7. Update sprint-status.yaml
+
+### Review Findings
+
+- [x] [Review][Patch] P1: `ref_id` CHAR 20 truncates BSR key in health check test — `lv_prereq_bsr_key` is 50 chars (17 + 1 + 32); `zen_orch_s_step.ref_id` is CHAR 20; INSERT silently truncates; `advance_performance` then passes the truncated key to `check_prerequisite` which finds no BSR row → gate never resolves [`zcl_en_orch_health_chk_query.clas.abap:2087`] — Fix: widen `zen_orch_de_ref_id` domain to CHAR 255, OR use a shorter prereq BSR key in the test (construct a short fixed key, store it in BSR directly, pass same short key as `ref_id`)
+- [x] [Review][Patch] P2: No `sy-dbcnt`/`sy-subrc` guard after `UPDATE zen_orch_p_step` in `evaluate_prereq_gate` — if UPDATE affects 0 rows (phantom step), gate silently stays PENDING; sweep blocks forever with no error [`zcl_en_orch_engine.clas.abap:1034`] — Fix: `IF sy-dbcnt = 0. RAISE EXCEPTION ... mv_detail = |evaluate_prereq_gate: step row not found|. ENDIF.`
+- [x] [Review][Patch] P3: No `sy-subrc` guard after re-read `SELECT SINGLE` in `advance_performance` PREREQ_GATE branch — if row missing, `lv_cur_status` is initial (≠ COMPLETED) → `lv_blocked = abap_true` → silent infinite stall instead of error [`zcl_en_orch_engine.clas.abap:~685`] — Fix: `IF sy-subrc <> 0. RAISE EXCEPTION ... ENDIF.` after the SELECT
+- [x] [Review][Patch] P4: `created_at = sy-datum` in `INSERT zen_orch_score` should be `created_at = lv_ts` (all other inserts in the same method use `lv_ts`) [`zcl_en_orch_health_chk_query.clas.abap:2069`]
+- [x] [Review][Patch] P5: Test not resilient to prior crashed run — no upfront cleanup of `gc_test_score_id` score/step data before `INSERT zen_orch_score`; if a previous run left stale rows, `create_performance` raises collision. Fix: add `cleanup_check_data( )` / explicit DELETEs at start of method (before the score INSERT), same as other check_* methods implicitly rely on.
+- [x] [Review][Patch] P6: Pre-req BSR/perf rows leaked when exception fires after `INSERT zen_orch_bsr` but before end-of-method cleanup — verified: post-ENDTRY DELETEs at lines 2159-2163 are unconditional and cover `lc_prereq_score_id` prefix for all exit paths (CATCH handlers fall through, early RETURN has its own cleanup). No code change required.
+- [x] [Review][Defer] D1: AC5 (already-COMPLETED PREREQ_GATE skipped) not verified in diff — relies on pre-existing step-loop logic that skips non-PENDING steps; not new code, not actionable here — deferred, pre-existing
+- [x] [Review][Defer] D2: `WHEN OTHERS` silently blocks on unknown/initial BSR status — consistent with `evaluate_gate` pattern; architectural decision, not a defect in this story — deferred, pre-existing
+- [x] [Review][Defer] D3: Concurrent sweep race on PREREQ_GATE (double-dispatch) — pre-existing architectural constraint (single APJ job execution model); out of scope here — deferred, pre-existing
+- [x] [Review][Defer] D4: Stale BSR row not deregistered on COMPLETED — BSR lifecycle is managed by `sweep_all` deregister path; PREREQ_GATE does not own the BSR entry for the prereq performance — deferred, by design
 
 ---
 

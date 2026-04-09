@@ -373,3 +373,15 @@ Items surfaced during review that are not caused by the current story but worth 
 - **Possible approach:** Add `zcl_en_orch_engine_test` (or the zen-7-6 test class name) to `GLOBAL FRIENDS` in zen-7-6 when the test class is created.
 - **Priority:** Medium — blocking for zen-7-6 BSR mock injection; address in zen-7-6 story.
 
+---
+
+## Deferred from: code review of zen-7-5 (2026-04-09)
+
+- **D1 — AC5 (already-COMPLETED PREREQ_GATE skipped) not verified in diff.** Relies on pre-existing step-loop logic that skips non-PENDING steps. Not new code, no change needed in this story.
+
+- **D2 — `WHEN OTHERS` in `evaluate_prereq_gate` silently blocks on unknown/initial BSR status.** Consistent with `evaluate_gate` pattern; architectural decision to treat any unrecognised status as "yield". Address if new status values are introduced in future.
+
+- **D3 — Concurrent sweep race on PREREQ_GATE (double-dispatch risk).** Pre-existing architectural constraint: single APJ job execution model means two concurrent `sweep_all` calls are not expected. Out of scope for this story. Revisit if concurrent execution is enabled.
+
+- **D4 — Stale BSR row not deregistered after PREREQ_GATE COMPLETED.** BSR entry for the prereq performance is owned by the prereq performance's lifecycle (deregistered by `sweep_all` when that perf ends). PREREQ_GATE does not own it. By design.
+

@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-09  # zen-7-5 implementation complete, moved to review.
+last_updated: 2026-04-09  # zen-7-5 review complete; all patches applied, marked done.
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -322,6 +322,6 @@ development_status:
     commit_hash: "7258f69"
     commit_repository: "cz.en.orch"
     notes: "Collision detection + BSR register/deregister lifecycle. Review patches: BUG-1 register missing iv_perf_uuid+iv_score_id (CRITICAL), BUG-2 deregister missing iv_perf_uuid (CRITICAL), BUG-3 cancel_performance missing BSR deregister (IMPORTANT), BUG-4 XML indentation normalised."
-  zen-7-5-prereq-gate-engine-support: review  # implementation complete; pending commit + code review
+  zen-7-5-prereq-gate-engine-support: done  # all 6 review patches applied (P1-P6)
   zen-7-6-unit-tests-bsr-and-prereq-gate: backlog
   zen-epic-7-retrospective: optional
