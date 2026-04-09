@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-08  # T12 resolved (ZEN_ORCH_TEST deleted; unit tests + health check run in SAP); BH-4-4-5 + evaluate_gate bugs fixed (cz.en.orch edcfa5e)
+last_updated: 2026-04-09  # Phase 1 closed (all unit tests GREEN, 16803ab). Phase 2 BSR planning complete — Epic 7 (6 stories) added.
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -294,3 +294,19 @@ development_status:
 
   zen-6-2-integration-test-program-and-repository-finalization: done  # Code review complete; P1–P13 patched (2026-04-06); T12 resolved — ZEN_ORCH_TEST deleted (overlap with unit tests/health check); unit tests + health check successfully run in SAP
   zen-epic-6-retrospective: optional
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # ZEN_ORCH PHASE 2 — Business State Registry (BSR)
+  # Planning: epics-zen-phase2.md (2026-04-09)
+  # Target repository: cz.en.orch
+  # ════════════════════════════════════════════════════════════════════════════
+
+  # ── Epic 7: Business State Registry (BSR) ────────────────────────────────
+  zen-epic-7: in-progress
+  zen-7-1-bsr-ddic-foundation: ready-for-dev
+  zen-7-2-zif-en-orch-bsr-interface: ready-for-dev
+  zen-7-3-zcl-en-orch-bsr-implementation: backlog
+  zen-7-4-engine-integration-collision-and-bsr-lifecycle: backlog
+  zen-7-5-prereq-gate-engine-support: backlog
+  zen-7-6-unit-tests-bsr-and-prereq-gate: backlog
+  zen-epic-7-retrospective: optional
