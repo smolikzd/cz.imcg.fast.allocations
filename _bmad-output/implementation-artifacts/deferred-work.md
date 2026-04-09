@@ -385,3 +385,15 @@ Items surfaced during review that are not caused by the current story but worth 
 
 - **D4 — Stale BSR row not deregistered after PREREQ_GATE COMPLETED.** BSR entry for the prereq performance is owned by the prereq performance's lifecycle (deregistered by `sweep_all` when that perf ends). PREREQ_GATE does not own it. By design.
 
+---
+
+## Deferred from: code review of zen-7-6-unit-tests-bsr-and-prereq-gate (2026-04-09)
+
+- **F-F: AC13–AC15 setup block copied 3×.** ~40 lines of identical prereq+gate score setup repeated in `test_prereq_gate_completed`, `test_prereq_gate_running`, and `test_prereq_gate_failed`. Extract to a private helper method (e.g., `setup_prereq_gate_scenario`) in a future test housekeeping pass.
+
+- **F-J: `MODIFY zen_orch_adpt_r` in `setup` never restored in `teardown`.** The adapter registry row is modified in `ltcl_engine_bsr.setup` and not rolled back. Pre-existing pattern used in all engine test classes throughout the project.
+
+- **F-O: No `sy-subrc` check after `INSERT zen_orch_perf` helper rows.** Silent insert failures would cause the wrong scenario to be tested. Pre-existing project-wide pattern; health-check and all engine tests follow the same convention.
+
+- **F-P: No test for PREREQ_GATE with CANCELLED prerequisite (AC17 gap).** The engine handles CANCELLED as equivalent to FAILED, but no unit test covers this path. Add AC17 in a future test-coverage story.
+
