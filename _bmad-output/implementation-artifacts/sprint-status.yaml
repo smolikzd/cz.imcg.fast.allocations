@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-10  # Phase 3 planning complete: epics-zen-phase3.md created (Epic 8 Dashboard + Epic 9 Planner Adapter, 9 stories total)
+last_updated: 2026-04-10  # Phase 3 complete: Epics 8+9 all done (Stories 8.1–8.5, 9.1–9.4)
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -357,18 +357,63 @@ development_status:
   # ════════════════════════════════════════════════════════════════════════════
 
   # ── Epic 8: Three-Level Observability Dashboard ───────────────────────────
-  zen-epic-8: ready-for-dev
-  zen-8-1-timing-ddic-and-engine-wiring: ready-for-dev
-  zen-8-2-interface-cds-views: ready-for-dev
-  zen-8-3-consumption-cds-view-and-association: ready-for-dev
-  zen-8-4-rap-bdef-with-actions: ready-for-dev
-  zen-8-5-service-binding-and-smoke-test: ready-for-dev
+  zen-epic-8: done
+  zen-8-1-timing-ddic-and-engine-wiring:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "c827019"
+    commit_repository: "cz.en.orch"
+    notes: "Timing fields STARTED_AT/ENDED_AT added to ZEN_ORCH_PERF + ZEN_ORCH_P_STEP; data element ZEN_ORCH_DE_TIMESTAMP created; engine wired."
+  zen-8-2-interface-cds-views:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "3a0c8a3"
+    commit_repository: "cz.en.orch"
+    notes: "ZEN_ORCH_I_PERF + ZEN_ORCH_I_P_STEP interface CDS views with composition/association and DurationSec calculated field."
+  zen-8-3-consumption-cds-view-and-association:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "3a0c8a3"
+    commit_repository: "cz.en.orch"
+    notes: "ZEN_ORCH_C_PERF + ZEN_ORCH_C_P_STEP consumption views with UI annotations, StatusCriticality, action buttons (cancel/restart/resume)."
+  zen-8-4-rap-bdef-with-actions:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "7d5db7c"
+    commit_repository: "cz.en.orch"
+    notes: "ZEN_ORCH_I_PERF BDEF (managed strict(2), lock/auth master) + behavior pool ZCL_EN_ORCH_BP_PERF with cancelPerformance/restartPerformance/resumePerformance actions."
+  zen-8-5-service-binding-and-smoke-test:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "9a19add"
+    commit_repository: "cz.en.orch"
+    notes: "Service definition ZEN_ORCH_UI_PERF + OData V4 binding ZEN_ORCH_UI_PERF_O4 + gateway activation binding."
   zen-epic-8-retrospective: optional
 
   # ── Epic 9: Planner Adapter ───────────────────────────────────────────────
-  zen-epic-9: ready-for-dev
-  zen-9-1-adapter-start-get-status: ready-for-dev
-  zen-9-2-adapter-cancel-restart-get-result-get-detail-link: ready-for-dev
-  zen-9-3-adapter-registration-and-smoke-score: ready-for-dev
-  zen-9-4-end-to-end-integration-test: ready-for-dev
+  zen-epic-9: done
+  zen-9-1-adapter-start-get-status:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "9fb5621"
+    commit_repository: "cz.imcg.fast.ovysledovka"
+    notes: "ZCL_FI_ALLOC_ORCH_ADAPTER start() + get_status() methods. Handle format ZFI_PROCESS:<instance_id>."
+  zen-9-2-adapter-cancel-restart-get-result-get-detail-link:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "9fb5621"
+    commit_repository: "cz.imcg.fast.ovysledovka"
+    notes: "cancel() + restart() + get_result() + get_detail_link() methods. iv_no_commit=abap_true in cancel. Committed together with 9.1."
+  zen-9-3-adapter-registration-and-smoke-score:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "0dae5c9"
+    commit_repository: "cz.imcg.fast.ovysledovka"
+    notes: "ZEN_ORCH_ALLOC_SETUP idempotent setup program: registers ALLOC_STEP in ZEN_ORCH_ADPT_R and creates ALLOC_STEP score in ZEN_ORCH_SCORE."
+  zen-9-4-end-to-end-integration-test:
+    status: "done"
+    completion_date: "2026-04-10"
+    commit_hash: "0b402bc"
+    commit_repository: "cz.en.orch"
+    notes: "ALLOC_ADAPTER capability added to ZCL_EN_ORCH_HEALTH_CHK_QUERY: GREY if ALLOC_STEP not in ZEN_ORCH_ADPT_R, GREEN if registered and factory-instantiable. Zero compile-time dependency maintained."
   zen-epic-9-retrospective: optional
