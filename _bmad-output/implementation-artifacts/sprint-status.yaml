@@ -51,9 +51,14 @@
 # Epic 4: Engine Core (stories 4.1–4.7)
 # Epic 5: APJ Scheduling & Performance Lifecycle (stories 5.1–5.3)
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
+# Phase 2 (epics-zen-phase2.md):
+# Epic 7: Business State Registry — BSR (stories 7.1–7.6)
+# Phase 3 (epics-zen-phase3.md):
+# Epic 8: Three-Level Observability Dashboard (stories 8.1–8.5) — cz.en.orch
+# Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-10  # zen-7-6 unit test bug-fix session complete: all 21 LTCL_HEALTH_CHK_QUERY tests GREEN.
+last_updated: 2026-04-10  # Phase 3 planning complete: epics-zen-phase3.md created (Epic 8 Dashboard + Epic 9 Planner Adapter, 9 stories total)
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -340,3 +345,30 @@ development_status:
   #   - TEST_PREREQ_GATE: params_hash added to prereq perf INSERT
   #   - TEST_PREREQ_GATE: created_at TIMESTAMPL overflow → sy-datum (DATS fields)
   zen-orch-unit-test-bugfix-all-21-green: done  # commits 20a12ba→a85e2be (cz.en.orch), 2026-04-10
+
+  # ── Transport cleanup (stale ZEN_ORCH_* table names in TR object list) ────
+  fix-transport-stale-zen-orch-table-entries: done  # Moot — transport already released to production (2026-04-10)
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # ZEN_ORCH PHASE 3 — Dashboard & Planner Adapter
+  # Planning: epics-zen-phase3.md (2026-04-10)
+  # Epic 8 target repository: cz.en.orch
+  # Epic 9 target repository: cz.imcg.fast.ovysledovka
+  # ════════════════════════════════════════════════════════════════════════════
+
+  # ── Epic 8: Three-Level Observability Dashboard ───────────────────────────
+  zen-epic-8: ready-for-dev
+  zen-8-1-timing-ddic-and-engine-wiring: ready-for-dev
+  zen-8-2-interface-cds-views: ready-for-dev
+  zen-8-3-consumption-cds-view-and-association: ready-for-dev
+  zen-8-4-rap-bdef-with-actions: ready-for-dev
+  zen-8-5-service-binding-and-smoke-test: ready-for-dev
+  zen-epic-8-retrospective: optional
+
+  # ── Epic 9: Planner Adapter ───────────────────────────────────────────────
+  zen-epic-9: ready-for-dev
+  zen-9-1-adapter-start-get-status: ready-for-dev
+  zen-9-2-adapter-cancel-restart-get-result-get-detail-link: ready-for-dev
+  zen-9-3-adapter-registration-and-smoke-score: ready-for-dev
+  zen-9-4-end-to-end-integration-test: ready-for-dev
+  zen-epic-9-retrospective: optional
