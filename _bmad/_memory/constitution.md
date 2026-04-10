@@ -138,6 +138,13 @@ DATA(ls_ctx) = VALUE ty_structure( field1 = value1 field2 = value2 field3 = valu
 - Use regular `"` for all comments inside IMPLEMENTATION (method bodies, SQL blocks, inline) and before `CONSTANTS` blocks
 - Violation produces: `ABAP Doc comment is in the wrong position.` or `"#" is not allowed here. "." is expected.`
 
+**Inter-method comments (Non-Negotiable)**:
+- Comments MUST NOT appear between `ENDMETHOD.` and the next `METHOD` at class IMPLEMENTATION level
+- The only valid content between two methods is blank lines
+- Any `"` or `"!` comment placed at class level (outside a method body) produces: `The class contains unknown comments which can't be stored.`
+- If a comment describes the next method, move it **inside** that method as its first line
+- This applies to ALL files: never leave section headers, phase labels, or group separators between methods
+
 ### Database Conventions
 
 - All tables MUST include: MANDT, key fields, created_by, created_at, changed_by, changed_at
@@ -226,4 +233,4 @@ Runtime development guidance is maintained in:
 
 These guidance files MUST stay aligned with constitution principles.
 
-**Version**: 1.0.1 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-04
+**Version**: 1.0.2 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-10
