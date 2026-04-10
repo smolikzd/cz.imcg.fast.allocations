@@ -2,7 +2,7 @@
 title: 'EST-161: Fix stale ended_at on process restart'
 type: 'bugfix'
 created: '2026-04-08'
-status: 'ready-for-dev'
+status: 'done'
 context: []
 ---
 
