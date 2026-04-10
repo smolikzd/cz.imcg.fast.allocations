@@ -53,7 +53,7 @@
 # Epic 6: Integration Testing & Repository Finalization (stories 6.1–6.2)
 
 generated: 2026-04-04
-last_updated: 2026-04-09  # zen-7-6 code review complete, all 5 patches applied, status: done.
+last_updated: 2026-04-10  # zen-7-6 unit test bug-fix session complete: all 21 LTCL_HEALTH_CHK_QUERY tests GREEN.
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -325,3 +325,18 @@ development_status:
   zen-7-5-prereq-gate-engine-support: done  # all 6 review patches applied (P1-P6)
   zen-7-6-unit-tests-bsr-and-prereq-gate: done  # code review: 5 patches applied (F-A AC4 assert_subrc, F-B AC2 textid, F-C AC10 textid, F-D RISK LEVEL DANGEROUS, F-K AC3 count), 4 deferred, 7 dismissed
   zen-epic-7-retrospective: optional
+
+  # ── ZEN_ORCH Unit Test Bug-Fix (post zen-7-6) ────────────────────────────
+  # All 21 LTCL_HEALTH_CHK_QUERY tests in ZCL_EN_ORCH_HEALTH_CHK_QUERY were
+  # failing. Fixed across 5 commits (20a12ba→a85e2be) on 2026-04-10.
+  # Key fixes:
+  #   - TEST_CREATE_PERFORMANCE: assert changed to expect status=P (PENDING)
+  #   - TEST_POLL_STEP_RESILIENT: adapter_not_registered reclassified as transient
+  #   - TEST_PREREQ_GATE: bsr_key STRING overflow → CONV zen_orch_de_bsr_key()
+  #   - TEST_PREREQ_GATE: COMMIT WORK AND WAIT added before create_performance
+  #   - TEST_PREREQ_GATE: IS INITIAL guard added in evaluate_prereq_gate
+  #   - TEST_PREREQ_GATE: prereq UUID create_uuid_c32→x16 (CHAR32→RAW16)
+  #   - TEST_PREREQ_GATE: prereq perf status PENDING→PAUSED (prevent sweep auto-complete)
+  #   - TEST_PREREQ_GATE: params_hash added to prereq perf INSERT
+  #   - TEST_PREREQ_GATE: created_at TIMESTAMPL overflow → sy-datum (DATS fields)
+  zen-orch-unit-test-bugfix-all-21-green: done  # commits 20a12ba→a85e2be (cz.en.orch), 2026-04-10
