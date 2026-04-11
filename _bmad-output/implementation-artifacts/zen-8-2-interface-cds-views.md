@@ -200,3 +200,11 @@ Created 6 files in `cz.en.orch/src/`:
 - `src/zen_orch_i_p_step.ddls.asddls` (new)
 - `src/zen_orch_i_p_step.ddls.xml` (new)
 - `src/zen_orch_i_p_step.ddls.baseinfo` (new)
+
+---
+
+### Review Findings
+
+- [x] [Review][Patch] `StatusCriticality` inverted and wrong type — **RESOLVED (Patch — CDS fix):** Mapping corrected to C→3 (green), F→1 (red), X→1 (red), R→2 (orange), B→2 (orange), P→0 (grey); cast to `abap.int1` applied in both interface views.
+- [x] [Review][Patch] `@EndUserText.label` missing on `PerfUuid` in `I_P_STEP` — **RESOLVED (Patch 10):** `@EndUserText.label: 'Performance UUID'` added to the `PerfUuid` field in `zen_orch_i_p_step.ddls.asddls`.
+- [x] [Review][Defer] Extra `@UI.selectionField` on `CreatedAt` — **DEFERRED to D2 in deferred-work.md** — minor over-delivery; no functional impact.

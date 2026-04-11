@@ -397,3 +397,74 @@ Items surfaced during review that are not caused by the current story but worth 
 
 - **F-P: No test for PREREQ_GATE with CANCELLED prerequisite (AC17 gap).** The engine handles CANCELLED as equivalent to FAILED, but no unit test covers this path. Add AC17 in a future test-coverage story.
 
+---
+
+## Deferred from: code review of Epic 8 (zen-8-1 through zen-8-5) (2026-04-11)
+
+### D1 — Hard-coded magic string literals for status codes in engine (zen-8-1)
+
+- **Source:** Epic 8 review (Blind Hunter)
+- **Date:** 2026-04-11
+- **Description:** Status values ('P','R','B','F','C','X') are hard-coded string literals throughout `zcl_en_orch_engine.clas.abap`. Pre-existing pattern; a `gc_status` constants structure has not yet been introduced. Consistent with deferred item #16 from zen-3-2/zen-3-3 reviews.
+- **Priority:** Low — domain values stable by design; deferred to a future constants housekeeping story.
+
+### D2 — Extra `@UI.selectionField` on `CreatedAt` not in spec (zen-8-3)
+
+- **Source:** Epic 8 review (Acceptance Auditor)
+- **Date:** 2026-04-11
+- **Description:** `zen_orch_c_perf.ddls.asddls` includes `@UI.selectionField` on `CreatedAt` which was not specified in Story 8.3. Minor over-delivery; no functional impact.
+- **Priority:** Low — no correction needed unless spec is strictly enforced.
+
+### D3 — Success messages hard-coded untranslatable English strings (zen-8-4/8-5)
+
+- **Source:** Epic 8 review (Blind Hunter)
+- **Date:** 2026-04-11
+- **Description:** Behavior implementation methods use hard-coded English string literals in `reported` success messages instead of T100 message classes. Pre-existing pattern throughout the project (dashboard behavior pool follows the same pattern). Deferred until a message translation requirement exists.
+- **Priority:** Low — internal operations cockpit; no i18n requirement in Phase 3.
+
+### D4 — Permanent-error path and normal terminal path can both fire for same step row (zen-8-1)
+
+- **Source:** Epic 8 review (Edge Case Hunter)
+- **Date:** 2026-04-11
+- **Description:** In `poll_step_status`, a step that is F-status at the adapter level can have both the normal terminal UPDATE (via `advance_performance`) and the permanent-error UPDATE execute for the same row in a single sweep pass. The second UPDATE is idempotent only if both write the same status. If the timing or error classification races, `ended_at` may be written twice. Pre-existing design constraint.
+- **Priority:** Low — both paths write F status; double-write is idempotent in the current implementation.
+
+---
+
+## Deferred from: code review of Epic 9 (zen-9-1 through zen-9-4) (2026-04-11)
+
+### 31. `get_detail_link` returns empty URL — Phase 4 deep link not yet implemented (zen-9-2)
+
+- **Source:** Epic 9 review (Acceptance Auditor D10)
+- **Date:** 2026-04-11
+- **Description:** `ZIF_EN_ORCH_ADAPTER~get_detail_link` in `ZCL_FI_ALLOC_ORCH_ADAPTER` returns
+  an empty string `''`. The engine tolerates an empty URL, but the ZEN_ORCH dashboard step table
+  will show no clickable link for allocation steps. The intent is to surface a deep link to the
+  ZFI_ALLOC process dashboard row.
+- **Possible approach:** In Phase 4, compute a Fiori intent-based URL:
+  `rv_url = |#ZFI_ALLOC_DASHBOARD-display?ProcessInstanceId={ iv_handle+lv_prefix_len }|`
+  or equivalent. Requires the target app URL pattern to be confirmed with UX.
+- **Priority:** Low — operational cockpit users can navigate manually for now.
+
+### 32. ZEN_ORCH_SETUP program has no error handling or user feedback (zen-9-3)
+
+- **Source:** Epic 9 review (Edge Case Hunter D11)
+- **Date:** 2026-04-11
+- **Description:** `ZEN_ORCH_SETUP` uses bare `MODIFY` statements with no `sy-subrc` check or
+  `MESSAGE` output. If a table lock or authorisation issue prevents the MODIFY, the program
+  silently completes without any indication of failure.
+- **Possible approach:** Add `IF sy-subrc <> 0 → WRITE 'ERROR: ...'` guards, or use
+  `TRY ... CATCH cx_sy_open_sql_error` to surface DB errors as user messages.
+- **Priority:** Low — admin-only tool executed manually in a controlled environment.
+  The MODIFY pattern is idempotent; partial failure would be visible on the next health check (GREY).
+
+---
+
+### ~~D5 — `ABSTRACT FINAL` class is semantically contradictory (zen-8-4)~~ RESOLVED 2026-04-11
+
+- **Source:** Epic 8 review (Blind Hunter)
+- **Date:** 2026-04-11
+- **Resolved:** 2026-04-11 — `ABSTRACT` keyword removed from `zcl_en_orch_bp_perf.clas.abap` (Patch 14). Class is now `PUBLIC FINAL FOR BEHAVIOR OF zen_orch_c_perf`.
+- **Description:** `zcl_en_orch_bp_perf` was declared `ABSTRACT FINAL` — a class cannot be both abstract (requiring subclassing) and final (forbidding subclassing). SAP RAP behavior pool classes conventionally use `FINAL`; the `ABSTRACT` keyword was carried over from a template.
+- **Priority:** ~~Low~~ Resolved.
+

@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-11  # zen-9-1/9-2/9-3/9-4 done, Epic 9 closed
+last_updated: 2026-04-11  # zen-8 + zen-9 code review patches applied; all Phase 3 complete
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -363,25 +363,25 @@ development_status:
     completion_date: "2026-04-11"
     commit_hash: "415bbcd"
     commit_repository: "cz.en.orch"
-    notes: "Created ZEN_ORCH_DE_TIMESTAMP dtel; added STARTED_AT/ENDED_AT to perf+step tables and s_perf_step structure; full timing wiring in engine (dispatch_step, advance_performance, sweep_all, cancel_performance, poll_step_status)"
+    notes: "Created ZEN_ORCH_DE_TIMESTAMP dtel; added STARTED_AT/ENDED_AT to perf+step tables and s_perf_step structure; full timing wiring in engine (dispatch_step, advance_performance, sweep_all, cancel_performance, poll_step_status). Code review patches applied 2026-04-11: Patch1 dtel domain TIMESTAMPL, Patch2 retype 8 engine vars to timestampl, Patch3 split poll_step_status UPDATE (ended_at terminal-only), Patch4 cancel_performance bulk-stamp step ended_at, Patch5 sweep_all fail-stop bulk-stamp step ended_at, Patch6 advance_performance COMPLETED path AND ended_at IS NULL guard, Patch7 restart_performance clears started_at+ended_at on steps and started_at on perf (D1 decision)."
   zen-8-2-interface-cds-views:
     status: "done"
     completion_date: "2026-04-11"
     commit_hash: "fddda9f"
     commit_repository: "cz.en.orch"
-    notes: "Created ZEN_ORCH_I_PERF and ZEN_ORCH_I_P_STEP interface CDS views. Fix commit fddda9f resolves activation errors: ZEN_ORCH_DE_TIMESTAMP switched from DOMNAME=TIMESTAMPL (not active in system) to raw DEC 21.7 type params; removed @AbapCatalog.compiler.compareFilter and @AbapCatalog.preserveKey annotations (invalid on define view entity)."
+    notes: "Created ZEN_ORCH_I_PERF and ZEN_ORCH_I_P_STEP interface CDS views. Fix commit fddda9f resolves activation errors. Code review patches applied 2026-04-11: Patch8 get_instance_features ls_failed check, Patch9 ZEN_ORCH_I_PERF DurationSec GREATEST(0,...) guard, Patch10 ZEN_ORCH_I_P_STEP DurationSec GREATEST(0,...) guard + @EndUserText.label on PerfUuid."
   zen-8-3-consumption-cds-view-and-association:
     status: "done"
     completion_date: "2026-04-11"
     commit_hash: "3d8edbc"
     commit_repository: "cz.en.orch"
-    notes: "ZEN_ORCH_C_PERF and ZEN_ORCH_C_P_STEP consumption views. Fixed label too long, replaced Semantics.url with UI.lineItem type #WITH_URL, removed redundant CAST to INT1."
+    notes: "ZEN_ORCH_C_PERF and ZEN_ORCH_C_P_STEP consumption views. Fixed label too long, replaced Semantics.url with UI.lineItem type #WITH_URL, removed redundant CAST to INT1. Code review patches applied 2026-04-11: Patch11 mask ParamsJson with '***' in ZEN_ORCH_C_PERF + add @UI.identification action button annotations, Patch12 @Semantics.url: true on WorkUnitHandle in ZEN_ORCH_C_P_STEP (D4 decision: mask ParamsJson; D3 decision: @Semantics.url on WorkUnitHandle)."
   zen-8-4-rap-bdef-with-actions:
     status: "done"
     completion_date: "2026-04-11"
     commit_hash: "16fd742"
     commit_repository: "cz.en.orch"
-    notes: "BDEF ZEN_ORCH_C_PERF with cancel/restart/resume instance actions, instance features gate, global auth. Behavior pool ZCL_EN_ORCH_BP_PERF delegates to engine methods."
+    notes: "BDEF ZEN_ORCH_C_PERF with cancel/restart/resume instance actions, instance features gate, global auth. Behavior pool ZCL_EN_ORCH_BP_PERF delegates to engine methods. Code review patches applied 2026-04-11: Patch13 add DurationSec+StatusCriticality to field(readonly) in both BDEF entities, Patch14 remove ABSTRACT keyword from ZCL_EN_ORCH_BP_PERF class definition (D5 resolved)."
   zen-8-5-service-binding-and-smoke-test:
     status: "done"
     completion_date: "2026-04-11"
@@ -397,23 +397,23 @@ development_status:
     completion_date: "2026-04-11"
     commit_hash: "594aae2"
     commit_repository: "cz.imcg.fast.ovysledovka"
-    notes: "ZCL_FI_ALLOC_ORCH_ADAPTER: start + get_status methods. Fixed init struct (zfi_alloc_process_params), field names (allocation_id, export). Added adapter_poll_failed textid to ZCX_EN_ORCH_ERROR (cz.en.orch e027652)."
+    notes: "ZCL_FI_ALLOC_ORCH_ADAPTER: start + get_status methods. Fixed init struct (zfi_alloc_process_params), field names (allocation_id, export). Added adapter_poll_failed textid to ZCX_EN_ORCH_ERROR (cz.en.orch e027652). Code review 2026-04-11: D5 (exception boundary) + D8 (textid) dismissed — already correct in actual code."
   zen-9-2-adapter-cancel-restart-get-result-get-detail-link:
     status: "done"
     completion_date: "2026-04-11"
     commit_hash: "594aae2"
     commit_repository: "cz.imcg.fast.ovysledovka"
-    notes: "cancel, restart, get_result, get_detail_link methods implemented in same class (ZCL_FI_ALLOC_ORCH_ADAPTER). Committed together with zen-9-1."
+    notes: "cancel, restart, get_result, get_detail_link methods. Committed together with zen-9-1. Code review 2026-04-11: D6 (missing commit) + D7 (stale handle) dismissed — cancel_process commits by default; restart reuses same instance."
   zen-9-3-adapter-registration-and-smoke-score:
     status: "done"
     completion_date: "2026-04-11"
     commit_hash: "af506cf"
     commit_repository: "cz.en.orch"
-    notes: "ZEN_ORCH_SETUP.prog.abap: idempotent MODIFY-based setup. Registers ZFI_PROCESS adapter in ZEN_ORCH_ADPT_R, defines ALLOC_STEP score in ZEN_ORCH_SCORE, inserts single STEP row in ZEN_ORCH_S_STEP. Params JSON uses COMPANY_CODE=1000 as placeholder — adjust before running in target system."
+    notes: "ZEN_ORCH_SETUP.prog.abap: idempotent MODIFY-based setup. Registers ZFI_PROCESS adapter, ALLOC_STEP score, single STEP row. Code review 2026-04-11: Patch A (parse_handle: NS→prefix-at-pos-0, +12→+lv_prefix_len, empty guard via length check) + Patch B (map_status: SKIPPED→completed, BREAKPOINT→failed) applied to zcl_fi_alloc_orch_adapter.clas.abap in cz.imcg.fast.ovysledovka."
   zen-9-4-end-to-end-integration-test:
     status: "done"
     completion_date: "2026-04-11"
     commit_hash: "d3a206a"
     commit_repository: "cz.en.orch"
-    notes: "Added check_alloc_adapter (Phase 14) to ZCL_EN_ORCH_HEALTH_CHK_QUERY. GREY if ALLOC_STEP not configured, GREEN if sweep_all succeeds and p_step STATUS=R or C, RED otherwise. Best-effort cancel + unconditional cleanup."
+    notes: "Added check_alloc_adapter (Phase 14) to ZCL_EN_ORCH_HEALTH_CHK_QUERY. GREY if ALLOC_STEP not configured, GREEN if sweep_all succeeds and p_step STATUS=R or C, RED otherwise. Uses MOCK adapter (intentional). Fix commits up to a73be2d. Code review 2026-04-11: D9 (MOCK adapter) accepted — intentional per spec AC3."
   zen-epic-9-retrospective: optional

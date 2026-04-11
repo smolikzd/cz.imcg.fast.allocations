@@ -264,3 +264,21 @@ Implementation date: 2026-04-11
 - `src/zen_orch_p_step.tabl.xml` (modified — added STARTED_AT, ENDED_AT fields)
 - `src/zen_orch_s_perf_step.tabl.xml` (modified — added STARTED_AT, ENDED_AT fields)
 - `src/zcl_en_orch_engine.clas.abap` (modified — full timing wiring: dispatch_step, advance_performance, sweep_all, cancel_performance, poll_step_status)
+
+---
+
+### Review Findings
+
+- [x] [Review][Decision] Restart clears `started_at` or retains it? — **RESOLVED (D1 → Patch 7):** `restart_performance` now clears `started_at` on the performance row and on reset steps, so duration reflects the new run only. Implemented via bulk UPDATE clearing `started_at`+`ended_at` on steps and clearing `started_at` on the perf row.
+- [x] [Review][Decision] `get_global_authorizations` grants unconditional access — **RESOLVED (D2 → Dismiss):** Intentional — internal operations cockpit, no authority check required in Phase 3.
+- [x] [Review][Patch] `timestamp`/`TZNTSTMPS` type mismatch — **RESOLVED (Patches 1+2):** `ZEN_ORCH_DE_TIMESTAMP` domain changed from `TZNTSTMPS` to `TIMESTAMPL`; all 8 engine local variables retyped to `TYPE timestampl`.
+- [x] [Review][Patch] `poll_step_status` overwrites `ended_at` with zero for non-terminal steps — **RESOLVED (Patch 3):** UPDATE split into two branches — `ended_at` only written when status is C or F (terminal).
+- [x] [Review][Patch] Step `ended_at` never set for status X (cancel) — **RESOLVED (Patch 4):** `cancel_performance` now bulk-UPDATEs `zen_orch_p_step` to stamp `ended_at` on all non-terminal steps before marking perf CANCELLED.
+- [x] [Review][Patch] `cancel_performance` does not stamp step `ended_at` for in-flight steps — **RESOLVED (Patch 4):** Same fix as above.
+- [x] [Review][Patch] `sweep_all` fail path does not stamp step `ended_at` for running steps — **RESOLVED (Patch 5):** `sweep_all` fail-stop path now bulk-UPDATEs step `ended_at` before setting perf STATUS=FAILED.
+- [x] [Review][Patch] `advance_performance` COMPLETED path missing `AND ended_at IS NULL` guard — **RESOLVED (Patch 6):** `WHERE ended_at IS NULL` added to the COMPLETED path UPDATE.
+- [x] [Review][Patch] `tstmp_seconds_between` negative delta when `ended_at < started_at` — **RESOLVED (Patches 9+10):** `GREATEST( 0, ... )` wrapper added to `DurationSec` in both `zen_orch_i_perf.ddls.asddls` and `zen_orch_i_p_step.ddls.asddls`.
+- [x] [Review][Patch] `get_instance_features` ignores READ ENTITIES failure — **RESOLVED (Patch 8):** `ls_failed` is now checked after READ ENTITIES; failed reads cause features to default to `#ENABLED` (fail-safe) rather than being silently dropped.
+- [x] [Review][Defer] `lx_error` re-declared with `INTO DATA(lx_error)` inside loop — **DEFERRED:** Pre-existing ABAP pattern; variable scoping within loops is valid in ABAP; no behavioral impact.
+- [x] [Review][Defer] `zen_orch_p_step` UPDATE (T1.4) WHERE clause missing key fields — **DEFERRED:** Verified that the UPDATE in `dispatch_step` includes all key fields (`perf_uuid`, `score_seq`, `loop_iteration`) in the WHERE clause. No correction needed.
+- [x] [Review][Defer] Hard-coded magic string literals ('P','R','B','F') for status codes — **DEFERRED to D1 in deferred-work.md** — pre-existing pattern throughout engine; no constants class exists yet.

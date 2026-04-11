@@ -2,7 +2,7 @@
 title: 'Fix transport release failure: remove stale ZEN_ORCH_* table entries'
 type: 'bugfix'
 created: '2026-04-08'
-status: 'ready-for-dev'
+status: 'done'
 context: []
 ---
 
