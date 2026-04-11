@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-11  # zen-9-1 + zen-9-2 done (ZCL_FI_ALLOC_ORCH_ADAPTER committed)
+last_updated: 2026-04-11  # zen-9-1/9-2/9-3 done
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -405,7 +405,11 @@ development_status:
     commit_repository: "cz.imcg.fast.ovysledovka"
     notes: "cancel, restart, get_result, get_detail_link methods implemented in same class (ZCL_FI_ALLOC_ORCH_ADAPTER). Committed together with zen-9-1."
   zen-9-3-adapter-registration-and-smoke-score:
-    status: "ready-for-dev"
+    status: "done"
+    completion_date: "2026-04-11"
+    commit_hash: "af506cf"
+    commit_repository: "cz.en.orch"
+    notes: "ZEN_ORCH_SETUP.prog.abap: idempotent MODIFY-based setup. Registers ZFI_PROCESS adapter in ZEN_ORCH_ADPT_R, defines ALLOC_STEP score in ZEN_ORCH_SCORE, inserts single STEP row in ZEN_ORCH_S_STEP. Params JSON uses COMPANY_CODE=1000 as placeholder — adjust before running in target system."
   zen-9-4-end-to-end-integration-test:
     status: "ready-for-dev"
   zen-epic-9-retrospective: optional
