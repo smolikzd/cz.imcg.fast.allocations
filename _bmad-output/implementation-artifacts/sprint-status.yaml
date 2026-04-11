@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-11  # zen-9-1/9-2/9-3 done
+last_updated: 2026-04-11  # zen-9-1/9-2/9-3/9-4 done, Epic 9 closed
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -391,7 +391,7 @@ development_status:
   zen-epic-8-retrospective: optional
 
   # ── Epic 9: Planner Adapter ───────────────────────────────────────────────
-  zen-epic-9: in-progress
+  zen-epic-9: done  # All 4 stories complete 2026-04-11
   zen-9-1-adapter-start-get-status:
     status: "done"
     completion_date: "2026-04-11"
@@ -411,5 +411,9 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "ZEN_ORCH_SETUP.prog.abap: idempotent MODIFY-based setup. Registers ZFI_PROCESS adapter in ZEN_ORCH_ADPT_R, defines ALLOC_STEP score in ZEN_ORCH_SCORE, inserts single STEP row in ZEN_ORCH_S_STEP. Params JSON uses COMPANY_CODE=1000 as placeholder — adjust before running in target system."
   zen-9-4-end-to-end-integration-test:
-    status: "ready-for-dev"
+    status: "done"
+    completion_date: "2026-04-11"
+    commit_hash: "d3a206a"
+    commit_repository: "cz.en.orch"
+    notes: "Added check_alloc_adapter (Phase 14) to ZCL_EN_ORCH_HEALTH_CHK_QUERY. GREY if ALLOC_STEP not configured, GREEN if sweep_all succeeds and p_step STATUS=R or C, RED otherwise. Best-effort cancel + unconditional cleanup."
   zen-epic-9-retrospective: optional
