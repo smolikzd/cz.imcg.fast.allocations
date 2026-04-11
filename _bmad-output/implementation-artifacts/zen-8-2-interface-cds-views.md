@@ -10,7 +10,7 @@ constitution_principles:
   - "Principle I — DDIC-First"
   - "Principle II — SAP Standards"
   - "Principle III — Consult SAP Docs"
-status: "review"
+status: "done"
 ```
 
 ---

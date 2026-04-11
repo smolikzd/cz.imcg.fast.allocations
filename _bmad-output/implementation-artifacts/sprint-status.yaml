@@ -365,11 +365,11 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "Created ZEN_ORCH_DE_TIMESTAMP dtel; added STARTED_AT/ENDED_AT to perf+step tables and s_perf_step structure; full timing wiring in engine (dispatch_step, advance_performance, sweep_all, cancel_performance, poll_step_status)"
   zen-8-2-interface-cds-views:
-    status: "review"
+    status: "done"
     completion_date: "2026-04-11"
-    commit_hash: "aabe8fb"
+    commit_hash: "fddda9f"
     commit_repository: "cz.en.orch"
-    notes: "Created ZEN_ORCH_I_PERF and ZEN_ORCH_I_P_STEP interface CDS views with DurationSec (TSTMP_SECONDS_BETWEEN) and StatusCriticality calculated fields"
+    notes: "Created ZEN_ORCH_I_PERF and ZEN_ORCH_I_P_STEP interface CDS views. Fix commit fddda9f resolves activation errors: ZEN_ORCH_DE_TIMESTAMP switched from DOMNAME=TIMESTAMPL (not active in system) to raw DEC 21.7 type params; removed @AbapCatalog.compiler.compareFilter and @AbapCatalog.preserveKey annotations (invalid on define view entity)."
   zen-8-3-consumption-cds-view-and-association:
     status: "ready-for-dev"
   zen-8-4-rap-bdef-with-actions:
