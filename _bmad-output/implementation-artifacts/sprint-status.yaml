@@ -357,7 +357,7 @@ development_status:
   # ════════════════════════════════════════════════════════════════════════════
 
   # ── Epic 8: Three-Level Observability Dashboard ───────────────────────────
-  zen-epic-8: in-progress
+  zen-epic-8: done
   zen-8-1-timing-ddic-and-engine-wiring:
     status: "done"
     completion_date: "2026-04-11"
@@ -371,11 +371,23 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "Created ZEN_ORCH_I_PERF and ZEN_ORCH_I_P_STEP interface CDS views. Fix commit fddda9f resolves activation errors: ZEN_ORCH_DE_TIMESTAMP switched from DOMNAME=TIMESTAMPL (not active in system) to raw DEC 21.7 type params; removed @AbapCatalog.compiler.compareFilter and @AbapCatalog.preserveKey annotations (invalid on define view entity)."
   zen-8-3-consumption-cds-view-and-association:
-    status: "ready-for-dev"
+    status: "done"
+    completion_date: "2026-04-11"
+    commit_hash: "3d8edbc"
+    commit_repository: "cz.en.orch"
+    notes: "ZEN_ORCH_C_PERF and ZEN_ORCH_C_P_STEP consumption views. Fixed label too long, replaced Semantics.url with UI.lineItem type #WITH_URL, removed redundant CAST to INT1."
   zen-8-4-rap-bdef-with-actions:
-    status: "ready-for-dev"
+    status: "done"
+    completion_date: "2026-04-11"
+    commit_hash: "16fd742"
+    commit_repository: "cz.en.orch"
+    notes: "BDEF ZEN_ORCH_C_PERF with cancel/restart/resume instance actions, instance features gate, global auth. Behavior pool ZCL_EN_ORCH_BP_PERF delegates to engine methods."
   zen-8-5-service-binding-and-smoke-test:
-    status: "ready-for-dev"
+    status: "done"
+    completion_date: "2026-04-11"
+    commit_hash: "5ae15be"
+    commit_repository: "cz.en.orch"
+    notes: "Service definition ZEN_ORCH_UI_PERF and OData V4 binding ZEN_ORCH_UI_PERF_O4. Dashboard visible in Fiori Elements preview."
   zen-epic-8-retrospective: optional
 
   # ── Epic 9: Planner Adapter ───────────────────────────────────────────────
