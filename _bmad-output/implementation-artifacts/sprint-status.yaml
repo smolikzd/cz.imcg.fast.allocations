@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-11  # Phase 3 reverted: all Stories 8.1–8.5 and 9.1–9.4 reset to ready-for-dev
+last_updated: 2026-04-11  # zen-9-1 + zen-9-2 done (ZCL_FI_ALLOC_ORCH_ADAPTER committed)
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -393,9 +393,17 @@ development_status:
   # ── Epic 9: Planner Adapter ───────────────────────────────────────────────
   zen-epic-9: in-progress
   zen-9-1-adapter-start-get-status:
-    status: "ready-for-dev"
+    status: "done"
+    completion_date: "2026-04-11"
+    commit_hash: "594aae2"
+    commit_repository: "cz.imcg.fast.ovysledovka"
+    notes: "ZCL_FI_ALLOC_ORCH_ADAPTER: start + get_status methods. Fixed init struct (zfi_alloc_process_params), field names (allocation_id, export). Added adapter_poll_failed textid to ZCX_EN_ORCH_ERROR (cz.en.orch e027652)."
   zen-9-2-adapter-cancel-restart-get-result-get-detail-link:
-    status: "ready-for-dev"
+    status: "done"
+    completion_date: "2026-04-11"
+    commit_hash: "594aae2"
+    commit_repository: "cz.imcg.fast.ovysledovka"
+    notes: "cancel, restart, get_result, get_detail_link methods implemented in same class (ZCL_FI_ALLOC_ORCH_ADAPTER). Committed together with zen-9-1."
   zen-9-3-adapter-registration-and-smoke-score:
     status: "ready-for-dev"
   zen-9-4-end-to-end-integration-test:
