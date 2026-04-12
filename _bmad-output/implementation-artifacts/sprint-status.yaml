@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-12  # EST-186 fix committed (resolve_params sXML reads element type name not JSON key); tester sign-off pending for EST-168
+last_updated: 2026-04-12  # EST-186 v2 state-machine fix committed (2005bc2); tester sign-off pending for EST-168
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -493,6 +493,6 @@ development_status:
   est-186-resolve-params-sxml-element-type-not-json-key:
     status: "in-progress"
     completion_date: null
-    commit_hash: "def60d2"
+    commit_hash: "2005bc2"
     commit_repository: "cz.en.orch"
-    notes: "True root cause of 'process_type is missing in params JSON'. Token-based lo_reader->name returns XML element type (e.g. 'str') not JSON key. Fixed both score-level and step-level loops: replaced next_node() token loop with read_next_node() OO approach, CAST if_sxml_open_element, get_attributes() to find 'name' attribute = JSON key. Tester sign-off required before marking done. Linear: EST-186 (child of EST-168)."
+    notes: "True root cause of 'process_type is missing in params JSON'. v1 fix (def60d2) used read_next_node() OO loop but called read_next_node() a second time *inside* the open-element branch to read value — consumed the value node AND skipped next key open-element. v2 fix (2005bc2): state-machine approach with lv_cur_key variable; value branch on next outer loop iteration captures the value. Applied to BOTH score-level (~line 1282) and step-level (~line 1327) loops in resolve_params. Tester sign-off required before marking done. Linear: EST-186 (child of EST-168)."
