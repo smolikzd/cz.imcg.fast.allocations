@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-11  # zen-8 + zen-9 code review patches applied; all Phase 3 complete
+last_updated: 2026-04-12  # zen-live-setup done; engine timestamp+logger fixes tracked
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -422,7 +422,20 @@ development_status:
   # ZEN_ORCH_SETUP.prog.abap updated to support real params via selection screen
   # and optional p_sweep flag to create a performance and trigger sweep_all().
   # Target: cz.en.orch
-  zen-live-setup-selscreen-sweep: in-progress  # cz.en.orch — selection screen + p_sweep
+  zen-live-setup-selscreen-sweep:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "69cf96c"
+    commit_repository: "cz.en.orch"
+    notes: "Selection screen B1 (p_bukrs/p_gjahr/p_period/p_alloc/p_export) + B2 (p_sweep). Score step params_json built dynamically. p_sweep=X creates ALLOC_STEP performance and calls sweep_all() to dispatch via ZCL_FI_ALLOC_ORCH_ADAPTER."
+
+  # ── ZEN_ORCH Engine: 8x TYPE timestamp → timestampl + BAL flush on sweep fail ─
+  fix-zen9-engine-8x-timestamp-and-bal-flush:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "b062210"
+    commit_repository: "cz.en.orch"
+    notes: "Fixed 8 vars (lv_sweep_fail_ts, lv_cancel_ts, lv_perf_end_ts, lv_step_ts, lv_perf_ts, lv_perm_fail_ts, lv_poll_ts, lv_step_ended_at) from TYPE timestamp (DEC15) to TYPE timestampl (DEC21) — silent truncation on TIMESTAMPL table fields. Added get_logger()->save() after log_exception() in sweep_all CATCH — failures now persist to SLG1."
 
   # ── ZEN_ORCH Phase 3 — Bug Fixes & Real Adapter Integration (post zen-9-4) ──
   fix-zen9-mv-adapter-type-literal:
