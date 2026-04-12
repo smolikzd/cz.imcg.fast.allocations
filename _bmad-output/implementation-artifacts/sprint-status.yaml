@@ -423,3 +423,47 @@ development_status:
   # and optional p_sweep flag to create a performance and trigger sweep_all().
   # Target: cz.en.orch
   zen-live-setup-selscreen-sweep: in-progress  # cz.en.orch — selection screen + p_sweep
+
+  # ── ZEN_ORCH Phase 3 — Bug Fixes & Real Adapter Integration (post zen-9-4) ──
+  fix-zen9-mv-adapter-type-literal:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "1793988"
+    commit_repository: "cz.imcg.fast.ovysledovka"
+    notes: "Fixed 7x mv_adapter_type = gc_handle_prefix (TYPE string) → literal 'ZFI_PROCESS' (TYPE zen_orch_de_adapter_type). Root cause of F status."
+  fix-zen9-engine-lv-initial-ts-type:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "f5e3070"
+    commit_repository: "cz.en.orch"
+    notes: "Fixed lv_initial_ts TYPE timestamp → TYPE timestampl in restart_performance (DEC15 vs DEC21 truncation)."
+  fix-zen9-diag-prog-xml-companion:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "eea66eb"
+    commit_repository: "cz.en.orch"
+    notes: "Created zen_orch_diag.prog.xml companion — abapgit was ignoring the program without it."
+  fix-zen9-diag-section-3b-direct-adapter-call:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "cd91448"
+    commit_repository: "cz.en.orch"
+    notes: "Added Section 3b to ZEN_ORCH_DIAG: calls adapter->start() directly to surface exact exception text."
+  fix-zen9-check-restart-perf-assertions:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "0f732e5"
+    commit_repository: "cz.en.orch"
+    notes: "Strengthened check_restart_performance: asserts perf.started_at IS INITIAL and 0 step rows with non-null started_at/ended_at."
+  fix-zen9-alloc-adapter-unit-tests:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "70bc22c"
+    commit_repository: "cz.imcg.fast.ovysledovka"
+    notes: "Created ZCL_FI_ALLOC_ORCH_ADAPTER test class: 12 unit tests (parse_handle x4, map_status x7, start_missing_process_type x1). FRIENDS added to class definition."
+  zen-9-5-alloc-adapter-real-health-check:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "bd77ee2"
+    commit_repository: "cz.en.orch"
+    notes: "Added ALLOC_ADAPTER_REAL health check (Phase 15) to ZCL_EN_ORCH_HEALTH_CHK_QUERY. Calls real ZCL_FI_ALLOC_ORCH_ADAPTER->start() with ALLOCATIONS process type. GREY if ZFI_PROC_TYPE not configured, GREEN if handle=ZFI_PROCESS:<id>+status=R+cancel succeeds. Unit test asserts NOT RED. Also added test_alloc_adapter_real FOR TESTING in testclasses."
