@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-12  # EST-188 fixed (BDEF PascalCase actions, cz.en.orch e2314ba); EST-186 + EST-187 committed; tester sign-off pending for EST-168
+last_updated: 2026-04-12  # EST-189 fixed (COMMIT WORK in RAP context, cz.en.orch aed1f1d); EST-188+187+186 committed; tester sign-off pending for EST-168
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -510,3 +510,11 @@ development_status:
     commit_hash: "e2314ba"
     commit_repository: "cz.en.orch"
     notes: "RAP BDL parser rejects action names starting with lowercase. Renamed cancelPerformance→CancelPerformance, restartPerformance→RestartPerformance, resumePerformance→ResumePerformance in: BDEF action declarations, BDEF side effects block, behavior pool FOR ACTION bindings, %features-%action-* refs, result-%action-* refs. External OData aliases (camelCase) preserved unchanged. Tester sign-off required before marking done. Linear: EST-188 (child of EST-168)."
+
+  # ── EST-189: COMMIT WORK forbidden in RAP action context ────────────────────
+  est-189-commit-work-forbidden-in-rap-action:
+    status: "in-progress"
+    completion_date: null
+    commit_hash: "aed1f1d"
+    commit_repository: "cz.en.orch"
+    notes: "Engine cancel_performance/restart_performance/resume_performance called COMMIT WORK AND WAIT unconditionally. RAP strict(2) forbids this inside a BO action handler. Added iv_skip_commit TYPE abap_bool DEFAULT abap_false to all three method signatures. Engine wraps COMMIT WORK with IF iv_skip_commit = abap_false. Behavior pool passes iv_skip_commit = abap_true. Non-RAP callers unchanged. Linear: EST-189 (child of EST-168)."
