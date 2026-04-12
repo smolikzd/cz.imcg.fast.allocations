@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-12  # EST-186 v2 state-machine fix committed (2005bc2); tester sign-off pending for EST-168
+last_updated: 2026-04-12  # EST-186 v2 + ZEN_ORCH_SETUP p_cancel; tester sign-off pending for EST-168
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -425,9 +425,9 @@ development_status:
   zen-live-setup-selscreen-sweep:
     status: "done"
     completion_date: "2026-04-12"
-    commit_hash: "69cf96c"
+    commit_hash: "26012e1"
     commit_repository: "cz.en.orch"
-    notes: "Selection screen B1 (p_bukrs/p_gjahr/p_period/p_alloc/p_export) + B2 (p_sweep). Score step params_json built dynamically. p_sweep=X creates ALLOC_STEP performance and calls sweep_all() to dispatch via ZCL_FI_ALLOC_ORCH_ADAPTER."
+    notes: "Selection screen B1 (p_bukrs/p_gjahr/p_period/p_alloc/p_export) + B2 (p_cancel/p_sweep). p_cancel cancels all active ALLOC_STEP performances (status P or R) before new run — prevents collision error. p_sweep=X creates ALLOC_STEP performance and calls sweep_all() to dispatch via ZCL_FI_ALLOC_ORCH_ADAPTER."
 
   # ── ZEN_ORCH Engine: 8x TYPE timestamp → timestampl + BAL flush on sweep fail ─
   fix-zen9-engine-8x-timestamp-and-bal-flush:
