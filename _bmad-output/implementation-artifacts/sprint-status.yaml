@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-12  # EST-186 v2 + ZEN_ORCH_SETUP p_cancel; tester sign-off pending for EST-168
+last_updated: 2026-04-12  # EST-187 fixed (RAP LOCK handler); EST-186 v2 + p_cancel deployed; tester sign-off pending for EST-168
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -489,7 +489,13 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "sXML cl_sxml_string_reader returns element names in UPPERCASE. XCO JSON builder emitted uppercase keys (e.g. PROCESS_TYPE) which /ui2/cl_json=>deserialize with pretty_mode-low_case could not map to struct fields. Applied to_lower() at both parse sites in resolve_params (score-level ~line 1285 + step-level ~line 1316). Partial fix only — to_lower() applied to element type name ('str') not JSON key. Root cause discovered later (EST-186). Linear: EST-185 (child of EST-168)."
 
-  # ── EST-186: resolve_params sXML reads element type name not JSON key ─────────
+  # ── EST-187: RAP LOCK handler missing on ZEN_ORCH_C_PERF ────────────────────
+  est-187-rap-lock-handler-not-implemented:
+    status: "done"
+    completion_date: "2026-04-12"
+    commit_hash: "3a6b480"
+    commit_repository: "cz.en.orch"
+    notes: "BDEF declares lock master but lhc_perf had no FOR LOCK method. RAP strict(2) requires it. Added empty lock handler — no-op correct since all fields readonly and engine owns LUW. Fixes CX_RAP_HANDLER_NOT_IMPLEMENTED short dump on Cancel/Restart/Resume dashboard actions. Linear: EST-187 (child of EST-168)."
   est-186-resolve-params-sxml-element-type-not-json-key:
     status: "in-progress"
     completion_date: null
