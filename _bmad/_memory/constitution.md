@@ -196,6 +196,14 @@ Before considering code complete:
 - [ ] **Line length** ≤ 120 characters (CRITICAL: ≤ 255 absolute limit to avoid parser errors)
 - [ ] Long statements wrapped at logical boundaries (parameters, fields, conditions)
 - [ ] **abaplint passes with zero new errors** — run `abaplint` in the repository root before every commit; newly introduced errors MUST be fixed before committing; pre-existing baseline violations are not our responsibility but MUST NOT be increased
+  - **CRITICAL**: abaplint auto-detects `abaplint.json` (no leading dot). A file named `.abaplint.json` is silently ignored and abaplint falls back to default config, producing a false-high error count. Config file MUST be named `abaplint.json`.
+  - **cz.en.orch baseline**: 577 issues (with `abaplint.json` correctly loaded). Any cross-repo type references from test code MUST be resolved via `deps_local/src/` folder (copy of needed objects from other repos).
+  - **deps_local/**: committed folder in `cz.en.orch` containing copies of cross-repo objects needed for abaplint type resolution (`zcl_fi_alloc_orch_adapter`, `zfi_process_instance_id`). Update this folder when referenced cross-repo objects change.
+- [ ] **CDS label lengths respected** — abaplint does NOT check these; enforce manually:
+  - `@EndUserText.label` — max **60 characters**
+  - `@EndUserText.quickInfo` — max **100 characters**
+  - DDIC field/structure short description — max **60 characters**
+  - Exceeding these limits causes SAP activation errors that abaplint cannot catch
 - [ ] Test program updated
 - [ ] mcp-sap-docs consulted for any new patterns
 
@@ -242,4 +250,4 @@ Runtime development guidance is maintained in:
 
 These guidance files MUST stay aligned with constitution principles.
 
-**Version**: 1.0.4 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
+**Version**: 1.0.5 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
