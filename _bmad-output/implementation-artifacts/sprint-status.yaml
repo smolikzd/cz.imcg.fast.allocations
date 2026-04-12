@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-12  # zen-live-setup done; engine timestamp+logger fixes tracked
+last_updated: 2026-04-12  # zen-9-4 reopened — E2E bugs found, 16 fixes tracked, tester sign-off pending
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -391,7 +391,7 @@ development_status:
   zen-epic-8-retrospective: optional
 
   # ── Epic 9: Planner Adapter ───────────────────────────────────────────────
-  zen-epic-9: done  # All 4 stories complete 2026-04-11
+  zen-epic-9: in-progress  # zen-9-4 reopened 2026-04-12 — E2E bugs found during live run, tester sign-off pending
   zen-9-1-adapter-start-get-status:
     status: "done"
     completion_date: "2026-04-11"
@@ -411,11 +411,11 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "ZEN_ORCH_SETUP.prog.abap: idempotent MODIFY-based setup. Registers ZFI_PROCESS adapter, ALLOC_STEP score, single STEP row. Code review 2026-04-11: Patch A (parse_handle: NS→prefix-at-pos-0, +12→+lv_prefix_len, empty guard via length check) + Patch B (map_status: SKIPPED→completed, BREAKPOINT→failed) applied to zcl_fi_alloc_orch_adapter.clas.abap in cz.imcg.fast.ovysledovka."
   zen-9-4-end-to-end-integration-test:
-    status: "done"
-    completion_date: "2026-04-11"
+    status: "in-progress"
+    completion_date: null
     commit_hash: "d3a206a"
     commit_repository: "cz.en.orch"
-    notes: "Added check_alloc_adapter (Phase 14) to ZCL_EN_ORCH_HEALTH_CHK_QUERY. GREY if ALLOC_STEP not configured, GREEN if sweep_all succeeds and p_step STATUS=R or C, RED otherwise. Uses MOCK adapter (intentional). Fix commits up to a73be2d. Code review 2026-04-11: D9 (MOCK adapter) accepted — intentional per spec AC3."
+    notes: "REOPENED 2026-04-12: Story was marked done when code was written + code review passed, but ACs require actual SAP execution verified by tester. 16 bugs found during live E2E run (engine timestamp truncations, dashboard RAP dump, adapter mv_adapter_type type mismatch, abapgit XML companion missing, linter not running). All bugs fixed in code. Tester sign-off still required before marking done again. Linear tracking: EST-168 (parent) + EST-169…EST-184 (16 bug subtasks)."
   zen-epic-9-retrospective: optional
 
   # ── ZEN_ORCH Live Integration: ZEN_ORCH_SETUP enhancements ───────────────
