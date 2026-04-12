@@ -195,6 +195,7 @@ Before considering code complete:
 - [ ] Naming conventions followed
 - [ ] **Line length** ≤ 120 characters (CRITICAL: ≤ 255 absolute limit to avoid parser errors)
 - [ ] Long statements wrapped at logical boundaries (parameters, fields, conditions)
+- [ ] **abaplint passes with zero new errors** — run `abaplint` in the repository root before every commit; newly introduced errors MUST be fixed before committing; pre-existing baseline violations are not our responsibility but MUST NOT be increased
 - [ ] Test program updated
 - [ ] mcp-sap-docs consulted for any new patterns
 
@@ -241,4 +242,4 @@ Runtime development guidance is maintained in:
 
 These guidance files MUST stay aligned with constitution principles.
 
-**Version**: 1.0.3 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
+**Version**: 1.0.4 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
