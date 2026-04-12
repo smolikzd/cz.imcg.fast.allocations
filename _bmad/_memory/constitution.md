@@ -199,7 +199,7 @@ Before considering code complete:
   - **CRITICAL**: abaplint auto-detects `abaplint.json` (no leading dot). A file named `.abaplint.json` is silently ignored and abaplint falls back to default config, producing a false-high error count. Config file MUST be named `abaplint.json`.
   - **cz.en.orch baseline**: 577 issues (with `abaplint.json` correctly loaded). Any cross-repo type references from test code MUST be resolved via `deps_local/src/` folder (copy of needed objects from other repos).
   - **deps_local/**: committed folder in `cz.en.orch` containing copies of cross-repo objects needed for abaplint type resolution (`zcl_fi_alloc_orch_adapter`, `zfi_process_instance_id`). Update this folder when referenced cross-repo objects change.
-- [ ] **Pushed to GitHub** — after every commit, run `git push origin main` immediately. SAP pulls from GitHub (not the local clone). A commit that is only local is invisible to SAP and will cause SAP to activate stale code.
+- [ ] **Pushed to GitHub** — at the end of every work session, ALL commits MUST be pushed to GitHub before handing off. SAP pulls from GitHub (not the local clone). A commit that is only local is invisible to SAP. The agent MUST provide a clear summary listing every repository pushed and the corresponding HEAD commit hash.
 - [ ] **CDS label lengths respected** — abaplint does NOT check these; enforce manually:
   - `@EndUserText.label` — max **60 characters**
   - `@EndUserText.quickInfo` — max **100 characters**
@@ -251,4 +251,4 @@ Runtime development guidance is maintained in:
 
 These guidance files MUST stay aligned with constitution principles.
 
-**Version**: 1.0.6 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
+**Version**: 1.0.7 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
