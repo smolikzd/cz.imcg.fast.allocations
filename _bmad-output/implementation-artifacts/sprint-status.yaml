@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-12  # EST-187 fixed (RAP LOCK handler); EST-186 v2 + p_cancel deployed; tester sign-off pending for EST-168
+last_updated: 2026-04-12  # EST-188 fixed (BDEF PascalCase actions, cz.en.orch e2314ba); EST-186 + EST-187 committed; tester sign-off pending for EST-168
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -502,3 +502,11 @@ development_status:
     commit_hash: "2005bc2"
     commit_repository: "cz.en.orch"
     notes: "True root cause of 'process_type is missing in params JSON'. v1 fix (def60d2) used read_next_node() OO loop but called read_next_node() a second time *inside* the open-element branch to read value — consumed the value node AND skipped next key open-element. v2 fix (2005bc2): state-machine approach with lv_cur_key variable; value branch on next outer loop iteration captures the value. Applied to BOTH score-level (~line 1282) and step-level (~line 1327) loops in resolve_params. Tester sign-off required before marking done. Linear: EST-186 (child of EST-168)."
+
+  # ── EST-188: BDEF action names lowercase → PascalCase ───────────────────────
+  est-188-bdef-action-names-pascalcase:
+    status: "in-progress"
+    completion_date: null
+    commit_hash: "e2314ba"
+    commit_repository: "cz.en.orch"
+    notes: "RAP BDL parser rejects action names starting with lowercase. Renamed cancelPerformance→CancelPerformance, restartPerformance→RestartPerformance, resumePerformance→ResumePerformance in: BDEF action declarations, BDEF side effects block, behavior pool FOR ACTION bindings, %features-%action-* refs, result-%action-* refs. External OData aliases (camelCase) preserved unchanged. Tester sign-off required before marking done. Linear: EST-188 (child of EST-168)."
