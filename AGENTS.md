@@ -319,6 +319,7 @@ If constitution needs changes (see Constitution § Governance):
 - Include constitution principles in every story
 - Cross-reference commit hashes from code repos
 - Verify constitution version matches across all repos
+- **Push all commits at session end** and report pushed repos with HEAD hashes (see § Push Rule below)
 
 ### ❌ DON'T
 
@@ -327,6 +328,28 @@ If constitution needs changes (see Constitution § Governance):
 - Don't mark stories "done" without commit hashes from code repos
 - Don't create stories without specifying target repository
 - Don't forget to sync constitution after changes
+- **Don't end a session without pushing** — local-only commits are invisible to SAP (abapgit pulls from GitHub)
+
+---
+
+## 11a. Push Rule (Non-Negotiable)
+
+This rule is defined in the constitution (`_bmad/_memory/constitution.md`, Code Review Gates checklist) and is reproduced here so agents cannot miss it:
+
+> At the end of every work session, ALL commits in ALL touched repositories MUST be pushed to GitHub. SAP pulls from GitHub via abapgit — a commit that exists only locally is invisible to SAP.
+
+**Required session-end output** (exact format):
+
+```
+## Pushed repositories
+
+| Repository | Branch | HEAD commit |
+|------------|--------|-------------|
+| cz.en.orch | main   | 37eea15     |
+| cz.imcg.fast.allocations | master | 920fe99 |
+```
+
+If a push fails, report the error and DO NOT claim the work is complete.
 
 ---
 
@@ -362,6 +385,6 @@ This planning repository tracks development for:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: 2026-03-10  
+**Version**: 1.1.0  
+**Last Updated**: 2026-04-12  
 **Maintained By**: Zdenek Smolik
