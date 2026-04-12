@@ -166,6 +166,14 @@ DATA(ls_ctx) = VALUE ty_structure( field1 = value1 field2 = value2 field3 = valu
 - Setup programs for test data MUST be available (e.g., ZFI_SETUP_DEMO_DATA)
 - Critical changes MUST be tested with demo data before transport
 
+**Unit Test Consolidation (Non-Negotiable)**:
+- ALL unit tests MUST be placed in the designated health-check query class for their project — NOT in the class under test:
+  - **ZEN_ORCH project** (`cz.en.orch`): `ZCL_EN_ORCH_HEALTH_CHK_QUERY.testclasses.abap`
+  - **ZFI_PROCESS project** (`cz.imcg.fast.planner`): `ZCL_FIPROC_HEALTH_CHK_QUERY.testclasses.abap`
+- Individual classes (e.g., adapters, step classes) MUST NOT have their own `.testclasses.abap`
+- Health check runtime checks (`check_*` methods) and ABAP unit tests (`FOR TESTING` methods) MUST be kept in sync — every new `check_*` method requires a corresponding `test_*` method in the same file
+- This rule exists to keep all tests discoverable in one place per project and to avoid scattered test includes across the codebase
+
 ### Error Scenarios
 
 All error scenarios MUST be handled:
@@ -233,4 +241,4 @@ Runtime development guidance is maintained in:
 
 These guidance files MUST stay aligned with constitution principles.
 
-**Version**: 1.0.2 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-10
+**Version**: 1.0.3 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
