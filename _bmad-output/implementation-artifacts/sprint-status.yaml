@@ -417,3 +417,9 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "Added check_alloc_adapter (Phase 14) to ZCL_EN_ORCH_HEALTH_CHK_QUERY. GREY if ALLOC_STEP not configured, GREEN if sweep_all succeeds and p_step STATUS=R or C, RED otherwise. Uses MOCK adapter (intentional). Fix commits up to a73be2d. Code review 2026-04-11: D9 (MOCK adapter) accepted — intentional per spec AC3."
   zen-epic-9-retrospective: optional
+
+  # ── ZEN_ORCH Live Integration: ZEN_ORCH_SETUP enhancements ───────────────
+  # ZEN_ORCH_SETUP.prog.abap updated to support real params via selection screen
+  # and optional p_sweep flag to create a performance and trigger sweep_all().
+  # Target: cz.en.orch
+  zen-live-setup-selscreen-sweep: in-progress  # cz.en.orch — selection screen + p_sweep
