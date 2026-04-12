@@ -166,6 +166,13 @@ DATA(ls_ctx) = VALUE ty_structure( field1 = value1 field2 = value2 field3 = valu
 - Setup programs for test data MUST be available (e.g., ZFI_SETUP_DEMO_DATA)
 - Critical changes MUST be tested with demo data before transport
 
+**Tester Sign-Off Rule (Non-Negotiable)**:
+- Any story whose Acceptance Criteria require actual SAP system execution (e.g., running a program in SE38, checking table entries in SE16, verifying UI in a browser, confirming APJ job completion in SM37) MUST NOT be marked `done` by the developer alone.
+- A human tester MUST confirm each such AC is met in the target SAP system and provide sign-off (Linear comment, issue closure, or equivalent).
+- A story where code is written and code review passes but SAP execution ACs are unverified MUST remain in `in-progress` or `review` status.
+- The developer's responsibility ends at: code committed, pushed to GitHub, and abapgit pull confirmed. Tester responsibility begins at: SAP execution verification.
+- **Lesson Learned**: Story zen-9-4 (E2E Integration Test) was incorrectly marked `done` after code review. 16 bugs were found only when a live SAP run was performed. This rule prevents that class of premature closure.
+
 **Unit Test Consolidation (Non-Negotiable)**:
 - ALL unit tests MUST be placed in the designated health-check query class for their project — NOT in the class under test:
   - **ZEN_ORCH project** (`cz.en.orch`): `ZCL_EN_ORCH_HEALTH_CHK_QUERY.testclasses.abap`
@@ -207,6 +214,7 @@ Before considering code complete:
   - Exceeding these limits causes SAP activation errors that abaplint cannot catch
 - [ ] Test program updated
 - [ ] mcp-sap-docs consulted for any new patterns
+- [ ] **Tester sign-off obtained** for any AC that requires SAP system execution (SE38, SE16, SM37, browser UI) — developer MUST NOT self-certify SAP execution ACs
 
 ## Governance
 
@@ -251,4 +259,4 @@ Runtime development guidance is maintained in:
 
 These guidance files MUST stay aligned with constitution principles.
 
-**Version**: 1.0.7 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
+**Version**: 1.1.0 | **Ratified**: 2025-11-10 | **Last Amended**: 2026-04-12
