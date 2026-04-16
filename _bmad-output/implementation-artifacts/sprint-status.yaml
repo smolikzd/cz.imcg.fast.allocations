@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-16  # EST-193 implemented (restart from CANCELLED, cz.en.orch b67dfe7); EST-186/188/189 committed; tester sign-off pending for EST-168
+last_updated: 2026-04-16  # EST-194 implemented (dashboard UX, cz.en.orch 41a4335); EST-193/186/188/189 committed; tester sign-off pending for EST-168
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -518,6 +518,12 @@ development_status:
     commit_hash: "b67dfe7"
     commit_repository: "cz.en.orch"
     notes: "Extended restart_performance: T1.2 guard accepts FAILED or CANCELLED; T1.3 adds second UPDATE for CANCELLED steps (sum dbcnt); T1.4 clears ended_at on perf row (started_at left intact). get_instance_features: RestartPerformance enabled for status X. Tester sign-off required (Phase B4 re-test). Linear: EST-193."
+  est-194-dashboard-ux-statustext-sort-startedat:
+    status: "in-progress"
+    completion_date: null
+    commit_hash: "41a4335"
+    commit_repository: "cz.en.orch"
+    notes: "ZEN_ORCH_I_PERF: added StatusText CASE field (Pending/Running/Completed/Failed/Cancelled/Blocked). ZEN_ORCH_C_PERF: StatusText shown in list/detail with criticality icon; raw Status hidden (selectionField filter only); list column changed from CreatedAt (DATS) to StartedAt (TIMESTAMPL); presentationVariant sort changed to StartedAt DESC. Tester sign-off required. Linear: EST-194 (child of EST-168)."
   est-189-commit-work-forbidden-in-rap-action:
     status: "in-progress"
     completion_date: null
