@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-12  # EST-189 fixed (COMMIT WORK in RAP context, cz.en.orch aed1f1d); EST-188+187+186 committed; tester sign-off pending for EST-168
+last_updated: 2026-04-16  # EST-193 implemented (restart from CANCELLED, cz.en.orch b67dfe7); EST-186/188/189 committed; tester sign-off pending for EST-168
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -511,7 +511,13 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "RAP BDL parser rejects action names starting with lowercase. Renamed cancelPerformance→CancelPerformance, restartPerformance→RestartPerformance, resumePerformance→ResumePerformance in: BDEF action declarations, BDEF side effects block, behavior pool FOR ACTION bindings, %features-%action-* refs, result-%action-* refs. External OData aliases (camelCase) preserved unchanged. Tester sign-off required before marking done. Linear: EST-188 (child of EST-168)."
 
-  # ── EST-189: COMMIT WORK forbidden in RAP action context ────────────────────
+  # ── EST-193: Allow restart_performance from CANCELLED status ────────────────
+  est-193-restart-from-cancelled:
+    status: "in-progress"
+    completion_date: null
+    commit_hash: "b67dfe7"
+    commit_repository: "cz.en.orch"
+    notes: "Extended restart_performance: T1.2 guard accepts FAILED or CANCELLED; T1.3 adds second UPDATE for CANCELLED steps (sum dbcnt); T1.4 clears ended_at on perf row (started_at left intact). get_instance_features: RestartPerformance enabled for status X. Tester sign-off required (Phase B4 re-test). Linear: EST-193."
   est-189-commit-work-forbidden-in-rap-action:
     status: "in-progress"
     completion_date: null
