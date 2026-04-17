@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-16  # EST-194 implemented (dashboard UX, cz.en.orch 41a4335); EST-193/186/188/189 committed; tester sign-off pending for EST-168
+last_updated: 2026-04-17  # EST-193 closed (code verified in cz.en.orch b67dfe7)
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -513,11 +513,11 @@ development_status:
 
   # ── EST-193: Allow restart_performance from CANCELLED status ────────────────
   est-193-restart-from-cancelled:
-    status: "in-progress"
-    completion_date: null
+    status: "done"
+    completion_date: "2026-04-17"
     commit_hash: "b67dfe7"
     commit_repository: "cz.en.orch"
-    notes: "Extended restart_performance: T1.2 guard accepts FAILED or CANCELLED; T1.3 adds second UPDATE for CANCELLED steps (sum dbcnt); T1.4 clears ended_at on perf row (started_at left intact). get_instance_features: RestartPerformance enabled for status X. Tester sign-off required (Phase B4 re-test). Linear: EST-193."
+    notes: "Extended restart_performance: T1.2 guard accepts FAILED or CANCELLED; T1.3 adds second UPDATE for CANCELLED steps (sum dbcnt); T1.4 clears ended_at on perf row (started_at left intact). get_instance_features: RestartPerformance enabled for status X. Code verified in cz.en.orch — all spec tasks present. Linear: EST-193."
   est-194-dashboard-ux-statustext-sort-startedat:
     status: "in-progress"
     completion_date: null
