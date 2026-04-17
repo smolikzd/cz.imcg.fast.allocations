@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-17  # EST-186/188/189/168 closed — all E2E bugs confirmed fixed by tester
+last_updated: 2026-04-17  # EST-196/198 done — Refresh button + ZEN_ORCH_SETUP simplified
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -544,3 +544,19 @@ development_status:
     commit_hash: "ddefeca"
     commit_repository: "cz.en.orch"
     notes: "DeletePerformance instance action. BDEF + side effects; engine delete_performance (BSR best-effort → DELETE p_step → DELETE perf; guard C/F/X); RAP handler deleteperformance; feature control (C/F/X enabled); CDS @UI.lineItem + @UI.fieldGroup Delete button (pos 40). Linear: EST-197 closed."
+
+  # ── EST-196: SweepPerformance dashboard action ──────────────────────────────
+  est-196-sweep-performance-dashboard-action:
+    status: "done"
+    completion_date: "2026-04-17"
+    commit_hash: "cbe4717"
+    commit_repository: "cz.en.orch"
+    notes: "SweepPerformance instance action on dashboard. BDEF action (features: instance) with external alias sweepPerformance; side effects (all fields); RAP handler delegates to engine sweep_all(iv_score_id); feature control (P/R enabled). CDS @UI.lineItem + @UI.fieldGroup Sweep button. Button renamed Sweep→Refresh and Actions facet added to object page (commit 2ba927a). Linear: EST-196."
+
+  # ── EST-198: Remove sweep/cancel checkboxes from ZEN_ORCH_SETUP ─────────────
+  est-198-remove-setup-checkboxes:
+    status: "done"
+    completion_date: "2026-04-17"
+    commit_hash: "2ba927a"
+    commit_repository: "cz.en.orch"
+    notes: "Removed p_cancel/p_sweep/p_swpol params and conditional blocks from ZEN_ORCH_SETUP. Program now unconditionally: (1) runs setup sections 1-3, (2) cancels all active ALLOC_STEP performances (prevents ZFI_PROCESS duplicate hash collision), (3) creates new performance and calls sweep_all(), (4) reads back DB status to surface FAILED in spool. Commits: f7c0d03, f2ccea8, 5491361, d27497e, d9a83fb, 2ba927a (cz.en.orch). Linear: EST-198."
