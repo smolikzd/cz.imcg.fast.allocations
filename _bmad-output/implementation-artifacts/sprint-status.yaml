@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-17  # EST-193 closed (code verified in cz.en.orch b67dfe7)
+last_updated: 2026-04-17  # EST-194/EST-195 closed (DATS+TIMS timestamp split, cz.en.orch 31cc4bd)
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -519,11 +519,17 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "Extended restart_performance: T1.2 guard accepts FAILED or CANCELLED; T1.3 adds second UPDATE for CANCELLED steps (sum dbcnt); T1.4 clears ended_at on perf row (started_at left intact). get_instance_features: RestartPerformance enabled for status X. Code verified in cz.en.orch — all spec tasks present. Linear: EST-193."
   est-194-dashboard-ux-statustext-sort-startedat:
-    status: "in-progress"
-    completion_date: null
-    commit_hash: "41a4335"
+    status: "done"
+    completion_date: "2026-04-17"
+    commit_hash: "31cc4bd"
     commit_repository: "cz.en.orch"
-    notes: "ZEN_ORCH_I_PERF: added StatusText CASE field (Pending/Running/Completed/Failed/Cancelled/Blocked). ZEN_ORCH_C_PERF: StatusText shown in list/detail with criticality icon; raw Status hidden (selectionField filter only); list column changed from CreatedAt (DATS) to StartedAt (TIMESTAMPL); presentationVariant sort changed to StartedAt DESC. Tester sign-off required. Linear: EST-194 (child of EST-168)."
+    notes: "Full TIMESTAMPL→DATS+TIMS split: ZEN_ORCH_DE_DATE/ZEN_ORCH_DE_TIME dtels added; perf/p_step/s_perf_step tables split started_at/ended_at to _on+_at pairs; sched table splits last_fired_ts to last_fired_on+last_fired_at; interface views rewritten with TSTMP_FROM_DATS computed fields + StatusText CASE; c_perf sorts by CreatedAt DESC, c_p_step shows StatusText+StartedAt+EndedAt; engine all SET patterns converted to CONVERT TIME STAMP INTO DATE/TIME; is_schedule_due signature changed to on/at params; health_chk_query adapted; diag prog SELECT lists updated. Linear: EST-194."
+  est-195-dashboard-ux-fix-timestamps-sort-order-job-reference:
+    status: "done"
+    completion_date: "2026-04-17"
+    commit_hash: "31cc4bd"
+    commit_repository: "cz.en.orch"
+    notes: "Same commit as EST-194 — CREATED_AT timestamp now comes from CREATED_ON+CREATED_AT (DATS+TIMS) pair fed through TSTMP_FROM_DATS in interface view, giving full datetime. Sort by CreatedAt DESC (never NULL). JobName exposed in c_perf at pos 25. Linear: EST-195."
   est-189-commit-work-forbidden-in-rap-action:
     status: "in-progress"
     completion_date: null
