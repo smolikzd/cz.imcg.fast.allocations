@@ -536,3 +536,11 @@ development_status:
     commit_hash: "aed1f1d"
     commit_repository: "cz.en.orch"
     notes: "iv_skip_commit parameter added to cancel/restart/resume. Behavior pool passes abap_true. Confirmed fixed by tester. Linear: EST-189 closed."
+
+  # ── EST-197: Add delete() action to dashboard ───────────────────────────────
+  est-197-add-delete-action-to-dashboard:
+    status: "done"
+    completion_date: "2026-04-17"
+    commit_hash: "ddefeca"
+    commit_repository: "cz.en.orch"
+    notes: "DeletePerformance instance action. BDEF + side effects; engine delete_performance (BSR best-effort → DELETE p_step → DELETE perf; guard C/F/X); RAP handler deleteperformance; feature control (C/F/X enabled); CDS @UI.lineItem + @UI.fieldGroup Delete button (pos 40). Linear: EST-197 closed."

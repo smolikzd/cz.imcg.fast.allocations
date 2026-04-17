@@ -2,7 +2,7 @@
 title: 'EST-197: Add delete() action to dashboard'
 type: 'feature'
 created: '2026-04-17'
-status: 'in-review'
+status: 'done'
 baseline_commit: 'dbad9e1'
 context: []
 ---
