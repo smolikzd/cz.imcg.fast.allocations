@@ -319,7 +319,7 @@ If constitution needs changes (see Constitution § Governance):
 - Include constitution principles in every story
 - Cross-reference commit hashes from code repos
 - Verify constitution version matches across all repos
-- **Push immediately after every commit** and report the pushed repo with HEAD hash immediately (see § Push Rule below)
+- **Push immediately after every complete commit** and report the pushed repo with HEAD hash immediately (see § Push Rule below)
 
 ### ❌ DON'T
 
@@ -328,26 +328,13 @@ If constitution needs changes (see Constitution § Governance):
 - Don't mark stories "done" without commit hashes from code repos
 - Don't create stories without specifying target repository
 - Don't forget to sync constitution after changes
-- **Don't commit without immediately pushing** — local-only commits are invisible to SAP (abapgit pulls from GitHub)
+- **Don't leave complete commits un-pushed** — local-only commits are invisible to SAP (abapgit pulls from GitHub)
 
 ---
 
 ## 11a. Push Rule (Non-Negotiable)
 
-This rule is defined in the constitution (`_bmad/_memory/constitution.md`, Code Review Gates checklist) and is reproduced here so agents cannot miss it:
-
-> After EVERY `git push`, immediately report the pushed repository, branch, and HEAD commit hash. Do NOT batch pushes and report at session end — report each push as it happens.
-
-**Required output after every push** (exact format):
-
-```
-## Pushed repositories
-
-| Repository | Branch | HEAD commit |
-|------------|--------|-------------|
-| cz.en.orch | main   | 37eea15     |
-| cz.imcg.fast.allocations | master | 920fe99 |
-```
+The push rule is defined in the constitution (`_bmad/_memory/constitution.md`, Code Review Gates checklist — "Pushed to GitHub after every complete commit"). That section is the single source of truth; follow it exactly.
 
 If a push fails, report the error and DO NOT claim the work is complete.
 
