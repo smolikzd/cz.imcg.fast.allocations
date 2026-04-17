@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-17  # EST-194/EST-195 closed (DATS+TIMS timestamp split, cz.en.orch 31cc4bd)
+last_updated: 2026-04-17  # EST-186/188/189/168 closed — all E2E bugs confirmed fixed by tester
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -391,7 +391,7 @@ development_status:
   zen-epic-8-retrospective: optional
 
   # ── Epic 9: Planner Adapter ───────────────────────────────────────────────
-  zen-epic-9: in-progress  # zen-9-4 reopened 2026-04-12 — E2E bugs found during live run, tester sign-off pending
+  zen-epic-9: done  # All stories done — zen-9-4 E2E confirmed by tester 2026-04-17
   zen-9-1-adapter-start-get-status:
     status: "done"
     completion_date: "2026-04-11"
@@ -411,11 +411,11 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "ZEN_ORCH_SETUP.prog.abap: idempotent MODIFY-based setup. Registers ZFI_PROCESS adapter, ALLOC_STEP score, single STEP row. Code review 2026-04-11: Patch A (parse_handle: NS→prefix-at-pos-0, +12→+lv_prefix_len, empty guard via length check) + Patch B (map_status: SKIPPED→completed, BREAKPOINT→failed) applied to zcl_fi_alloc_orch_adapter.clas.abap in cz.imcg.fast.ovysledovka."
   zen-9-4-end-to-end-integration-test:
-    status: "in-progress"
-    completion_date: null
-    commit_hash: "d3a206a"
+    status: "done"
+    completion_date: "2026-04-17"
+    commit_hash: "dbad9e1"
     commit_repository: "cz.en.orch"
-    notes: "REOPENED 2026-04-12: Story was marked done when code was written + code review passed, but ACs require actual SAP execution verified by tester. 16 bugs found during live E2E run (engine timestamp truncations, dashboard RAP dump, adapter mv_adapter_type type mismatch, abapgit XML companion missing, linter not running). All bugs fixed in code. Tester sign-off still required before marking done again. Linear tracking: EST-168 (parent) + EST-169…EST-184 (16 bug subtasks)."
+    notes: "E2E confirmed by tester. All 16 bugs + EST-186/188/189 sub-issues fixed and verified. Performance status propagation fix (FAILED steps → perf FAILED) also applied. Linear: EST-168 closed."
   zen-epic-9-retrospective: optional
 
   # ── ZEN_ORCH Live Integration: ZEN_ORCH_SETUP enhancements ───────────────
@@ -497,19 +497,19 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "BDEF declares lock master but lhc_perf had no FOR LOCK method. RAP strict(2) requires it. Added empty lock handler — no-op correct since all fields readonly and engine owns LUW. Fixes CX_RAP_HANDLER_NOT_IMPLEMENTED short dump on Cancel/Restart/Resume dashboard actions. Linear: EST-187 (child of EST-168)."
   est-186-resolve-params-sxml-element-type-not-json-key:
-    status: "in-progress"
-    completion_date: null
+    status: "done"
+    completion_date: "2026-04-17"
     commit_hash: "2005bc2"
     commit_repository: "cz.en.orch"
-    notes: "True root cause of 'process_type is missing in params JSON'. v1 fix (def60d2) used read_next_node() OO loop but called read_next_node() a second time *inside* the open-element branch to read value — consumed the value node AND skipped next key open-element. v2 fix (2005bc2): state-machine approach with lv_cur_key variable; value branch on next outer loop iteration captures the value. Applied to BOTH score-level (~line 1282) and step-level (~line 1327) loops in resolve_params. Tester sign-off required before marking done. Linear: EST-186 (child of EST-168)."
+    notes: "State-machine sXML loop using get_value() on name attribute. Confirmed fixed by tester. Linear: EST-186 closed."
 
   # ── EST-188: BDEF action names lowercase → PascalCase ───────────────────────
   est-188-bdef-action-names-pascalcase:
-    status: "in-progress"
-    completion_date: null
+    status: "done"
+    completion_date: "2026-04-17"
     commit_hash: "e2314ba"
     commit_repository: "cz.en.orch"
-    notes: "RAP BDL parser rejects action names starting with lowercase. Renamed cancelPerformance→CancelPerformance, restartPerformance→RestartPerformance, resumePerformance→ResumePerformance in: BDEF action declarations, BDEF side effects block, behavior pool FOR ACTION bindings, %features-%action-* refs, result-%action-* refs. External OData aliases (camelCase) preserved unchanged. Tester sign-off required before marking done. Linear: EST-188 (child of EST-168)."
+    notes: "Actions renamed to PascalCase with external camelCase aliases. Confirmed fixed by tester. Linear: EST-188 closed."
 
   # ── EST-193: Allow restart_performance from CANCELLED status ────────────────
   est-193-restart-from-cancelled:
@@ -531,8 +531,8 @@ development_status:
     commit_repository: "cz.en.orch"
     notes: "Same commit as EST-194 — CREATED_AT timestamp now comes from CREATED_ON+CREATED_AT (DATS+TIMS) pair fed through TSTMP_FROM_DATS in interface view, giving full datetime. Sort by CreatedAt DESC (never NULL). JobName exposed in c_perf at pos 25. Linear: EST-195."
   est-189-commit-work-forbidden-in-rap-action:
-    status: "in-progress"
-    completion_date: null
+    status: "done"
+    completion_date: "2026-04-17"
     commit_hash: "aed1f1d"
     commit_repository: "cz.en.orch"
-    notes: "Engine cancel_performance/restart_performance/resume_performance called COMMIT WORK AND WAIT unconditionally. RAP strict(2) forbids this inside a BO action handler. Added iv_skip_commit TYPE abap_bool DEFAULT abap_false to all three method signatures. Engine wraps COMMIT WORK with IF iv_skip_commit = abap_false. Behavior pool passes iv_skip_commit = abap_true. Non-RAP callers unchanged. Linear: EST-189 (child of EST-168)."
+    notes: "iv_skip_commit parameter added to cancel/restart/resume. Behavior pool passes abap_true. Confirmed fixed by tester. Linear: EST-189 closed."
