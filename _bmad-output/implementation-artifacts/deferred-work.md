@@ -468,3 +468,49 @@ Items surfaced during review that are not caused by the current story but worth 
 - **Description:** `zcl_en_orch_bp_perf` was declared `ABSTRACT FINAL` — a class cannot be both abstract (requiring subclassing) and final (forbidding subclassing). SAP RAP behavior pool classes conventionally use `FINAL`; the `ABSTRACT` keyword was carried over from a template.
 - **Priority:** ~~Low~~ Resolved.
 
+---
+
+## EST-205 Deferred Items — ZCL_EN_ORCH_SCORE_BUILDER
+
+Source: EST-205 review (Edge Case Hunter, 2026-04-18)
+
+### EC-1 — score_seq overflow at 999 elements
+
+- **Source:** EST-205 edge case review
+- **Date:** 2026-04-18
+- **Description:** `mv_next_seq` is `NUMC4` (max 9999). With step 10, the counter overflows at seq 10000 (wraps to 0000), corrupting the `score_seq` of subsequent rows. For practical score definitions this is extremely unlikely, but the constraint is undocumented.
+- **Suggested fix:** Raise `ZCX_EN_ORCH_ERROR` in `append_element` when `mv_next_seq > 9990`, or widen the domain type.
+- **Priority:** Low
+
+### EC-2 — `PREREQ_GATE` domain value inconsistency (pre-existing engine bug)
+
+- **Source:** EST-205 edge case review
+- **Date:** 2026-04-18
+- **Description:** Domain `ZEN_ORCH_ELEM_TYPE` defines the fixed value as `PREREQ_GAT` (10 chars), but `zcl_en_orch_engine.clas.abap:952` uses `WHEN 'PREREQ_GATE'` (11 chars). The builder correctly uses `'PREREQ_GATE'` to match the engine. The domain needs the value corrected to `PREREQ_GATE`.
+- **Suggested fix:** Extend domain value to 11 chars or add `PREREQ_GATE` as the correct value.
+- **Priority:** Low (pre-existing, no runtime impact as engine logic does the matching)
+
+### EC-3 — Builder re-use after partial `add_step` failure
+
+- **Source:** EST-205 edge case review
+- **Date:** 2026-04-18
+- **Description:** If `add_step` raises (e.g. blank `adapter_type`), the partial internal state is unchanged and the builder is still usable. A subsequent successful `add_step` + `build()` could persist an unexpected partial score. This is an edge-case misuse pattern, not a core bug.
+- **Suggested fix:** Set a `mv_poisoned` flag on validation failure and check it in `build()`.
+- **Priority:** Low
+
+### EC-7 — Concurrent `build()` race condition
+
+- **Source:** EST-205 edge case review
+- **Date:** 2026-04-18
+- **Description:** Two parallel `build()` calls for the same `score_id` could interleave their DELETE/INSERT sequences, resulting in duplicate or missing rows. No locking (`ENQUEUE`) is performed before the DELETE.
+- **Suggested fix:** Add `SELECT … FOR UPDATE` or an explicit SAP enqueue object before the DELETE in `build()`.
+- **Priority:** Low (unlikely in practice; setup programs run once)
+
+### EC-8 — Audit fields not populated in score header
+
+- **Source:** EST-205 edge case review
+- **Date:** 2026-04-18
+- **Description:** `ms_score_hdr` fields `CREATED_BY`, `CREATED_ON`, `CREATED_AT` (if present in `zen_orch_score`) are not populated by `build()`. Audit trail is incomplete.
+- **Suggested fix:** Populate `CREATED_BY = sy-uname`, `CREATED_ON = sy-datum`, `CREATED_AT = sy-uzeit` in `for_score()` (or `build()` on first write).
+- **Priority:** Low
+
