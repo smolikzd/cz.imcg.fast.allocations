@@ -98,6 +98,22 @@ ENDIF.
 
 Apply in both `get_data` (data file) and `trailing_file` (finished file) after the initial `lv_file = mv_fname` assignment.
 
+## Review Findings
+
+### Patches (require fixing)
+
+- [x] [Review][Patch] Silent filename injection skip when template lacks `ZFI_OV_` token — `REPLACE FIRST OCCURRENCE OF 'ZFI_OV_'` silently no-ops if `mv_fname` does not start with that literal; BUKRS token is never injected and no error is raised. Affects both `get_data` (~line 492) and `trailing_file` (~line 670). Add a guard or an assertion when `mv_bukrs IS NOT INITIAL` and the replacement did not occur (`sy-subrc <> 0`). [zcl_fi_ov_keboola_extractor.clas.abap:492,670] — fixed in commit 309e36a
+- [x] [Review][Patch] `mv_bukrs TYPE bukrs` — lowercase type name violates Constitution Principle II (SAP naming conventions). Should be `DATA mv_bukrs TYPE BUKRS.` to match the DDIC type reference style used in all other declarations in the class. [zcl_fi_ov_keboola_extractor.clas.abap:92] — fixed in commit 309e36a
+- [x] [Review][Patch] No selection-screen text key for `p_bukrs` — all other parameters reference a `text-t0x` element; `p_bukrs` has none, so the field appears with its technical name only on the selection screen. Add a text element reference (e.g. `p_bukrs type bukrs` → add corresponding text symbol). [zfi_ov_keboola_extract.prog.abap:33] — fixed in commit 309e36a (all 5 language pools)
+
+### Deferred (pre-existing / not actionable now)
+
+- [x] [Review][Defer] `ZFI_OV_` token may appear >1 times in a pathological custom template — `REPLACE FIRST OCCURRENCE` handles deterministically but leaves a residual token. Requires intentionally malformed template. Deferred. [zcl_fi_ov_keboola_extractor.clas.abap:492,670] — deferred, pre-existing
+- [x] [Review][Defer] No log message for the active BUKRS filter — useful for debugging but not an AC requirement. Pre-existing logging gaps elsewhere. Deferred. [zcl_fi_ov_keboola_extractor.clas.abap] — deferred, pre-existing
+- [x] [Review][Defer] Empty `mt_semtag_filter` + bukrs set → silent zero results without warning — pre-existing behaviour, not introduced by this change. Deferred. — deferred, pre-existing
+- [x] [Review][Defer] Concurrent parallel runs (bukrs vs no-bukrs) same period could overwrite FTP/object-store files — operational concern, not a code defect. Deferred. — deferred, pre-existing
+- [x] [Review][Defer] Two filename-building blocks maintained independently — duplication risk if prefix convention changes. Pre-existing pattern. Deferred. [zcl_fi_ov_keboola_extractor.clas.abap] — deferred, pre-existing
+
 ## Verification
 
 **Manual checks (if no CLI):**
