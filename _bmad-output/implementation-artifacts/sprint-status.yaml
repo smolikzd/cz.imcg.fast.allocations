@@ -58,7 +58,7 @@
 # Epic 9: Planner Adapter ZCL_FI_ALLOC_ORCH_ADAPTER (stories 9.1–9.4) — ovysledovka
 
 generated: 2026-04-04
-last_updated: 2026-04-17  # EST-196/198 done — Refresh button + ZEN_ORCH_SETUP simplified
+last_updated: 2026-04-30  # EST-212 story added (reverse EST-208, enable CreateAndExecute for Cancelled)
 project: cz.imcg.fast.allocations
 project_key: NOKEY
 tracking_system: file-system
@@ -578,3 +578,10 @@ development_status:
     commit_hash: "0e9868c"
     commit_repository: "cz.imcg.fast.ovysledovka"
     notes: "Updated ZCL_FI_ALLOC_STEP_EXTRACT to parse COMPANY_CODE from process context and pass it to ZCL_FI_OV_KEBOOLA_EXTRACTOR. Log message updated to include BUKRS."
+
+  - story_id: "EST-212"
+    title: "Dashboard: Enable CreateAndExecute for cancelled process instances (reverse EST-208)"
+    target_repository: "cz.imcg.fast.ovysledovka"
+    status: "ready-for-dev"
+    depends_on: ["EST-192", "EST-208"]
+    notes: "Re-enables CreateAndExecute button for CANCELLED status. Reverses the two EST-208 changes: (1) restore gc_status-cancelled to CreateAndExecute COND in get_instance_features, (2) remove server-side CANCELLED rejection guard in createandexecute handler. Both Restart (EST-192) and CreateAndExecute must coexist for CANCELLED. Story: spec-est-212-createandexecute-for-cancelled.md"
