@@ -582,6 +582,9 @@ development_status:
   - story_id: "EST-212"
     title: "Dashboard: Enable CreateAndExecute for cancelled process instances (reverse EST-208)"
     target_repository: "cz.imcg.fast.ovysledovka"
-    status: "ready-for-dev"
+    status: "done"
+    completion_date: "2026-04-30"
+    commit_hash: "984e9db"
+    commit_repository: "ovysledovka"
     depends_on: ["EST-192", "EST-208"]
     notes: "Re-enables CreateAndExecute button for CANCELLED status. Reverses the two EST-208 changes: (1) restore gc_status-cancelled to CreateAndExecute COND in get_instance_features, (2) remove server-side CANCELLED rejection guard in createandexecute handler. Both Restart (EST-192) and CreateAndExecute must coexist for CANCELLED. Story: spec-est-212-createandexecute-for-cancelled.md"
