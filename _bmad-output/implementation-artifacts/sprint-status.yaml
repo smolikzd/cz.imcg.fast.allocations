@@ -569,3 +569,12 @@ development_status:
     commit_hash: "7853ecd"
     commit_repository: "cz.en.orch"
     notes: "Created ZEN_ORCH_ALLOC_LOOP_SETUP program using ZCL_EN_ORCH_SCORE_BUILDER fluent API. Defines score ALLOC_CZ01_2024 with 6 sequential STEPs (periods 001-006, FY2024, company 1000). Cancel-before-create + sweep_all pattern. Idempotent."
+
+  - story_id: "EST-211"
+    title: "Update ZCL_FI_ALLOC_STEP_EXTRACT with BUKRS parameter (EST-210 follow-up)"
+    target_repository: "cz.imcg.fast.ovysledovka"
+    status: "done"
+    completion_date: "2026-04-30"
+    commit_hash: "0e9868c"
+    commit_repository: "cz.imcg.fast.ovysledovka"
+    notes: "Updated ZCL_FI_ALLOC_STEP_EXTRACT to parse COMPANY_CODE from process context and pass it to ZCL_FI_OV_KEBOOLA_EXTRACTOR. Log message updated to include BUKRS."
