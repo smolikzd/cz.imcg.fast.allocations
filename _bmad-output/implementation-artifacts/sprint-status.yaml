@@ -588,3 +588,14 @@ development_status:
     commit_repository: "ovysledovka"
     depends_on: ["EST-192", "EST-208"]
     notes: "Re-enables CreateAndExecute button for CANCELLED status. Reverses the two EST-208 changes: (1) restore gc_status-cancelled to CreateAndExecute COND in get_instance_features, (2) remove server-side CANCELLED rejection guard in createandexecute handler. Both Restart (EST-192) and CreateAndExecute must coexist for CANCELLED. Story: spec-est-212-createandexecute-for-cancelled.md"
+
+  # ── Keboola extractor: per-semantic-tag export row/document count logging ──
+  - story_id: "keboola-semtag-row-count-logging"
+    title: "Log per-semantic-tag export row/document counts in ZCL_FI_OV_KEBOOLA_EXTRACTOR"
+    target_repository: "cz.imcg.fast.ovysledovka"
+    status: "ready-for-dev"
+    constitution_principles:
+      - "Principle I - DDIC-First"
+      - "Principle II - SAP Standards"
+      - "Principle V - Error Handling"
+    notes: "Diagnostic follow-up: one exported gz CSV was found empty. Theory: the semantic tag it belongs to has no relevant data for the extracted period. Add explicit per-semantic-tag row/document count logging (via ZIF_FI_PROCESS_LOGGER, message class ZFI_OV_KBC) in EXECUTE, including a distinct warning-severity entry when a tag exports 0 rows or has 0 matching packets, to make this scenario visible in the application log instead of silent. Story: spec-keboola-extractor-semtag-row-count-log.md"
