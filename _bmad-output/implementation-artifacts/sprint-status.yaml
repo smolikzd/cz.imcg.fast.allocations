@@ -599,3 +599,16 @@ development_status:
       - "Principle II - SAP Standards"
       - "Principle V - Error Handling"
     notes: "Diagnostic follow-up: one exported gz CSV was found empty. Theory: the semantic tag it belongs to has no relevant data for the extracted period. Add explicit per-semantic-tag row/document count logging (via ZIF_FI_PROCESS_LOGGER, message class ZFI_OV_KBC) in EXECUTE, including a distinct warning-severity entry when a tag exports 0 rows or has 0 matching packets, to make this scenario visible in the application log instead of silent. Story: spec-keboola-extractor-semtag-row-count-log.md"
+
+  # ── Standalone ZFI_OV_KEBOOLA_EXTRACT report: no SLG1 output (null logger) ──
+  - story_id: "keboola-extract-report-slg1-logging"
+    title: "Wire real SLG1 logging into standalone ZFI_OV_KEBOOLA_EXTRACT report"
+    target_repository: "cz.imcg.fast.ovysledovka"
+    status: "ready-for-dev"
+    depends_on: ["keboola-semtag-row-count-logging"]
+    constitution_principles:
+      - "Principle I - DDIC-First"
+      - "Principle II - SAP Standards"
+      - "Principle IV - Factory Pattern"
+      - "Principle V - Error Handling"
+    notes: "User ran ZFI_OV_KEBOOLA_EXTRACT and found no SLG1 messages at all, even after the semtag row-count logging was added to ZCL_FI_OV_KEBOOLA_EXTRACTOR. Root cause: the report instantiates the extractor with ZCL_FI_PROCESS_NULL_LOGGER (a no-op logger), discarding every message. Fix: replace with ZCL_FI_PROCESS_LOGGER=>create_new using BAL object ZFI_ALLOC, new subobject KEBOOLA_EXTRACT (registered via SLG0), and call save() on both success and the existing zcx_fi_ov_keboola_extractor catch branch. Keeps the productive ALLOC_EXPORT process path (object ZFI_ALLOC / subobject PROCESS, via ZCL_FI_ALLOC_STEP_EXTRACT) untouched and distinct. Story: spec-keboola-extract-report-slg1-logging.md"
