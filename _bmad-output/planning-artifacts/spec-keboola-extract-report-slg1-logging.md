@@ -44,7 +44,9 @@ try.
 endtry.
 ```
 
-No `save()` call exists anywhere in the report today (irrelevant while the logger is a no-op, but will matter once a real logger is wired in — `ZIF_FI_PROCESS_LOGGER->save` must be called explicitly to flush to the DB/SLG1; nothing auto-flushes unless `iv_flush_interval` is reached).
+No `save()` call exists anywhere in the report today (irrelevant while the logger is a no-op).
+
+> **Correction (post-review):** `ZIF_FI_PROCESS_LOGGER->save` must **NOT** be called by step/report developers — its doc comment explicitly states *"WARNING: This method is for framework use only... Framework automatically saves logs after step execution completes."* `ZCL_FI_PROCESS_LOGGER->message()` (and `log_exception_from_framework()`) already **auto-flush to the DB via a 2nd connection on every call** by default (`iv_flush_interval` defaults to `1` in `create_new`/`attach_existing`, added for real-time SLG1 visibility per EST-120). So once a real logger is wired in, messages already logged by `ZCL_FI_OV_KEBOOLA_EXTRACTOR->EXECUTE` (via `mo_log->message(...)`) will persist to SLG1 immediately — no additional `save()` call is required or wanted in this report.
 
 ## 4. Proposed Changes
 
@@ -68,6 +70,13 @@ try.
       iv_subobject       = 'KEBOOLA_EXTRACT'
     ).
 
+  catch zcx_fi_process_error into data(lo_log_ex).
+    " logger creation itself failed — surface to the user, extraction never runs
+    message 'Failed to initialize application log.'(E02) type 'E'.
+    return.
+endtry.
+
+try.
     lo_kbc = new zcl_fi_ov_keboola_extractor(
       io_log           = lo_log
       iv_gjahr         = p_gjahr
@@ -84,23 +93,18 @@ try.
     ...
     lo_kbc->execute( ).
     ...
-    lo_log->save( ).
 
   catch zcx_fi_ov_keboola_extractor into data(lo_ex).
     lo_log->log_exception_from_framework( lo_ex ).
-    lo_log->save( ).
     message 'Technical issue during extraction process.'(E01) type 'E' .
-
-  catch zcx_fi_process_error into data(lo_log_ex).
-    " logger creation itself failed — surface to the user, extraction never ran
-    message 'Failed to initialize application log.'(E02) type 'E'.
 endtry.
 ```
 
 Key points:
-- `zcl_fi_process_logger=>create_new` raises `zcx_fi_process_error` — add a dedicated `CATCH` so a logger-creation failure doesn't get silently swallowed or confused with an extraction failure.
+- `zcl_fi_process_logger=>create_new` raises `zcx_fi_process_error` — handled in its own `TRY` block, separate from the extraction `TRY`, so a logger-creation failure is never confused with an extraction failure and the report exits cleanly (`RETURN`) before attempting extraction with no logger at all.
 - `iv_external_number` (type `balnrext`) must be populated with something correlating to this run (date+time is sufficient here since this is a manual/ad-hoc report, not a framework-tracked process instance with a UUID).
-- Call `lo_log->save( )` **both** on the happy path and in the `CATCH zcx_fi_ov_keboola_extractor` branch, so partial-run logs are still visible in SLG1 even when extraction fails partway through.
+- **Do not call `lo_log->save( )` anywhere** — `message()` (called inside `ZCL_FI_OV_KEBOOLA_EXTRACTOR->EXECUTE`) and `log_exception_from_framework()` already auto-flush to SLG1 per call (default `iv_flush_interval = 1`); `save()` is reserved for framework/step-orchestration use only (see §3 correction above).
+- `log_exception_from_framework` itself raises `zcx_fi_process_error` — in the rare case that logging the exception fails too, this would propagate unhandled out of the existing `CATCH zcx_fi_ov_keboola_extractor` block (ABAP does not let a `CATCH` block catch an exception raised by its own statements without a nested `TRY`). Acceptable here (BAL failures are already treated as fail-hard elsewhere in the framework, per `flush_to_db`'s doc comment), but call this out explicitly during implementation review.
 - Text elements `E01`/`E02` — confirm `E02` doesn't already exist in the report's text pool before adding.
 
 ### 4.3 Do not change `ZCL_FI_OV_KEBOOLA_EXTRACTOR` or `ZCL_FI_ALLOC_STEP_EXTRACT`
@@ -112,13 +116,13 @@ Both already handle `mo_log`/`io_log` correctly (guarded `IF mo_log IS BOUND`, f
 - **Principle I (DDIC-First):** No new local types; `balnrext`/`balobj_d`/`balsubobj` are existing DDIC types used as-is.
 - **Principle II (SAP Standards):** New/changed lines ≤120 chars; follow existing report coding style (lowercase keywords, as used in this program today).
 - **Principle IV (Factory Pattern):** Use `zcl_fi_process_logger=>create_new(...)` factory method — do not `NEW zcl_fi_process_logger(...)` directly (class is `CREATE PRIVATE` and enforces this already).
-- **Principle V (Error Handling):** Add explicit `CATCH zcx_fi_process_error` around logger creation; ensure `save()` is called on both success and the existing `zcx_fi_ov_keboola_extractor` failure path so partial logs aren't lost.
+- **Principle V (Error Handling):** Add explicit `CATCH zcx_fi_process_error` around logger creation, separate from the extraction `TRY`, so a logger init failure is never confused with (or masked by) an extraction failure.
 
 ## 6. Verification Plan
 
 1. Run `ZFI_OV_KEBOOLA_EXTRACT` for a period with data — confirm SLG1 (object `ZFI_ALLOC`, subobject `KEBOOLA_EXTRACT`) shows the full set of per-semantic-tag messages from `keboola-semtag-row-count-logging` (start/packet/summary/warning messages) for this run's external number.
 2. Run with a semantic tag filter known to yield zero packages — confirm the `W`-severity "no packages found" message (from the earlier logging story) is now visible in SLG1 for this report too, not just via the `ALLOC_EXPORT` framework path.
-3. Force a failure (e.g. invalid FTP config with `p_ftp = 'X'`) — confirm the exception is logged via `log_exception_from_framework` and `save()` still flushes the partial log before the `MESSAGE ... TYPE 'E'` is raised.
+3. Force a failure (e.g. invalid FTP config with `p_ftp = 'X'`) — confirm the exception is logged via `log_exception_from_framework` and is visible in SLG1 immediately (auto-flushed), before the `MESSAGE ... TYPE 'E'` is raised.
 4. Confirm the productive `ALLOC_EXPORT` process path (`ZCL_FI_ALLOC_STEP_EXTRACT` → BAL object `ZFI_ALLOC` / subobject `PROCESS`) is completely unaffected — its log stream must remain separate from the new `KEBOOLA_EXTRACT` subobject stream.
 5. Confirm `p_cnts` (count-only) mode still works and produces a sensible log entry (or at minimum doesn't error) with the new logger wired in.
 
